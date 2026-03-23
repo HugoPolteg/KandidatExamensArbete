@@ -3,7 +3,7 @@ import requests
 
 mcp = FastMCP("Flex")
 
-BASE_URL = "SOME_URL"
+BASE_URL = "https://stage-api.flexhrm.com"
 
 @mcp.tool()
 def dagredovisning(employeeId :str, date: str, payload: dict) -> dict:
