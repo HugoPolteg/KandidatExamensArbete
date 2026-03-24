@@ -1,29 +1,33 @@
 from mcp.server.fastmcp import FastMCP
 import requests
-from typing import TypedDict, Optional
+from pydantic import BaseModel  
+from uuid import UUID
+from datetime import date, time
 
 mcp = FastMCP("Flex")
 
 BASE_URL = "https://stage-api.flexhrm.com"
 
 
-class Entry(TypedDict):
-    start_time: str
-    end_time: str
+class DagsEntry(BaseModel):
+    employeeId: UUID
+    date: date
+    start_time: time
+    end_time: time
     time_code: str
-    billable: Optional[bool]
-    comment: Optional[str]
+    billable: bool = True
+    comment: str = ""
 
 @mcp.tool()
-def dagredovisning(employeeId :str, date: list[str], entries:list[Entry]) -> dict:
+def dagredovisning(entries:list[DagsEntry]) -> dict:
     """
     Create or update one or more time reports for an employee on one or more given dates.
 
     Args:
-        employeeId: UUDI of the employee.
-        date: ISO date string (e.g. 2026-03-23)
-        entries: 
-            Each entrie must include:      
+        entries: a list of entries 
+            Each entrie must include: 
+            employeeId: UUDI of the employee.
+            date: ISO date string (e.g. 2026-03-23)  
                 start_time: Time of day for which the user started work (HH:MM)
                 end_time: Time of day for which the user finished work (HH:MM)
             Each entire can (but must not) also include
@@ -33,35 +37,52 @@ def dagredovisning(employeeId :str, date: list[str], entries:list[Entry]) -> dic
     Returns:
         API response JSON
         """
+    results =[]
+    grouped = {}
 
-    time_rows = []
+
+
     for e in entries:
-        row = {
-            "billable": e.billable,
-            "externalComment": e.comment,
-            "timeCode": {"code": e.time_code},
-            "fromTimeDateTime": f"{date}T{e.start_time}:00Z",
-            "toTimeDateTime": f"{date}T{e.end_time}:00Z"
-        }
-        time_rows.append(row)
+        e: DagsEntry
+        key = (str(e.employeeId), e.date.isoformat())
+        grouped.setdefault(key, []).append(e)
+   
+    
+    for (employeeId, date_str), group_entries in grouped.items():
+
+        time_rows = []
+
+        for e in group_entries:
+            from_dt = f"{e.date.isoformat()}T{e.start_time.strftime('%H:%M:%S')}Z"
+            to_dt = f"{e.date.isoformat()}T{e.end_time.strftime('%H:%M:%S')}Z"
+
+            row = {
+                "billable": e.billable,
+                "externalComment": e.comment,
+                "timeCode": {"code": e.time_code},
+                "fromTimeDateTime": from_dt,
+                "toTimeDateTime": to_dt
+            }
+
+            time_rows.append(row)
 
     payload = {"timeRows": time_rows}
-    url = f"{BASE_URL}/api/employees/{employeeId}/timereports/{date}"
 
     try:
         response = requests.put(
-            url,
+            url=f"{BASE_URL}/api/employees/{employeeId}/timereports/{date_str}",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=30
         )
 
-        response.raise_for_status
+        response.raise_for_status()
+        results.append(response.json() if response.content else {"status": "ok"})
 
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
 
-    return response.json() if response.content else {"status": "ok"}
+    return {"results": results}
 
 if __name__ == "__main__":
     mcp.run()
