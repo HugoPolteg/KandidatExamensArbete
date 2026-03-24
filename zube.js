@@ -254,6 +254,17 @@ const TOOLS = [
       required: ["card_id", "destination_type", "destination_position"],
     },
   },
+  {
+    name: "get_project_members",
+    description: "Get a list of members for a project",
+    inputSchema: {
+        type: "object",
+        properties: {
+        project_id: { type: "number", description: "The project ID" },
+        },
+        required: ["project_id"],
+    },
+    },
 ];
 
 // ── Request handlers ──────────────────────────────────────────────────────────
@@ -288,7 +299,7 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
     } else if (name === "get_sprint_events") {
       data = await zubeRequest("GET", `/sprints/${args.sprint_id}/events`);
-      
+
     } else if (name === "get_project_cards") {
       data = await zubeRequest("GET", `/projects/${args.project_id}/cards`);
 
@@ -304,7 +315,8 @@ server.setRequestHandler(CallToolRequestSchema, async (req) => {
 
     } else if (name === "archive_card") {
       data = await zubeRequest("PUT", `/cards/${args.card_id}/archive`);
-
+    } else if (name === "get_project_members") {
+        data = await zubeRequest("GET", `/projects/${args.project_id}/members`);
     } else if (name === "move_card") {
       const destination = {
         type: args.destination_type,
