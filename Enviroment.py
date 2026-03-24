@@ -10,4 +10,3 @@ load_dotenv()
 ATHROPIC_API_KEY = os.getenv("ANTHROPIC_API_KEY")
 anthropic = Anthropic(api_key=ATHROPIC_API_KEY)
 ANTHROPIC_MODEL = "claude-3-5-sonnet-20241022"
-
