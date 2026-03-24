@@ -8,7 +8,6 @@ mcp = FastMCP("Flex")
 
 BASE_URL = "https://stage-api.flexhrm.com"
 
-
 class DagsEntry(BaseModel):
     employeeId: UUID
     date: date
@@ -26,11 +25,11 @@ def dagredovisning(entries:list[DagsEntry]) -> dict:
     Args:
         entries: a list of entries 
             Each entrie must include: 
-            employeeId: UUDI of the employee.
-            date: ISO date string (e.g. 2026-03-23)  
+                employeeId: UUDI of the employee.
+                date: ISO date
                 start_time: Time of day for which the user started work (HH:MM)
                 end_time: Time of day for which the user finished work (HH:MM)
-            Each entire can (but must not) also include
+            Each entire can (but must not) also include:
                 billable: Wheater or not the work was billable
                 comment: Comments the user whiches to append to their time report
         
