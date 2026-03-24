@@ -39,11 +39,9 @@ def dagredovisning(entries:list[DagsEntry]) -> dict:
         """
     results =[]
     grouped = {}
-
-
+    e:DagsEntry
 
     for e in entries:
-        e: DagsEntry
         key = (str(e.employeeId), e.date.isoformat())
         grouped.setdefault(key, []).append(e)
    
