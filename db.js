@@ -22,7 +22,7 @@ const createTableSQL = (tableName) => `
     tool_inputs TEXT,
     correct_tool_inputs TEXT,
     duration_ms INTEGER,
-    timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP
+    timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP  
 
   )
 `;
