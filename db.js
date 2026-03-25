@@ -13,10 +13,16 @@ const createTableSQL = (tableName) => `
     id          INTEGER PRIMARY KEY AUTOINCREMENT,
     prompt      TEXT NOT NULL,
     response    TEXT NOT NULL,
+    correct_response TEXT NOT NULL,
+    tool_invocation BOOL,
+    correct_tool_invocation BOOL,
     tools_used  TEXT,
+    correct_tool_use TEXT,
     tool_inputs TEXT,
+    correct_tool_inputs TEXT,
     duration_ms INTEGER,
     timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP
+
   )
 `;
 
