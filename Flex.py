@@ -29,7 +29,7 @@ def dagredovisning(entries:list[DagsEntry]) -> dict:
                 date: ISO date
                 start_time: Time of day for which the user started work (HH:MM)
                 end_time: Time of day for which the user finished work (HH:MM)
-            Each entire can (but must not) also include:
+            Each entry can (but must not) also include:
                 billable: Wheater or not the work was billable
                 comment: Comments the user whiches to append to their time report
         
