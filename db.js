@@ -14,6 +14,7 @@ const createTableSQL = (tableName) => `
     prompt      TEXT NOT NULL,
     response    TEXT NOT NULL,
     correct_response TEXT NOT NULL,
+    ROUGE-L_F1 DOUBLE,
     tool_invocation BOOL,
     correct_tool_invocation BOOL,
     tools_used  TEXT,
