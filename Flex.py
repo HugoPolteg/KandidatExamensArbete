@@ -3,13 +3,15 @@ import requests
 from pydantic import BaseModel  
 from uuid import UUID
 from datetime import date, time
+from typing import Dict
+
 
 mcp = FastMCP("Flex")
 
 BASE_URL = "https://stage-api.flexhrm.com"
 
 class DagsEntry(BaseModel):
-    employeeId: UUID
+    employee_id: UUID
     date: date
     start_time: time
     end_time: time
@@ -18,20 +20,85 @@ class DagsEntry(BaseModel):
     comment: str = ""
 
 @mcp.tool()
-def dagredovisning(entries:list[DagsEntry]) -> dict:
+def update_salary_by_id(salary_id: UUID, salary_data: Dict) -> dict:
+    """
+    Updates a salary by id
+
+    Args:
+        Required:
+            salary_id: (UUID, required) UUID of the salary.
+            salary_data: (dict, required) JSON body containing the updated salary information.
+    """
+
+    url = f"{BASE_URL}/api/salaries/{salary_id}"
+
+    response = requests.put(url, json=salary_data)
+
+    response.raise_for_status()
+
+    return response.json()
+
+@mcp.tool()
+def get_salary_by_id(salary_id: UUID) -> dict:
+    """
+    Gets a salary by id
+
+    Args:
+        Required:
+            salary_id: (UUID, required) UUID of the salary.
+    """
+
+    url = f"{BASE_URL}/api/salaries/{salary_id}"
+
+    response = requests.get(url)
+
+    response.raise_for_status()
+
+    return response.json()
+
+@mcp.tool()
+def get_time_report_by_employee(employee_id: UUID, date: date = None, generated: bool = True) -> dict:
+    """
+    Gets a time report for an employee
+
+    Args:
+        Required:
+            employee_id: (UUID, required) UUID of the employee.
+        Optional:
+            date: (ISO date, optional) date of the time report
+            generated: (bool, optional) include generated time rows
+    """
+
+    url = f"{BASE_URL}/api/employees/{employee_id}/timereport"
+
+    params = {
+        "generated": generated
+    }
+
+    if date:
+        params["date"] = date.isoformat()
+
+    response = requests.get(url, params=params)
+
+    response.raise_for_status()
+
+    return response.json()
+
+@mcp.tool()
+def put_time_report(entries:list[DagsEntry]) -> dict:
     """
     Create or update one or more time reports for an employee on one or more given dates.
 
     Args:
         entries: a list of entries 
-            Each entrie must include: 
-                employeeId: UUDI of the employee.
-                date: ISO date
-                start_time: Time of day for which the user started work (HH:MM)
-                end_time: Time of day for which the user finished work (HH:MM)
+            Each entry must include: 
+                employee_id: (UUID, required) UUDI of the employee.
+                date: (ISO date, required) date of the time report
+                start_time: (HH:MM, required) Time of day for which the user started work
+                end_time: (HH:MM, required) Time of day for which the user finished work
             Each entry can (but must not) also include:
-                billable: Wheater or not the work was billable
-                comment: Comments the user whiches to append to their time report
+                billable: (bool, optional) Whether or not the work was billable
+                comment: (str, optional)
         
     Returns:
         API response JSON
@@ -41,11 +108,11 @@ def dagredovisning(entries:list[DagsEntry]) -> dict:
     e:DagsEntry
 
     for e in entries:
-        key = (str(e.employeeId), e.date.isoformat())
+        key = (str(e.employee_id), e.date.isoformat())
         grouped.setdefault(key, []).append(e)
    
     
-    for (employeeId, date_str), group_entries in grouped.items():
+    for (employee_id, date_str), group_entries in grouped.items():
 
         time_rows = []
 
@@ -67,7 +134,7 @@ def dagredovisning(entries:list[DagsEntry]) -> dict:
 
     try:
         response = requests.put(
-            url=f"{BASE_URL}/api/employees/{employeeId}/timereports/{date_str}",
+            url=f"{BASE_URL}/api/employees/{employee_id}/timereports/{date_str}",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=30
