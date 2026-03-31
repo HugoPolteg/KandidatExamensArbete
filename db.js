@@ -8,22 +8,29 @@ const db = await open({
   driver: sqlite3.Database,
 });
 
+// reference_prompts must be created first since other tables reference it
+await db.run(`
+  CREATE TABLE IF NOT EXISTS prompts (
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    prompt                  TEXT NOT NULL,
+    correct_response        TEXT,
+    correct_tool_invocation BOOL,
+    correct_tool_use        TEXT,
+    correct_tool_inputs     TEXT
+  )
+`);
+
 const createTableSQL = (tableName) => `
   CREATE TABLE IF NOT EXISTS ${tableName} (
-    id          INTEGER PRIMARY KEY AUTOINCREMENT,
-    prompt      TEXT NOT NULL,
-    response    TEXT NOT NULL,
-    correct_response TEXT NOT NULL,
-    ROUGE-L_F1 DOUBLE,
-    tool_invocation BOOL,
-    correct_tool_invocation BOOL,
-    tools_used  TEXT,
-    correct_tool_use TEXT,
-    tool_inputs TEXT,
-    correct_tool_inputs TEXT,
-    duration_ms INTEGER,
-    timestamp   DATETIME DEFAULT CURRENT_TIMESTAMP
-
+    id                      INTEGER PRIMARY KEY AUTOINCREMENT,
+    prompt_id               INTEGER REFERENCES prompts(id),
+    response                TEXT NOT NULL,
+    rouge_l_f1              DOUBLE,
+    tool_invocation         BOOL,
+    tools_used              TEXT,
+    tool_inputs             TEXT,
+    duration_ms             INTEGER,
+    timestamp               DATETIME DEFAULT CURRENT_TIMESTAMP
   )
 `;
 
