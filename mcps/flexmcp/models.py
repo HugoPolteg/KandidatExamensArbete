@@ -259,3 +259,28 @@ class ProjectModel(BaseModel):
     work_place: Optional[Workplace] = Field(None, alias="workPlace", description="Workplace associated with this project.")
  
     model_config = {"populate_by_name": True}
+
+
+class SalaryQueryBase(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+
+# For /api/instance/{instance}/salaries: instance required
+class GetSalaries(SalaryQueryBase):
+    instance: str = Field(..., description="Domain name.")
+
+# For /api/instance/{instance}/companies/{companyId}/salaries — instance and companyId required
+class GetSalariesByCompany(SalaryQueryBase):
+    instance: str = Field(..., description="Domain name.")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+
+#For /api/instance/{instance}/companies/{companyId}/employees/{employeeId}/salaries — instance, companyId and employeeId required
+class GetSalariesByCompanyAndEmployee(SalaryQueryBase):
+    instance: str = Field(..., description="Domain name.")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")

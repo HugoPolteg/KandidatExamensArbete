@@ -15,7 +15,7 @@ from anthropic.types import MessageParam, ToolParam
 load_dotenv()
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(BASE_DIR, "db.sqlite")
+DB_PATH = os.path.join(BASE_DIR, "db.js")
 
 
 def get_prompts_from_db() -> list[tuple[int, str]]:
