@@ -175,15 +175,38 @@ def get_companies(
 
 @mcp.tool()
 def get_instances(
-    instance_name: Optional[str] = Field("", description="Instance name."),
-    domain: Optional[str] = Field("", description="Domain name."),
-    page_index: Optional[int] = Field(0, description="Page index. Begins at 0."),
+    instance_name: Optional[str] = Field(None, description="Instance name."),
+    domain: Optional[str] = Field(None, description="Domain name."),
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
     page_size: Optional[int] = Field(20, description="Number of entries per page.")
 ) -> dict:
     """Gets a list of instances. Optional to specify name, domain and page information."""
     url = f"{consts.API_ENDPOINT}/api/instances"
 
-    parameters = {"name": instance_name, "domain": domain, "pageIndex": page_index, "pageSize": page_size}
+    parameters = {"pageIndex": page_index, "pageSize": page_size}
+    if instance_name is not None:
+        parameters["name"] = instance_name
+    if domain is not None:
+        parameters["domain"] = domain
+    try:
+        response = requests.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
+@mcp.tool()
+def get_time_groups(
+    company_number: Optional[int] = Field(None, "Company number."),
+    time_group_code: Optional[str] = Field(None, "Time group code."),
+    page_index: Optional[int] = Field(0, "Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, "Number of entries per page.")
+) -> dict:
+    """Gets a list of time groups. Optional to specify search parameters."""
+    url = f"{consts.API_ENDPOINT}/api/instances"
+
+    parameters = {"companynumber": company_number, "code": time_group_code, "pageIndex": page_index, "pageSize": page_size}
     try:
         response = requests.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
