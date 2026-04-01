@@ -290,10 +290,12 @@ class GetSalariesByEmployee(GetSalaryQueryBase):
     instance: str = Field(..., description="Domain name.")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
+#For /api/salaries — no parameters required
 class GetAllSalaries(GetSalaryQueryBase):
     pass
 
-class UpdateSalaries(BaseModel):
+#For /api/employees/{employeeId}/salaries — employeeId required
+class UpdateOrCreateSalaries(BaseModel):
     comment: Optional[str] = Field(None, description="Comment. Nullable.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
@@ -304,4 +306,7 @@ class UpdateSalaries(BaseModel):
     is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
     salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
-    
+
+class StampingAccountModel(BaseModel):
+    accountCode: str = Field(..., min_length=1, description="Account code string.")
+    accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")

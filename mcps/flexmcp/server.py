@@ -5,7 +5,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel
 import consts
 
 mcp = FastMCP("Flex")
@@ -197,30 +197,31 @@ def get_salaries_by_employee(
     return response.json()
 
 #@mcp.tool()
-#def update_salary_by_employee(
-#    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
-#    ) -> dict:
-#    """
-#     Update salaries for an employee in a given company. 
-#
-#     Returns:
-#        API response as a JSON dict.
-#    """
-#    url = f"{consts.API_ENDPOINT}/api/employees/{query.employee_id}/salaries"
-#
-#    params = query.model_dump(by_alias=True, exclude_none=True)
-#
-#    try:
-#        response = requests.put(
-#            url, 
-#            json=params, 
-#            headers={"Content-Type": "application/json"},
-#            timeout=consts.API_TIMEOUT
-#        )
-#        response.raise_for_status()
-#    except requests.RequestException as e:
-#        raise RuntimeError(f"API request failed: {e}")
-#    return response.json()
+def update_salaries_by_employee(
+    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
+    ) -> dict:
+    """
+     Update salaries for an employee in a given company. 
+
+     Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/employees/{query.employee_id}/salaries"
+
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = requests.put(
+            url, 
+            params={"employeeId": query.employee_id},
+            json=payload, 
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 @mcp.tool()
 def get_all_salaries(
@@ -244,7 +245,7 @@ def get_all_salaries(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
-@mcp.tool()
+#@mcp.tool()
 def create_salary(
     query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
     ) -> dict:
@@ -256,12 +257,12 @@ def create_salary(
     """
     url = f"{consts.API_ENDPOINT}/api/salaries"
 
-    params = query.model_dump(by_alias=True, exclude_none=True)
+    payload = query.model_dump(by_alias=True, exclude_none=True)
 
     try:        
         response = requests.post(
             url, 
-            json=params, 
+            json=payload, 
             headers={"Content-Type": "application/json"},
             timeout=consts.API_TIMEOUT
         )
@@ -594,5 +595,107 @@ def update_project(
  
     return response.json() if response.content else {"status": "ok"}
 
+#@mcp.tool()
+def stamping_by_Id  (
+    userId: UUID = Field(..., description="UUID of the employee."),
+    internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable."),
+    date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format."),
+    account: StampingAccountModel = Field(..., description="Stamping account details including account code and distribution ID, both required."),
+    ) -> dict:
+    """
+    Stamps in or out for a user
+
+    Returns:
+        API response as a JSON dict.
+    """
+
+    url = f"{consts.API_ENDPOINT}/api/stamping/{userId}/inOut"
+
+    params = {}
+    if internal_comment is not None:
+        params["internalComment"] = internal_comment
+    if date_time is not None:
+        params["dateTime"] = date_time.isoformat()
+
+    payload = account.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = requests.post(
+            url, 
+            
+            json=payload, 
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+#@mcp.tool()
+def stamping_by_employeeId(
+    employeeId: UUID = Field(..., description="UUID of the employee."),
+    internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable."),
+    date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format."),
+    account: StampingAccountModel = Field(..., description="Stamping account details including account code and distribution ID, both required."),
+    )-> dict:
+    """
+    Stamps in or out for an employee by their ID
+
+    Returns:
+        API response as a JSON dict.
+
+    """
+    url = f"{consts.API_ENDPOINT}/api/employees/{employeeId}/inOut"
+
+    params = {}
+    if internal_comment is not None:
+        params["internalComment"] = internal_comment
+    if date_time is not None:
+        params["dateTime"] = date_time.isoformat()
+
+    payload = account.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = requests.post(
+            url, 
+            json=payload, 
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_stamping_by_userID(
+    user_id: UUID = Field(..., description="UUID of the employee."),
+    date_time: Optional[datetime] = Field(None, description="Date and time for which to retrieve stamping information, in ISO format.")
+    )-> dict:
+    """
+    Gets stamping information for a user
+
+    Response:
+        A JSON dict containing stamping details for the specified user.
+     """
+    
+    url = f"{consts.API_ENDPOINT}/api/stamping/{user_id}/timeRows"
+
+    params = {}
+    if date_time is not None:
+        params["dateTime"] = date_time.isoformat()
+    try:
+        response = requests.get(
+        url, 
+        params=params, 
+        timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 if __name__ == "__main__":
     mcp.run()
+
+
