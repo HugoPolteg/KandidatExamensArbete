@@ -5,7 +5,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateSalaries
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries
 import consts
 
 mcp = FastMCP("Flex")
@@ -198,7 +198,7 @@ def get_salaries_by_employee(
 
 #@mcp.tool()
 #def update_salary_by_employee(
-#    query: UpdateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
+#    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
 #    ) -> dict:
 #    """
 #     Update salaries for an employee in a given company. 
@@ -221,6 +221,54 @@ def get_salaries_by_employee(
 #    except requests.RequestException as e:
 #        raise RuntimeError(f"API request failed: {e}")
 #    return response.json()
+
+@mcp.tool()
+def get_all_salaries(
+    query: GetAllSalaries = Field(..., description="Full query object. All fields are optional")
+    ) -> dict:
+    """
+     Get salaries.
+     """
+    url = f"{consts.API_ENDPOINT}/api/salaries"
+
+    params = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = requests.get(
+            url, 
+            params=params, 
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_salary(
+    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
+    ) -> dict:
+    """
+     Create a salary for an employee in a given company. 
+
+     Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/salaries"
+
+    params = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:        
+        response = requests.post(
+            url, 
+            json=params, 
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 
 @mcp.tool()

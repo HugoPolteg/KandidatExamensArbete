@@ -290,6 +290,9 @@ class GetSalariesByEmployee(GetSalaryQueryBase):
     instance: str = Field(..., description="Domain name.")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
+class GetAllSalaries(GetSalaryQueryBase):
+    pass
+
 class UpdateSalaries(BaseModel):
     comment: Optional[str] = Field(None, description="Comment. Nullable.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
