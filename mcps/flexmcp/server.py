@@ -40,7 +40,7 @@ def get_salary_by_id(
     return response.json()
 
 
-@mcp.tool()
+#@mcp.tool()
 def update_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
     salary_data: dict = Field(..., description="JSON body containing the updated salary fields."),
@@ -220,7 +220,7 @@ def get_employee(
 
     return response.json()
 
-@mcp.tool()
+#@mcp.tool()
 def put_time_report(
     employee_id: UUID = Field(..., description="Employee ID"),
     date: datetime = Field(..., description="Date of the report"),
@@ -253,6 +253,23 @@ def put_time_report(
         raise RuntimeError(
             f"API request failed for employee {employee_id} on {date}: {e}"
         )
+
+@mcp.tool()
+def get_employment_periods_by_employee(
+    employee_id: UUID = Field(..., description="Employee ID"),
+    domain_name: Optional[str] = Field(None, description="Domain name."),
+    company_id: Optional[UUID] = Field(None, description="Company id."),
+    company_number: Optional[int] = Field(None, "Company number."),
+    employment_number: Optional[int] = Field(None, "Employment number."),
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+) -> dict:
+    """
+    Gets a list of employment periods by employee id.
+
+    Returns:
+        The employment periods from and to dates, id of resignation cause and type of employment.
+    """
 
 @mcp.tool()
 def get_companies(

@@ -1,0 +1,205 @@
+Time Report (time_report)
+
+A time report is the primary entity where a user records and reviews their working time.
+
+It supports multiple views:
+
+day_view
+week_view
+month_view
+compensation_view
+
+Purpose:
+
+Store reported work time
+Provide visibility into recorded time
+Daily Reporting (daily_reporting)
+
+Recording time day-by-day using exact timestamps (start/end times).
+
+Characteristics:
+
+Uses day_view
+Time is recorded as clock times (e.g. 08:00–17:00)
+Period Reporting (period_reporting)
+
+Recording time as total hours over a period, without specifying exact timestamps.
+
+Characteristics:
+
+Uses week_view or month_view
+Time is aggregated (e.g. 40 hours/week)
+Deviation Reporting (deviation_reporting)
+
+Only reporting deviations from the regular schedule.
+
+Characteristics:
+
+Uses deviation_view
+Assumes a predefined schedule
+Only exceptions (e.g. absence, overtime) are recorded
+Time Group (time_group)
+
+A configuration group assigned to each employee.
+
+Purpose:
+
+Defines shared rules and settings for a group of employees
+
+Includes:
+
+Schedules
+Time codes
+Rule sets
+Time Code (time_code)
+
+A required classification for each time entry (time row).
+
+Purpose:
+
+Defines the type of time
+
+Examples:
+
+work (presence)
+absence
+break
+
+Behavior:
+
+Controls how time is:
+Registered
+Calculated
+Summarized
+Daily Schedule (daily_schedule)
+
+The base unit of scheduling, defining rules for a specific day.
+
+Defines:
+
+Working hours
+Flex time limits
+Break rules
+
+Importance:
+
+Every day must have a schedule
+Used to:
+Generate deviations
+Detect unspecified time
+Accounting / Allocation (accounting)
+
+Metadata used to categorize time entries.
+
+Examples:
+
+Account
+Cost center
+Project
+
+Purpose:
+
+Enable reporting and analytics
+Control permissions (e.g. access to projects)
+Unspecified Time (unspecified_time)
+
+Time that violates the rules of the daily schedule.
+
+Cause:
+
+Missing or incorrect classification
+
+Resolution:
+
+Must be specified using correct time_code or adjustments
+e.g. mark as overtime or absence
+Completion Mark (completion_mark)
+
+An action where the employee marks their time report as complete.
+
+Effects:
+
+Locks the report for editing
+Signals readiness for approval
+
+Note:
+
+Naming is customizable (not required to be "completion mark")
+Approval (approval)
+
+An action where a manager reviews and approves a time report.
+
+Effects:
+
+Marks report as approved
+Enables transfer to payroll system
+
+Note:
+
+Naming is customizable
+Partial Approval (partial_approval)
+
+Approval performed at the individual time entry (row) level.
+
+Characteristics:
+
+Often based on accounting (e.g. project-based approval)
+Compensation (compensation)
+
+Used for non-time-based compensation entries.
+
+Defined by:
+
+compensation_codes (instead of time codes)
+
+Examples:
+
+On-call compensation
+Emergency/snow response bonus
+Late schedule change compensation
+
+Recorded in:
+
+compensation_view
+Rolling Absence (rolling_absence)
+
+Absence without a predefined end date.
+
+Behavior:
+
+Continues until explicitly ended
+
+Can be ended by:
+
+Setting an end date
+A check-in (clock-in event)
+
+Common use case:
+
+Sick leave
+Special Day (special_day)
+
+A day that deviates from normal scheduling rules.
+
+Examples:
+
+Public holidays
+Custom non-working days
+
+Typical effects:
+
+Reduced working hours
+Full day off
+Events (events)
+
+Logic-based constructs used to automatically generate time or compensation entries.
+
+Built using:
+
+Formulas / rules
+
+Use cases:
+
+Extra compensation on holidays
+Overtime calculation
+Aggregating time beyond contracted hours
