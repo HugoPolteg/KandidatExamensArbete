@@ -1,0 +1,6 @@
+"requests",
+"pydantic",
+"python-dotenv",
+"mcp",
+"uuid",
+"typing-extensions"

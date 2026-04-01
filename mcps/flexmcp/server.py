@@ -1,4 +1,4 @@
-from mcp.server.fastmcp import FastMCP
+from fastmcp import FastMCP
 import requests
 
 from pydantic import Field
@@ -7,9 +7,18 @@ from datetime import date, datetime
 from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union, GetUsers, GetUsersByInstance
 import consts
+from dotenv import load_dotenv
+import os
+load_dotenv()
+DOMAIN = os.getenv("DOMAIN")
 
+s = requests.Session()
+s.headers.update({
+    "Content-Type": "application/json",
+    "Instance": DOMAIN,
+    "Authorization": 'Basic' + DOMAIN + ":" + os.getenv("USERNAME") + ":" + os.getenv("PASSWORD")
+})
 mcp = FastMCP("Flex")
-
 def to_api_time_row(row: TimeRow) -> dict:
     return {
         "fromTimeDateTime": row.start.isoformat(),
@@ -32,7 +41,7 @@ def get_salary_by_id(
     url = f"{consts.API_ENDPOINT}/api/salaries/{salary_id}"
 
     try:
-        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -54,7 +63,7 @@ def update_salary_by_id(
     url = f"{consts.API_ENDPOINT}/api/salaries/{salary_id}"
 
     try:
-        response = requests.put(
+        response = s.put(
             url,
             json=salary_data,
             headers={"Content-Type": "application/json"},
@@ -79,7 +88,7 @@ def delete_salary(
     url = f"{consts.API_ENDPOINT}/api/salaries/{salary_id}"
 
     try:
-        response = requests.delete(
+        response = s.delete(
             url, 
             timeout=consts.API_TIMEOUT
         )
@@ -105,7 +114,7 @@ def get_salaries(
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
 
     try:
-        response = requests.get(
+        response = s.get(
             url, 
             params=params, 
             timeout=consts.API_TIMEOUT
@@ -115,7 +124,6 @@ def get_salaries(
         raise RuntimeError(f"API request failed: {e}")
 
     return response.json()
-@mcp.tool()
 
 @mcp.tool()
 def get_salaries_by_company(
@@ -133,7 +141,7 @@ def get_salaries_by_company(
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id"})
 
     try:
-        response = requests.get(
+        response = s.get(
             url, 
             params=params, 
             timeout=consts.API_TIMEOUT
@@ -161,7 +169,7 @@ def get_salaries_by_company_and_employee(
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id", "employee_id"})
 
     try:
-        response = requests.get(
+        response = s.get(
             url, 
             params=params, 
             timeout=consts.API_TIMEOUT
@@ -186,7 +194,7 @@ def get_salaries_by_employee(
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "employee_id"})
 
     try:
-        response = requests.get(
+        response = s.get(
             url, 
             params=params, 
             timeout=consts.API_TIMEOUT
@@ -211,7 +219,7 @@ def update_salaries_by_employee(
     payload = query.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = requests.put(
+        response = s.put(
             url, 
             params={"employeeId": query.employee_id},
             json=payload, 
@@ -235,7 +243,7 @@ def get_all_salaries(
     params = query.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = requests.get(
+        response = s.get(
             url, 
             params=params, 
             timeout=consts.API_TIMEOUT
@@ -260,7 +268,7 @@ def create_salary(
     payload = query.model_dump(by_alias=True, exclude_none=True)
 
     try:        
-        response = requests.post(
+        response = s.post(
             url, 
             json=payload, 
             headers={"Content-Type": "application/json"},
@@ -293,7 +301,7 @@ def get_time_report_by_employee(
         params["generated"] = generated
 
     try:
-        response = requests.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -314,7 +322,7 @@ def get_employee(
     url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}"
 
     try:
-        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -340,7 +348,7 @@ def put_time_report(
     payload = entry.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = requests.put(
+        response = s.put(
             url=f"{consts.API_ENDPOINT}/api/employees/{employee_id}/timereports/{date.isoformat()}",
             json=payload,
             headers={"Content-Type": "application/json"},
@@ -360,8 +368,8 @@ def get_employment_periods_by_employee(
     employee_id: UUID = Field(..., description="Employee ID"),
     domain_name: Optional[str] = Field(None, description="Domain name."),
     company_id: Optional[UUID] = Field(None, description="Company id."),
-    company_number: Optional[int] = Field(None, "Company number."),
-    employment_number: Optional[int] = Field(None, "Employment number."),
+    company_number: Optional[int] = Field(None, description="Company number."),
+    employment_number: Optional[int] = Field(None, description="Employment number."),
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
     page_size: Optional[int] = Field(20, description="Number of entries per page.")
 ) -> dict:
@@ -371,6 +379,24 @@ def get_employment_periods_by_employee(
     Returns:
         The employment periods from and to dates, id of resignation cause and type of employment.
     """
+    url = f"/api/employees/{employee_id}/employmentperiods"
+    params = {"pageIndex": page_index, "pageSize": page_size}
+    if domain_name is not None:
+        params["instance"] = domain_name
+    if company_id is not None:
+        params["companyId"] = company_id
+    if company_number is not None:
+        params["companynumber"] = company_number
+    if employment_number is not None:
+        params["employmentnumber"] = employment_number
+
+    try:
+        response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
 
 @mcp.tool()
 def get_companies(
@@ -387,7 +413,7 @@ def get_companies(
     url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
     params = {"instance": domain_name, "startRange": start_range, "endRange": end_range}
     try:
-        response = requests.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -411,7 +437,7 @@ def get_instances(
     if domain is not None:
         parameters["domain"] = domain
     try:
-        response = requests.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
+        response = s.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -420,17 +446,21 @@ def get_instances(
 
 @mcp.tool()
 def get_time_groups(
-    company_number: Optional[int] = Field(None, "Company number."),
-    time_group_code: Optional[str] = Field(None, "Time group code."),
-    page_index: Optional[int] = Field(0, "Page index for search. Begins at 0."),
-    page_size: Optional[int] = Field(20, "Number of entries per page.")
+    company_number: Optional[int] = Field(None, description="Company number."),
+    time_group_code: Optional[str] = Field(None, description="Time group code."),
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
 ) -> dict:
     """Gets a list of time groups. Optional to specify search parameters."""
     url = f"{consts.API_ENDPOINT}/api/instances"
-
-    parameters = {"companynumber": company_number, "code": time_group_code, "pageIndex": page_index, "pageSize": page_size}
+    parameters = {"pageIndex": page_index, "pageSize": page_size}
+    if company_number is not None:
+        parameters["companynumber"] = company_number
+    if time_group_code is not None:
+        parameters["code"] = time_group_code
+    
     try:
-        response = requests.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
+        response = s.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -450,7 +480,7 @@ def get_company(
     url = f"{consts.API_ENDPOINT}/api/companies/{company_id}"
 
     try:
-        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -471,7 +501,7 @@ def get_project(
     url = f"{consts.API_ENDPOINT}/api/employees/{project_id}"
 
     try:
-        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -512,7 +542,7 @@ def get_schedule_days_by_employee(
         params["hideWorkshifts"] = hide_workshifts
  
     try:
-        response = requests.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed for employee {employee_id}: {e}")
@@ -545,7 +575,7 @@ def insert_time_row(
     payload = to_api_time_row(time_row)
  
     try:
-        response = requests.post(
+        response = s.post(
             url,
             json=payload,
             headers={"Content-Type": "application/json"},
@@ -583,7 +613,7 @@ def update_project(
     payload = project.model_dump(by_alias=True, exclude_none=True)
  
     try:
-        response = requests.put(
+        response = s.put(
             url,
             json=payload,
             headers={"Content-Type": "application/json"},
@@ -620,7 +650,7 @@ def stamping_by_Id  (
     payload = account.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = requests.post(
+        response = s.post(
             url, 
             
             json=payload, 
@@ -657,7 +687,7 @@ def stamping_by_employeeId(
     payload = account.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = requests.post(
+        response = s.post(
             url, 
             json=payload, 
             headers={"Content-Type": "application/json"},
@@ -686,7 +716,7 @@ def get_stamping_by_userID(
     if date_time is not None:
         params["dateTime"] = date_time.isoformat()
     try:
-        response = requests.get(
+        response = s.get(
         url, 
         params=params, 
         timeout=consts.API_TIMEOUT)
@@ -708,7 +738,7 @@ def get_unions(
     url = f"{consts.API_ENDPOINT}/api/unions"
     params = filters.model_dump(by_alias=True, exclude_none=True)
     try:
-        response = requests.get(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT
@@ -730,7 +760,7 @@ def get_union_by_id(
     """
     url = f"{consts.API_ENDPOINT}/api/unions/{union_id}"
     try:
-        response = requests.get(
+        response = s.get(
             url,
             timeout=consts.API_TIMEOUT
         )
@@ -751,7 +781,7 @@ def get_user_by_id(
     """
     url = f"{consts.API_ENDPOINT}/api/users/{user_id}"
     try:
-        response = requests.get(url,
+        response = s.get(url,
         timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()
@@ -772,7 +802,7 @@ def get_users(
 
     url = f"{consts.API_ENDPOINT}/api/users"
     try:
-        response = requests.get(
+        response = s.get(
             url,
             params=filters.model_dump(by_alias=True, exclude_none=True),
             timeout=consts.API_TIMEOUT
@@ -795,7 +825,7 @@ def get_users_by_instance(
     url = f"{consts.API_ENDPOINT}/api/instance/{filters.instance}/users"
     params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
     try:
-        response = requests.get(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT
