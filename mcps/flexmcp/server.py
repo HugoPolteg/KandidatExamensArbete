@@ -5,7 +5,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union, GetUsers, GetUsersByInstance
 import consts
 
 mcp = FastMCP("Flex")
@@ -697,16 +697,16 @@ def get_stamping_by_userID(
 
 @mcp.tool()
 def get_unions(
-    union: Union = Field(..., description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
+    filters: Union = Field(..., description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
 )-> dict:
     """
-    Get available unions.
+    Filter unions by specified criteria.
 
     Returns:
         A JSON dict containing the list of unions.
     """
     url = f"{consts.API_ENDPOINT}/api/unions"
-    params = union.model_dump(by_alias=True, exclude_none=True)
+    params = filters.model_dump(by_alias=True, exclude_none=True)
     try:
         response = requests.get(
             url,
@@ -739,6 +739,71 @@ def get_union_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_user_by_id(
+    user_id: UUID = Field(..., description="UUID of the user.")
+    )-> dict:
+    """
+    Gets user information by ID
+
+    Returns:
+        User data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/users/{user_id}"
+    try:
+        response = requests.get(url,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_users(
+    filters: GetUsers = Field(..., description="User details for filtering the users list. All fields are optional")
+    )->dict:
+    """
+    Filter users by specified criteria.
+
+    Returns:
+        A JSON dict containing the list of users.
+    """
+
+    url = f"{consts.API_ENDPOINT}/api/users"
+    try:
+        response = requests.get(
+            url,
+            params=filters.model_dump(by_alias=True, exclude_none=True),
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_users_by_instance(
+    filters: GetUsersByInstance = Field(..., description="User details for filtering the users list. Instance is required. All other fields are optional")
+    )->dict:
+    """
+    Filter users by specified criteria, with instance as a required filter.
+
+    Returns:
+        A JSON dict containing the list of users.
+    """
+    url = f"{consts.API_ENDPOINT}/api/instance/{filters.instance}/users"
+    params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 if __name__ == "__main__":
     mcp.run()

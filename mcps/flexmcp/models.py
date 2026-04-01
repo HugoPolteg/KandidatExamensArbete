@@ -317,3 +317,21 @@ class Union(BaseModel):
     company_number: Optional[int] = Field(None, description="Company number."),
     pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
     pageSize: Optional[int] = Field(20, description="Number of entries per page.")
+
+class GetUsersQueryBase(BaseModel):
+    instans: Optional[str] = Field(None, description="Domain name."),
+    username: Optional[str] = Field(None, description="User name."),
+    extern_ref: Optional[str] = Field(None, description="External reference."),
+    user_type: Optional[int] = Field(None, description="User type") #Vilken int är vad?
+    active: Optional[bool] = Field(None, description="Are the useres active.")
+    logon_since: Optional[datetime] = Field(None, description="Did the user log in since.")
+    no_logon_since: Optional[datetime] = Field(None, description="Did the user not log in since.")
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page")
+
+class GetUsers(GetUsersQueryBase):
+    pass
+
+class GetUsersByInstance(GetUsersQueryBase):
+    instance: str = Field(..., description="Domain name.")
+
