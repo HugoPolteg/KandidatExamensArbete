@@ -5,7 +5,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union
 import consts
 
 mcp = FastMCP("Flex")
@@ -694,6 +694,51 @@ def get_stamping_by_userID(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+
+@mcp.tool()
+def get_unions(
+    union: Union = Field(..., description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
+)-> dict:
+    """
+    Get available unions.
+
+    Returns:
+        A JSON dict containing the list of unions.
+    """
+    url = f"{consts.API_ENDPOINT}/api/unions"
+    params = union.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_union_by_id(
+    union_id: UUID = Field(..., description="UUID of the union.")
+) -> dict:
+    """
+    Get a union by id.
+
+    Returns:
+        A JSON dict containing the union details.
+    """
+    url = f"{consts.API_ENDPOINT}/api/unions/{union_id}"
+    try:
+        response = requests.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 if __name__ == "__main__":
     mcp.run()

@@ -310,3 +310,10 @@ class UpdateOrCreateSalaries(BaseModel):
 class StampingAccountModel(BaseModel):
     accountCode: str = Field(..., min_length=1, description="Account code string.")
     accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
+
+class Union(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name."),
+    company_id: Optional[UUID] = Field(None, description="Company id."),
+    company_number: Optional[int] = Field(None, description="Company number."),
+    pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    pageSize: Optional[int] = Field(20, description="Number of entries per page.")
