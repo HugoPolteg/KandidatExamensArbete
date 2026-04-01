@@ -261,7 +261,7 @@ class ProjectModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 
-class SalaryQueryBase(BaseModel):
+class GetSalaryQueryBase(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
@@ -271,16 +271,34 @@ class SalaryQueryBase(BaseModel):
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
 
 # For /api/instance/{instance}/salaries: instance required
-class GetSalaries(SalaryQueryBase):
+class GetSalaries(GetSalaryQueryBase):
     instance: str = Field(..., description="Domain name.")
 
 # For /api/instance/{instance}/companies/{companyId}/salaries — instance and companyId required
-class GetSalariesByCompany(SalaryQueryBase):
+class GetSalariesByCompany(GetSalaryQueryBase):
     instance: str = Field(..., description="Domain name.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
 
 #For /api/instance/{instance}/companies/{companyId}/employees/{employeeId}/salaries — instance, companyId and employeeId required
-class GetSalariesByCompanyAndEmployee(SalaryQueryBase):
+class GetSalariesByCompanyAndEmployee(GetSalaryQueryBase):
     instance: str = Field(..., description="Domain name.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+
+# For /api/instance/{instance}/employees/{employeeId}/salaries — instance and employeeId required
+class GetSalariesByEmployee(GetSalaryQueryBase):
+    instance: str = Field(..., description="Domain name.")
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+
+class UpdateSalaries(BaseModel):
+    comment: Optional[str] = Field(None, description="Comment. Nullable.")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date. Nullable.")
+    full_time_salary: Optional[float] = Field(None, alias="fullTimeSalary", description="Full time salary.")
+    id: Optional[UUID] = Field(None, description="Salary ID (UUID).")
+    instance_id: UUID = Field(..., alias="instanceId", description="Instance ID (UUID).")
+    is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
+    salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
+    

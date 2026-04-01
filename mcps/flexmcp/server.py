@@ -5,7 +5,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry, GetSalariesByCompany, TimeRow, ProjectModel, GetSalaries, GetSalariesByCompanyAndEmployee
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateSalaries
 import consts
 
 mcp = FastMCP("Flex")
@@ -170,6 +170,58 @@ def get_salaries_by_company_and_employee(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}") 
     return response.json()
+
+@mcp.tool()
+def get_salaries_by_employee(
+    query: GetSalariesByEmployee = Field(..., description="Full query object. Instance and employee_id are required. All other fields are optional")
+    ) -> dict:
+    """
+     Get salaries for an employee
+
+     Returns: 
+        A JSON dict containing the list of salaries.
+    """
+    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/employee/{query.employee_id}/salaries"
+
+    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "employee_id"})
+
+    try:
+        response = requests.get(
+            url, 
+            params=params, 
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+#@mcp.tool()
+#def update_salary_by_employee(
+#    query: UpdateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
+#    ) -> dict:
+#    """
+#     Update salaries for an employee in a given company. 
+#
+#     Returns:
+#        API response as a JSON dict.
+#    """
+#    url = f"{consts.API_ENDPOINT}/api/employees/{query.employee_id}/salaries"
+#
+#    params = query.model_dump(by_alias=True, exclude_none=True)
+#
+#    try:
+#        response = requests.put(
+#            url, 
+#            json=params, 
+#            headers={"Content-Type": "application/json"},
+#            timeout=consts.API_TIMEOUT
+#        )
+#        response.raise_for_status()
+#    except requests.RequestException as e:
+#        raise RuntimeError(f"API request failed: {e}")
+#    return response.json()
+
 
 @mcp.tool()
 def get_time_report_by_employee(
