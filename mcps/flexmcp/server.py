@@ -97,9 +97,29 @@ def get_time_report_by_employee(
 
 
 @mcp.tool()
+def get_employee(
+    employee_id: UUID = Field(..., description="Employee ID"),
+) -> dict:
+    """
+    Gets employee information by ID
+
+    Returns:
+        Employee data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}"
+
+    try:
+        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
+@mcp.tool()
 def put_time_report(
-    employee_id: UUID = Field(..., description="Employee ID (path parameter)"),
-    date: datetime = Field(..., description="Date of the report (path parameter)"),
+    employee_id: UUID = Field(..., description="Employee ID"),
+    date: datetime = Field(..., description="Date of the report"),
     entry: DayEntry = Field(..., description="Time report payload for the given day"),
 ) -> dict:
     """
@@ -129,6 +149,26 @@ def put_time_report(
         raise RuntimeError(
             f"API request failed for employee {employee_id} on {date}: {e}"
         )
+
+@mcp.tool()
+def get_company(
+    company_id: UUID = Field(..., description="UUID of the company.")
+) -> dict:
+    """
+    Gets company information by id.
+
+    Returns:
+        The company information as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/companies/{company_id}"
+
+    try:
+        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
 
 @mcp.tool()
 def insert_time_row(
@@ -206,10 +246,29 @@ def get_schedule_days_by_employee(
  
     return response.json()
 
+@mcp.tool()
+def get_project(
+    project_id: UUID = Field(..., description="UUID of the project.")
+) -> dict:
+    """
+    Gets project information by ID
+
+    Returns:
+        Project data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/employees/{project_id}"
+
+    try:
+        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
 
 @mcp.tool()
 def update_project(
-    project_id: UUID = Field(..., description="UUID of the project to update."),
+    project_id: UUID = Field(..., description="UUID of the project."),
     project: ProjectModel = Field(
         ...,
         description=(
