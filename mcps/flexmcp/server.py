@@ -151,14 +151,56 @@ def put_time_report(
         )
 
 @mcp.tool()
+def get_companies(
+    domain_name: str = Field(..., description="Domain name."),
+    start_range: int = Field(..., description="Start range of company numbers:s."),
+    end_range: int = Field(..., description="End range of the company numbers:s.")
+) -> dict:
+    """
+    Gets a list of companies.
+
+    Returns:
+        The company names, numbers and customer instances within the range.
+    """
+    url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
+    params = {"instance": domain_name, "startRange": start_range, "endRange": end_range}
+    try:
+        response = requests.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
+
+@mcp.tool()
+def get_instances(
+    instance_name: Optional[str] = Field("", description="Instance name."),
+    domain: Optional[str] = Field("", description="Domain name."),
+    page_index: Optional[int] = Field(0, description="Page index. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+) -> dict:
+    """Gets a list of instances. Optional to specify name, domain and page information."""
+    url = f"{consts.API_ENDPOINT}/api/instances"
+
+    parameters = {"name": instance_name, "domain": domain, "pageIndex": page_index, "pageSize": page_size}
+    try:
+        response = requests.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
+@mcp.tool()
 def get_company(
     company_id: UUID = Field(..., description="UUID of the company.")
-) -> dict:
+    ) -> dict:
     """
     Gets company information by id.
 
     Returns:
-        The company information as a JSON dict.
+        The detailed company information as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/api/companies/{company_id}"
 
@@ -170,42 +212,28 @@ def get_company(
 
     return response.json()
 
+
 @mcp.tool()
-def insert_time_row(
-    employee_id: UUID = Field(..., description="UUID of the employee."),
-    row_date: date = Field(..., description="Date of the time row (YYYY-MM-DD)."),
-    time_row: TimeRow = Field(
-        ...,
-        description=(
-            "Time row data. Must include start and end times. All other fields are optional."
-        ),
-    ),
+def get_project(
+    project_id: UUID = Field(..., description="UUID of the project.")
 ) -> dict:
     """
-    Inserts a time row for an employee on a specific date.
-    Overlapping rows are automatically split to accommodate the new entry.
-    If timeCode is omitted, the employee's default work time code is used.
-    Accounting entries are populated automatically based on system rules.
- 
+    Gets project information by ID
+
     Returns:
-        The created time row as a JSON dict.
+        Project data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}/timerow/{row_date.isoformat()}"
- 
-    payload = to_api_time_row(time_row)
- 
+    url = f"{consts.API_ENDPOINT}/api/employees/{project_id}"
+
     try:
-        response = requests.post(
-            url,
-            json=payload,
-            headers={"Content-Type": "application/json"},
-            timeout=consts.API_TIMEOUT,
-        )
+        response = requests.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for employee {employee_id} on {row_date}: {e}")
- 
-    return response.json() if response.content else {"status": "ok"}
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
+
  
 @mcp.tool()
 def get_schedule_days_by_employee(
@@ -246,27 +274,46 @@ def get_schedule_days_by_employee(
  
     return response.json()
 
-@mcp.tool()
-def get_project(
-    project_id: UUID = Field(..., description="UUID of the project.")
+
+#@mcp.tool()
+def insert_time_row(
+    employee_id: UUID = Field(..., description="UUID of the employee."),
+    row_date: date = Field(..., description="Date of the time row (YYYY-MM-DD)."),
+    time_row: TimeRow = Field(
+        ...,
+        description=(
+            "Time row data. Must include start and end times. All other fields are optional."
+        ),
+    ),
 ) -> dict:
     """
-    Gets project information by ID
-
+    Inserts a time row for an employee on a specific date.
+    Overlapping rows are automatically split to accommodate the new entry.
+    If timeCode is omitted, the employee's default work time code is used.
+    Accounting entries are populated automatically based on system rules.
+ 
     Returns:
-        Project data as a JSON dict.
+        The created time row as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{project_id}"
-
+    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}/timerow/{row_date.isoformat()}"
+ 
+    payload = to_api_time_row(time_row)
+ 
     try:
-        response = requests.get(url, timeout=consts.API_TIMEOUT)
+        response = requests.post(
+            url,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT,
+        )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        raise RuntimeError(f"API request failed for employee {employee_id} on {row_date}: {e}")
+ 
+    return response.json() if response.content else {"status": "ok"}
 
-    return response.json()
 
-@mcp.tool()
+#@mcp.tool()
 def update_project(
     project_id: UUID = Field(..., description="UUID of the project."),
     project: ProjectModel = Field(
