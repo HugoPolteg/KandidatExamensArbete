@@ -11,7 +11,7 @@ from dotenv import load_dotenv
 import os
 load_dotenv()
 DOMAIN = os.getenv("DOMAIN")
-
+INSTANCE = os.getenv("INSTANCE")
 s = requests.Session()
 s.headers.update({
     "Content-Type": "application/json",
@@ -136,7 +136,7 @@ def get_salaries_by_company(
     Returns:
         A JSON dict containing the list of salaries.
      """
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/company/{query.company_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/instance/{INSTANCE}/company/{query.company_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id"})
 
@@ -164,7 +164,7 @@ def get_salaries_by_company_and_employee(
         A JSON dict containing the list of salaries.
      """
     
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/company/{query.company_id}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/instance/{INSTANCE}/company/{query.company_id}/employee/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id", "employee_id"})
 
@@ -189,7 +189,7 @@ def get_salaries_by_employee(
      Returns: 
         A JSON dict containing the list of salaries.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/instance/{INSTANCE}/employee/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "employee_id"})
 
@@ -400,7 +400,6 @@ def get_employment_periods_by_employee(
 
 @mcp.tool()
 def get_companies(
-    domain_name: str = Field(..., description="Domain name."),
     start_range: int = Field(..., description="Start range of company numbers:s."),
     end_range: int = Field(..., description="End range of the company numbers:s.")
 ) -> dict:
@@ -411,33 +410,9 @@ def get_companies(
         The company names, numbers and customer instances within the range.
     """
     url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
-    params = {"instance": domain_name, "startRange": start_range, "endRange": end_range}
+    params = {"instance": INSTANCE, "startRange": start_range, "endRange": end_range}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-
-    return response.json()
-
-
-@mcp.tool()
-def get_instances(
-    instance_name: Optional[str] = Field(None, description="Instance name."),
-    domain: Optional[str] = Field(None, description="Domain name."),
-    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
-    page_size: Optional[int] = Field(20, description="Number of entries per page.")
-) -> dict:
-    """Gets a list of instances. Optional to specify name, domain and page information."""
-    url = f"{consts.API_ENDPOINT}/api/instances"
-
-    parameters = {"pageIndex": page_index, "pageSize": page_size}
-    if instance_name is not None:
-        parameters["name"] = instance_name
-    if domain is not None:
-        parameters["domain"] = domain
-    try:
-        response = s.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -452,7 +427,7 @@ def get_time_groups(
     page_size: Optional[int] = Field(20, description="Number of entries per page.")
 ) -> dict:
     """Gets a list of time groups. Optional to specify search parameters."""
-    url = f"{consts.API_ENDPOINT}/api/instances"
+    url = f"{consts.API_ENDPOINT}/api/timegroups"
     parameters = {"pageIndex": page_index, "pageSize": page_size}
     if company_number is not None:
         parameters["companynumber"] = company_number
