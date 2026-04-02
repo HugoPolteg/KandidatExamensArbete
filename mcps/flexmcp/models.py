@@ -287,13 +287,14 @@ class GetSalariesByCompanyAndEmployee(GetSalaryQueryBase):
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
-# For /api/instance/{instance}/employees/{employeeId}/salaries — instance and employeeId required
+# For /api/employees/{employeeId}/salaries — instance and employeeId required
 class GetSalariesByEmployee(GetSalaryQueryBase):
+    instance: Optional[str] = Field(..., description="Domain name.")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
 #For /api/salaries — no parameters required
 class GetAllSalaries(GetSalaryQueryBase):
-    pass
+    instance: Optional[str] = Field(..., description="Domain name.")
 
 #For /api/employees/{employeeId}/salaries — employeeId required
 class UpdateOrCreateSalaries(BaseModel):
@@ -313,14 +314,14 @@ class StampingAccountModel(BaseModel):
     accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
 
 class Union(BaseModel):
-    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
+    instance: Optional[str] = Field(..., description="Domain name.")
     company_id: Optional[UUID] = Field(None, description="Company id.")
     company_number: Optional[int] = Field(None, description="Company number.")
     pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     pageSize: Optional[int] = Field(20, description="Number of entries per page.")
 
 class GetUsers(BaseModel):
-    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
+    instance: Optional[str] = Field(..., description="Domain name.")
     username: Optional[str] = Field(None, description="User name.")
     extern_ref: Optional[str] = Field(None, description="External reference.")
     user_type: Optional[int] = Field(None, description="User type: 1 = System, 2 = Instance") 
@@ -329,6 +330,9 @@ class GetUsers(BaseModel):
     no_logon_since: Optional[datetime] = Field(None, description="Did the user not log in since.")
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     page_size: Optional[int] = Field(20, description="Number of entries per page")
+
+class GetUsersByInstance(GetUsers):
+    instance: str = Field(DOMAIN, description="Domain name.")
 
 class GetVehicleType(BaseModel):
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
@@ -362,4 +366,20 @@ class VehicleTypeRequestModel(BaseModel):
     type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type: 0 = Private, 1 = Business")
     use_with_allowances: Optional[bool] = Field(None, alias="useWithAllowances", description="Whether this vehicle type can be used together with allowances.")
     use_with_benefit: Optional[bool] = Field(None, alias="useWithBenefit", description="Whether this vehicle type can be used together with benefits.")
+
+class GetTravelClaims(BaseModel):
+    instance: Optional[str] = Field(..., description="Domain name.")
+    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
+    payment_from_date: Optional[datetime] = Field(None, alias="paymentFromDate", description="Payment from date.")
+    payment_to_date: Optional[datetime] = Field(None, alias="paymentToDate", description="Payment to date.")
+    audit_from_date: Optional[datetime] = Field(None, alias="auditFromDate", description="Audit from date. Will check all audit levels if publicTravelClaimAuditLevelId is not specified.")
+    audit_to_date: Optional[datetime] = Field(None, alias="auditToDate", description="Audit to date. Will check all audit levels if publicTravelClaimAuditLevelId is not specified.")
+    public_travel_claim_audit_level_id: Optional[UUID] = Field(None, alias="publicTravelClaimAuditLevelId", description="UUID of the public travel claim audit level.  Must be used in combination with atleast one of auditFromDate/auditToDate. If not specified, will check all audit levels.")
+    billing_release_from_date: Optional[datetime] = Field(None, alias="billingReleaseFromDate", description="Get travel claims by billing release from date-time.")
+    billing_release_to_date: Optional[datetime] = Field(None, alias="billingReleaseToDate", description="Get travel claims by billing release to date-time.")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+
+
 

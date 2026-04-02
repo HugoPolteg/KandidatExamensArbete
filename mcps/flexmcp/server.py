@@ -7,7 +7,7 @@ from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
 GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
 GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel, GetTravelClaims
+VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance
 import consts
 from dotenv import load_dotenv
 import os
@@ -103,7 +103,7 @@ def delete_salary(
     return response.json()
 
 @mcp.tool()
-def get_salaries(
+def get_salaries_by_instance(
     query: GetSalaries = Field(..., 
     description="Full query object, all fields are optional")
     ) -> dict:
@@ -193,9 +193,9 @@ def get_salaries_by_employee(
      Returns: 
         A JSON dict containing the list of salaries.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/employee/{query.employee_id}/salaries"
 
-    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "employee_id"})
+    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
 
     try:
         response = s.get(
@@ -403,7 +403,7 @@ def get_employment_periods_by_employee(
     return response.json()
 
 @mcp.tool()
-def get_companies(
+def get_companies_by_instance(
     start_range: int = Field(..., description="Start range of company numbers:s."),
     end_range: int = Field(..., description="End range of the company numbers:s."),
     instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance.")
@@ -774,7 +774,7 @@ def get_users(
     filters: GetUsers = Field(..., description="User details for filtering the users list. All fields are optional")
     )->dict:
     """
-    Filter users by specified criteria.
+    Filter users of instance by specified criteria. If no instance is provided, defaults to the default-domain instance.
 
     Returns:
         A JSON dict containing the list of users.
@@ -794,7 +794,7 @@ def get_users(
 
 @mcp.tool()
 def get_users_by_instance(
-    filters: GetUsers = Field(..., description="User details for filtering the users list. All fields are optional")
+    filters: GetUsersByInstance = Field(..., description="User details for filtering the users list. All fields are optional")
     )->dict:
     """
     Filter users of a given instance by specified criteria. If no instance is provided, defaults to the default-domain instance.
@@ -956,11 +956,11 @@ def delete_vehicle_type(
     return response.json()
 
 @mcp.tool()
-def get_travel_claims(
+def get_travel_claims_by_instance(
     filters: GetTravelClaims = Field(..., description="Travel claim details for filtering the travel claims list. All fields are optional")
     )->dict:
     """
-    Filter travel claims by specified criteria.
+    Filter travel claims by specified criteria for a given instance. If no instance is provided, defaults to the default-domain instance.
 
     Returns:
         A JSON dict containing the list of travel claims.
@@ -1028,6 +1028,125 @@ def get_travel_claims_by_company_id(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+
+@mcp.tool()
+def get_qualification_by_id(
+    id: UUID = Field(..., description="UUID of the qualification.")
+    )->dict:
+    """
+    Get qualification information by id.
+
+    Returns:
+        The qualification information as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/qualifications/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_qualifications_by_instance(
+    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance."),
+    company_id: Optional[UUID] = Field(None, description="UUID of the company."),
+    company_number: Optional[int] = Field(None, description="Company number."),
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+    )->dict:
+
+    """
+    Get qualifications, optionally filtered by instance or company. If no instance is provided, defaults to the default-domain instance.
+    Pagination parameters are supported to control result format.
+
+    Returns:
+        A JSON dict containing the list of qualifications.
+    """
+    url = f"{consts.API_ENDPOINT}/api/instance/{instance}/qualifications"
+    params = {"pageIndex": page_index, "pageSize": page_size, "instance": instance}
+    if company_id is not None:
+        params["companyId"] = company_id
+    if company_number is not None:
+        params["companyNumber"] = company_number
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_qualifications_by_company_id(
+    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance."),
+    company_id: UUID = Field(..., description="UUID of the company."),
+    company_number: Optional[int] = Field(None, description="Company number."),
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page."),
+    )->dict:
+    """
+    Get qualifications for a given company. Company ID is required. If no instance is provided, defaults to the default-domain instance.
+
+    Returns:
+        A JSON dict containing the list of qualifications for the specified company.
+    """
+    url = f"{consts.API_ENDPOINT}/api/instance/{instance}/company/{company_id}/qualifications"
+    params = {"instance": instance, "companyId": company_id, "pageIndex": page_index, "pageSize": page_size}
+    if company_number is not None:
+        params["companyNumber"] = company_number
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_all_qualifications(
+    instance: Optional[str] = Field(..., description="Domain name. If not provided, defaults to the default-domain instance."),
+    company_id: Optional[UUID] = Field(None, description="UUID of the company."),
+    comopany_number: Optional[int] = Field(None, description="Company number."),
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+    )->dict:
+    """
+    Gets qualifications for all isntances if no instance is provided, filtered by company_id or company_number.
+
+    Returns:
+        A JSON dict containing the list of qualifications.
+    """
+    url = f"{consts.API_ENDPOINT}/api/qualifications"
+    params = {"pageIndex": page_index, "pageSize": page_size}
+    if instance is not None:
+        params["instance"] = instance
+    if company_id is not None:
+        params["companyId"] = company_id
+    if comopany_number is not None:
+        params["companyNumber"] = comopany_number
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
 
 if __name__ == "__main__":
     mcp.run()
