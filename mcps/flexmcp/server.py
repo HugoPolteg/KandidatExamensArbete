@@ -101,10 +101,10 @@ def delete_salary(
 @mcp.tool()
 def get_salaries(
     query: GetSalaries = Field(..., 
-    description="Full query object. Instance is required. All other fields are optional")
+    description="Full query object, all fields are optional")
     ) -> dict:
     """
-     Get salaries for a given instance.
+     Get salaries for a given instance. If no instance is provided, defaults to the default-domain instance.
 
     Returns:
         A JSON dict containing the list of salaries.
@@ -128,15 +128,15 @@ def get_salaries(
 @mcp.tool()
 def get_salaries_by_company(
     query: GetSalariesByCompany = Field(..., 
-    description="Full query object. Instance and company_id are required. All other fields are optional")
+    description="Full query object. company_id is required. All other fields are optional")
     ) -> dict:
     """
-     Get salaries for a given company
+     Get salaries for a given company and instance. If no instance is provided, defaults to the default-domain instance.
 
     Returns:
         A JSON dict containing the list of salaries.
      """
-    url = f"{consts.API_ENDPOINT}/api/instance/{INSTANCE}/company/{query.company_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/company/{query.company_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id"})
 
@@ -155,16 +155,16 @@ def get_salaries_by_company(
 @mcp.tool()
 def get_salaries_by_company_and_employee(
     query: GetSalariesByCompanyAndEmployee = Field(...,
-    description="Full query object. Instance, company_id and employee_id are required. All other fields are optional")
+    description="Full query object. Company_id and employee_id are required. All other fields are optional")
     )-> dict:
     """
-     Get salaries for an employee in a given company
+     Get salaries for an employee of a given company in a given instance. If no instance is provided, defaults to the default-domain instance.
 
     Returns:
         A JSON dict containing the list of salaries.
      """
     
-    url = f"{consts.API_ENDPOINT}/api/instance/{INSTANCE}/company/{query.company_id}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/company/{query.company_id}/employee/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id", "employee_id"})
 
@@ -181,15 +181,15 @@ def get_salaries_by_company_and_employee(
 
 @mcp.tool()
 def get_salaries_by_employee(
-    query: GetSalariesByEmployee = Field(..., description="Full query object. Instance and employee_id are required. All other fields are optional")
+    query: GetSalariesByEmployee = Field(..., description="Full query object. Employee_id is required. All other fields are optional")
     ) -> dict:
     """
-     Get salaries for an employee
+     Get salaries for an employee in a given instance. If no instance is provided, defaults to the default-domain instance.
 
      Returns: 
         A JSON dict containing the list of salaries.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{INSTANCE}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/employee/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "employee_id"})
 
@@ -206,10 +206,10 @@ def get_salaries_by_employee(
 
 #@mcp.tool()
 def update_salaries_by_employee(
-    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
+    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Employee_id, and company_id are required. All other fields are optional")
     ) -> dict:
     """
-     Update salaries for an employee in a given company. 
+     Update salaries for an employee of a given company for a given isntance-id. If no instanceid is provided, uses default instance-id. 
 
      Returns:
         API response as a JSON dict.
@@ -255,10 +255,10 @@ def get_all_salaries(
 
 #@mcp.tool()
 def create_salary(
-    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Instance, employee_id, and company_id are required. All other fields are optional")
+    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Employee_id, and company_id are required. All other fields are optional")
     ) -> dict:
     """
-     Create a salary for an employee in a given company. 
+     Create a salary for an employee of a given company for a given instance-id. If no instance id is provided, uses default instance-id. 
 
      Returns:
         API response as a JSON dict.
@@ -410,7 +410,7 @@ def get_companies(
         The company names, numbers and customer instances within the range.
     """
     url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
-    params = {"instance": INSTANCE, "startRange": start_range, "endRange": end_range}
+    params = {"instance": DOMAIN, "startRange": start_range, "endRange": end_range}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
@@ -789,10 +789,10 @@ def get_users(
 
 @mcp.tool()
 def get_users_by_instance(
-    filters: GetUsersByInstance = Field(..., description="User details for filtering the users list. Instance is required. All other fields are optional")
+    filters: GetUsersByInstance = Field(..., description="User details for filtering the users list. All fields are optional")
     )->dict:
     """
-    Filter users by specified criteria, with instance as a required filter.
+    Filter users of a given instance by specified criteria. If no instance is provided, defaults to the default-domain instance.
 
     Returns:
         A JSON dict containing the list of users.

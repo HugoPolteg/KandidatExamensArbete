@@ -1,7 +1,11 @@
+import os
 from pydantic import BaseModel, Field, field_validator, model_validator
 from uuid import UUID
 from datetime import date, time, datetime
 from typing import Dict, List, Literal, Optional
+INSTANCE = os.getenv("INSTANCE")
+DOMAIN = os.getenv("DOMAIN")
+
 
 
 class TimeRowAccount(BaseModel):
@@ -262,7 +266,7 @@ class ProjectModel(BaseModel):
 
 
 class GetSalaryQueryBase(BaseModel):
-    instance: Optional[str] = Field(None, description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
@@ -272,22 +276,19 @@ class GetSalaryQueryBase(BaseModel):
 
 # For /api/instance/{instance}/salaries: instance required
 class GetSalaries(GetSalaryQueryBase):
-    instance: str = Field(..., description="Domain name.")
+    pass
 
 # For /api/instance/{instance}/companies/{companyId}/salaries — instance and companyId required
 class GetSalariesByCompany(GetSalaryQueryBase):
-    instance: str = Field(..., description="Domain name.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
 
 #For /api/instance/{instance}/companies/{companyId}/employees/{employeeId}/salaries — instance, companyId and employeeId required
 class GetSalariesByCompanyAndEmployee(GetSalaryQueryBase):
-    instance: str = Field(..., description="Domain name.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
 # For /api/instance/{instance}/employees/{employeeId}/salaries — instance and employeeId required
 class GetSalariesByEmployee(GetSalaryQueryBase):
-    instance: str = Field(..., description="Domain name.")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
 #For /api/salaries — no parameters required
