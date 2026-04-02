@@ -4,7 +4,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union, GetUsers, GetUsersByInstance
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union, GetUsers
 import consts
 from dotenv import load_dotenv
 import os
@@ -790,7 +790,7 @@ def get_users(
 
 @mcp.tool()
 def get_users_by_instance(
-    filters: GetUsersByInstance = Field(..., description="User details for filtering the users list. All fields are optional")
+    filters: GetUsers = Field(..., description="User details for filtering the users list. All fields are optional")
     )->dict:
     """
     Filter users of a given instance by specified criteria. If no instance is provided, defaults to the default-domain instance.

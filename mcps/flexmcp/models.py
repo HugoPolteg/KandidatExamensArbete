@@ -303,7 +303,7 @@ class UpdateOrCreateSalaries(BaseModel):
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date. Nullable.")
     full_time_salary: Optional[float] = Field(None, alias="fullTimeSalary", description="Full time salary.")
     id: Optional[UUID] = Field(None, description="Salary ID (UUID).")
-    instance_id: UUID = Field(..., alias="instanceId", description="Instance ID (UUID).")
+    instance_id: UUID = Field(INSTANCE, alias="instanceId", description="Instance ID (UUID).")
     is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
     salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
@@ -313,26 +313,20 @@ class StampingAccountModel(BaseModel):
     accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
 
 class Union(BaseModel):
-    instance: Optional[str] = Field(None, description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     company_id: Optional[UUID] = Field(None, description="Company id.")
     company_number: Optional[int] = Field(None, description="Company number.")
     pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     pageSize: Optional[int] = Field(20, description="Number of entries per page.")
 
-class GetUsersQueryBase(BaseModel):
-    instans: Optional[str] = Field(None, description="Domain name.")
+class GetUsers(BaseModel):
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     username: Optional[str] = Field(None, description="User name.")
     extern_ref: Optional[str] = Field(None, description="External reference.")
-    user_type: Optional[int] = Field(None, description="User type") #Vilken int är vad?
+    user_type: Optional[int] = Field(None, description="User type: 1 = System, 2 = Instance") 
     active: Optional[bool] = Field(None, description="Are the useres active.")
     logon_since: Optional[datetime] = Field(None, description="Did the user log in since.")
     no_logon_since: Optional[datetime] = Field(None, description="Did the user not log in since.")
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     page_size: Optional[int] = Field(20, description="Number of entries per page")
-
-class GetUsers(GetUsersQueryBase):
-    pass
-
-class GetUsersByInstance(GetUsersQueryBase):
-    instance: str = Field(..., description="Domain name.")
 
