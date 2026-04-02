@@ -17,6 +17,7 @@ s.headers.update({
     "Instance": DOMAIN,
     "Authorization": 'Basic' + DOMAIN + ":" + os.getenv("USERNAME") + ":" + os.getenv("PASSWORD")
 })
+
 mcp = FastMCP("Flex")
 def to_api_time_row(row: TimeRow) -> dict:
     return {
