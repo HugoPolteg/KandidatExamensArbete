@@ -7,10 +7,11 @@ from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
 GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
 GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel
+VehicleTypeRequestModel, GetTravelClaims
 import consts
 from dotenv import load_dotenv
 import os
+import base64 
 load_dotenv()
 DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
@@ -946,6 +947,80 @@ def delete_vehicle_type(
     url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
     try:
         response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_travel_claims(
+    filters: GetTravelClaims = Field(..., description="Travel claim details for filtering the travel claims list. All fields are optional")
+    )->dict:
+    """
+    Filter travel claims by specified criteria.
+
+    Returns:
+        A JSON dict containing the list of travel claims.
+     """
+    url = f"{consts.API_ENDPOINT}/api/travelclaim"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_travel_claim_attachment_by_id(
+    id: UUID = Field(..., description="UUID of the travel claim attachment.")
+    )->dict:
+    """
+    Get travel claim attachment file by id.
+    
+    Returns:
+         A dict containing the filename and base64 encoded file content.
+    """
+    url = f"{consts.API_ENDPOINT}/api/travelclaim/attachment/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    
+    content_disposition = response.headers.get("Content-Disposition", "")
+    filename = content_disposition.split("filename=")[-1].strip('"') if "filename=" in content_disposition else str(id)
+
+    return {
+        "filename": filename,
+        "content_type": response.headers.get("Content-Type", "application/octet-stream"),
+        "content_base64": base64.b64encode(response.content).decode("utf-8")
+    }
+
+@mcp.tool()
+def get_travel_claims_by_company_id(
+    company_id: UUID = Field(..., description="UUID of the company."),
+    )->dict:
+    """
+    Get travel claims by company ID.
+
+    Returns:
+        A JSON dict containing the list of travel claims for the specified company.
+    """
+
+    url = f"{consts.API_ENDPOINT}/api/companies/{company_id}/publictravelclaimsauditlevels"
+    try:
+        response = s.get(
             url,
             timeout=consts.API_TIMEOUT
         )
