@@ -4,7 +4,10 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany, GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, GetAllSalaries, StampingAccountModel, Union, GetUsers
+from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
+GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
+GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
+VehicleTypeRequestModel
 import consts
 from dotenv import load_dotenv
 import os
@@ -804,6 +807,146 @@ def get_users_by_instance(
         response = s.get(
             url,
             params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_vehicle_type(
+    filters: GetVehicleType = Field(..., description="Vehicle type details for filtering the vehicle types list. All fields are optional")
+    )->dict:
+    """"
+    Filter vehicle types by specified criteria.
+
+    Returns:
+        A paginated JSON response containing a list of matching vehicle type objects.
+    """
+    url = f"{consts.API_ENDPOINT}/api/vehicletypes"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
+#@mcp.tool()
+def create_vehicle_type(
+    vehicle_type: VehicleTypeRequestModel = Field(..., description="Vehicle type details for creating a new vehicle type. All fields are optional.")
+    )->dict:
+    """
+    Create a new vehicle type with the specified details.
+
+    Returns:
+        The created vehicle type object as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/vehicletypes"
+    payload = vehicle_type.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_vehicle_type_by_company_id(
+    filters: GetVehicleTypeByCompanyId = Field(..., description="Vehicle type details for filtering the vehicle types list. CompanyId is required. All fields are optional")
+    )->dict:
+    """
+    Filter vehicle types by specified criteria for a given company. CompanyId is required.
+
+    Returns:
+        A paginated JSON response containing a list of matching vehicle type objects.
+    """
+    url = f"{consts.API_ENDPOINT}/api/company/{filters.company_id}/vehicletypes"
+    params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"company_id"})
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_vehicle_type_by_id(
+    id: UUID = Field(..., description="UUID of the vehicle type.")
+    )->dict:
+    """
+    Get vechicle type information by id.
+
+    Returns:
+        The vehicle type information as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_vehicle_type(
+    id: UUID = Field(..., description="UUID of the vehicle type."),
+    vehicle_type: VehicleTypeRequestModel = Field(..., description="Updated vehicle type details. All fields are optional.")
+    )->dict:
+    """
+    Update a vehicle type by id.
+
+    Returns:
+        The updated vehicle type information as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
+    payload = vehicle_type.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_vehicle_type(
+    id: UUID = Field(..., description="UUID of the vehicle type.")
+    )->dict:
+    """
+    Delete a vehicle type by id.
+
+    Returns
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
+    try:
+        response = s.delete(
+            url,
             timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()

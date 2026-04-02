@@ -330,3 +330,36 @@ class GetUsers(BaseModel):
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     page_size: Optional[int] = Field(20, description="Number of entries per page")
 
+class GetVehicleType(BaseModel):
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    vechile_type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type string to search for: 0 = Private, 1 = Business")
+    comsumption_unit: Optional[int] = Field(None, alias="consumptionUnit", description="Consumption unit: 0 = LPer100Km, 1 = KWhPer100Km")
+    pageIndex: Optional[int] = Field(0, alias="pageIndex", description="Page index for search. Begins at 0.")
+    pageSize: Optional[int] = Field(20, alias="pageSize", description="Number of entries per page")
+
+class GetVehicleTypeByCompanyId(GetVehicleType):
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+
+class VehicleTypeRequestModel(BaseModel):
+    average_fuel_price_from_month: Optional[int] = Field(None, alias="fromMonth", description="Average fuel price from month (1-12).")
+    average_fuel_price_from_year: Optional[int] = Field(None, alias="fromYear", description="Average fuel price from year (e.g. 2023).")
+    average_fuel_price_id: Optional[UUID] = Field(None, alias="id", description="UUID of the average fuel price to use for the vehicle type.")
+    average_fuel_price: Optional[float] = Field(None, alias="price", description="Average fuel price to use for the vehicle type.")
+    average_fuel_price_to_month: Optional[int] = Field(None, alias="toMonth", description="Average fuel price to month (1-12).")
+    average_fuel_price_to_year: Optional[int] = Field(None, alias="toYear", description="Average fuel price to year (e.g. 2025).")
+    company_id: Optional[UUID] = Field(..., alias="companyId", description="Company ID (UUID).")
+    consumption_unit_type: Optional[int] = Field(None, alias="consumptionUnit", description="Consumption unit: 0 = LPer100Km, 1 = KWhPer100Km")
+    default_private_vehicle: Optional[bool] = Field(None, alias="defaultPrivateVehicle", description="Whether this is the default private vehicle.")
+    fuel_benefit_20_percent_paycode_id: Optional[UUID] = Field(None, alias="fuelBenefit20PercentPaycodeId", description=r"UUID of the pay code to use for the 20% fuel benefit when this vehicle type is used.")
+    fuel_benefit_paycode_id: Optional[UUID] = Field(None, alias="fuelBenefitPaycodeId", description="UUID of the pay code to use for the fuel benefit when this vehicle type is used.")
+    id: Optional[UUID] = Field(None, description="UUID of the vehicle type.")
+    mileage_limit_template_id: Optional[UUID] = Field(None, alias="mileageLimitTemplateId", description="UUID of the mileage limit template to use for this vehicle type.")
+    name: Optional[str] = Field(None, description="Name of the vehicle type.")
+    taxed_allowance_amount: Optional[float] = Field(None, alias="taxedAllowanceAmount", description="Taxed allowance amount for this vehicle type.")
+    taxed_allowance_paycode_id: Optional[UUID] = Field(None, alias="taxedAllowancePaycodeId", description="UUID of the pay code to use for the taxed allowance when this vehicle type is used.")
+    tax_free_allowance_amount: Optional[float] = Field(None, alias="taxFreeAllowanceAmount", description="Tax free allowance amount for this vehicle type.")
+    tax_free_allowance_paycode_id: Optional[UUID] = Field(None, alias="taxFreeAllowancePaycodeId", description="UUID of the pay code to use for the tax free allowance when this vehicle type is used.")
+    type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type: 0 = Private, 1 = Business")
+    use_with_allowances: Optional[bool] = Field(None, alias="useWithAllowances", description="Whether this vehicle type can be used together with allowances.")
+    use_with_benefit: Optional[bool] = Field(None, alias="useWithBenefit", description="Whether this vehicle type can be used together with benefits.")
+
