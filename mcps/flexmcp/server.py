@@ -7,7 +7,7 @@ from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
 GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
 GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance
+VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput
 import consts
 from dotenv import load_dotenv
 import os
@@ -403,9 +403,7 @@ def get_employment_periods_by_employee(
 
 @mcp.tool()
 def list_all_companies(
-    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance."), # Domain verified
-    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
-    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+    params: ListCompaniesInput = ListCompaniesInput()
 ) -> dict:
     """
     Gets a list of companies.
@@ -413,8 +411,9 @@ def list_all_companies(
     Returns:
         The company names, numbers and customer instances within the range.
     """
-    url = f"{consts.API_ENDPOINT}/instance/{instance}/companies"
-    params = {"pageIndex": page_index, "pageSize": page_size}
+    url = f"{consts.API_ENDPOINT}/instance/{params.instance}/companies"
+    print(url)
+    params = {"pageIndex": params.page_index, "pageSize": params.page_size}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
@@ -1144,8 +1143,6 @@ def get_all_qualifications(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
-
-
 
 if __name__ == "__main__":
     mcp.run()

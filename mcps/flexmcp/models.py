@@ -1,8 +1,11 @@
+from dotenv import load_dotenv
 import os
+load_dotenv()
 from pydantic import BaseModel, Field, field_validator, model_validator
 from uuid import UUID
 from datetime import date, time, datetime
 from typing import Dict, List, Literal, Optional
+
 INSTANCE = os.getenv("INSTANCE")
 DOMAIN = os.getenv("DOMAIN")
 
@@ -319,6 +322,20 @@ class Union(BaseModel):
     company_number: Optional[int] = Field(None, description="Company number.")
     pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     pageSize: Optional[int] = Field(20, description="Number of entries per page.")
+
+class ListCompaniesInput(BaseModel):
+    instance: Optional[str] = Field(
+        default=DOMAIN,
+        description="Domain name. If not provided, defaults to the default-domain instance."
+    )
+    page_index: Optional[int] = Field(
+        default=0,
+        description="Page index for search. Begins at 0."
+    )
+    page_size: Optional[int] = Field(
+        default=20,
+        description="Number of entries per page."
+    )
 
 class GetUsers(BaseModel):
     instance: Optional[str] = Field(INSTANCE, description="Domain name.")
