@@ -11,7 +11,7 @@ VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance
 import consts
 from dotenv import load_dotenv
 import os
-import base64 
+import base64
 load_dotenv()
 DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
