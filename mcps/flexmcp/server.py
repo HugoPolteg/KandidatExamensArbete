@@ -1,6 +1,5 @@
-from fastmcp import FastMCP
+from mcp.server.fastmcp import FastMCP
 import requests
-
 from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
