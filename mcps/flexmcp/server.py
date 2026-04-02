@@ -401,7 +401,8 @@ def get_employment_periods_by_employee(
 @mcp.tool()
 def get_companies(
     start_range: int = Field(..., description="Start range of company numbers:s."),
-    end_range: int = Field(..., description="End range of the company numbers:s.")
+    end_range: int = Field(..., description="End range of the company numbers:s."),
+    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance.")
 ) -> dict:
     """
     Gets a list of companies.
@@ -410,7 +411,7 @@ def get_companies(
         The company names, numbers and customer instances within the range.
     """
     url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
-    params = {"instance": DOMAIN, "startRange": start_range, "endRange": end_range}
+    params = {"instance": instance, "startRange": start_range, "endRange": end_range}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
