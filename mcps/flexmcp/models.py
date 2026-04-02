@@ -266,7 +266,7 @@ class ProjectModel(BaseModel):
 
 
 class GetSalaryQueryBase(BaseModel):
-    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
@@ -289,12 +289,12 @@ class GetSalariesByCompanyAndEmployee(GetSalaryQueryBase):
 
 # For /api/employees/{employeeId}/salaries — instance and employeeId required
 class GetSalariesByEmployee(GetSalaryQueryBase):
-    instance: Optional[str] = Field(..., description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
 #For /api/salaries — no parameters required
 class GetAllSalaries(GetSalaryQueryBase):
-    instance: Optional[str] = Field(..., description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
 
 #For /api/employees/{employeeId}/salaries — employeeId required
 class UpdateOrCreateSalaries(BaseModel):
@@ -314,14 +314,14 @@ class StampingAccountModel(BaseModel):
     accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
 
 class Union(BaseModel):
-    instance: Optional[str] = Field(..., description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
     company_id: Optional[UUID] = Field(None, description="Company id.")
     company_number: Optional[int] = Field(None, description="Company number.")
     pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     pageSize: Optional[int] = Field(20, description="Number of entries per page.")
 
 class GetUsers(BaseModel):
-    instance: Optional[str] = Field(..., description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
     username: Optional[str] = Field(None, description="User name.")
     extern_ref: Optional[str] = Field(None, description="External reference.")
     user_type: Optional[int] = Field(None, description="User type: 1 = System, 2 = Instance") 
@@ -332,7 +332,7 @@ class GetUsers(BaseModel):
     page_size: Optional[int] = Field(20, description="Number of entries per page")
 
 class GetUsersByInstance(GetUsers):
-    instance: str = Field(DOMAIN, description="Domain name.")
+    instance: str = Field(INSTANCE, description="Domain name.")
 
 class GetVehicleType(BaseModel):
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
@@ -368,7 +368,7 @@ class VehicleTypeRequestModel(BaseModel):
     use_with_benefit: Optional[bool] = Field(None, alias="useWithBenefit", description="Whether this vehicle type can be used together with benefits.")
 
 class GetTravelClaims(BaseModel):
-    instance: Optional[str] = Field(..., description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
     payment_from_date: Optional[datetime] = Field(None, alias="paymentFromDate", description="Payment from date.")

@@ -19,9 +19,8 @@ s = requests.Session()
 s.headers.update({
     "Content-Type": "application/json",
     "Instance": DOMAIN,
-    "Authorization": 'Basic' + DOMAIN + ":" + os.getenv("USERNAME") + ":" + os.getenv("PASSWORD")
+    "Authorization": 'Basic ' + DOMAIN + ":" + os.getenv("FLEX_USERNAME") + ":" + os.getenv("FLEX_PASSWORD")
 })
-
 mcp = FastMCP("Flex")
 def to_api_time_row(row: TimeRow) -> dict:
     return {
@@ -403,10 +402,10 @@ def get_employment_periods_by_employee(
     return response.json()
 
 @mcp.tool()
-def get_companies_by_instance(
-    start_range: int = Field(..., description="Start range of company numbers:s."),
-    end_range: int = Field(..., description="End range of the company numbers:s."),
-    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance.")
+def list_all_companies(
+    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance."), # Domain verified
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
 ) -> dict:
     """
     Gets a list of companies.
@@ -414,8 +413,8 @@ def get_companies_by_instance(
     Returns:
         The company names, numbers and customer instances within the range.
     """
-    url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
-    params = {"instance": instance, "startRange": start_range, "endRange": end_range}
+    url = f"{consts.API_ENDPOINT}/instance/{instance}/companies"
+    params = {"pageIndex": page_index, "pageSize": page_size}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
@@ -1052,7 +1051,7 @@ def get_qualification_by_id(
 
 @mcp.tool()
 def get_qualifications_by_instance(
-    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance."),
+    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
     company_id: Optional[UUID] = Field(None, description="UUID of the company."),
     company_number: Optional[int] = Field(None, description="Company number."),
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
@@ -1086,7 +1085,7 @@ def get_qualifications_by_instance(
 
 @mcp.tool()
 def get_qualifications_by_company_id(
-    instance: Optional[str] = Field(DOMAIN, description="Domain name. If not provided, defaults to the default-domain instance."),
+    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
     company_id: UUID = Field(..., description="UUID of the company."),
     company_number: Optional[int] = Field(None, description="Company number."),
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
@@ -1115,7 +1114,7 @@ def get_qualifications_by_company_id(
 
 @mcp.tool()
 def get_all_qualifications(
-    instance: Optional[str] = Field(..., description="Domain name. If not provided, defaults to the default-domain instance."),
+    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
     company_id: Optional[UUID] = Field(None, description="UUID of the company."),
     comopany_number: Optional[int] = Field(None, description="Company number."),
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
