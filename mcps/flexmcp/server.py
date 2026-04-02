@@ -11,7 +11,7 @@ VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance
 import consts
 from dotenv import load_dotenv
 import os
-import base64 
+import base64
 load_dotenv()
 DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
@@ -414,7 +414,7 @@ def get_companies_by_instance(
     Returns:
         The company names, numbers and customer instances within the range.
     """
-    url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
+    url = f"{consts.API_ENDPOINT}/instance/{instance}/companies"
     params = {"instance": instance, "startRange": start_range, "endRange": end_range}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
