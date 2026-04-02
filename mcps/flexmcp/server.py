@@ -419,7 +419,6 @@ def list_all_companies(
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
-
     return response.json()
 
 @mcp.tool()
