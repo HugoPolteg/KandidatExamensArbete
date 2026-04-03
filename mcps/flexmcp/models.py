@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 load_dotenv()
-from pydantic import BaseModel, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 from uuid import UUID
 from datetime import date, time, datetime
 from typing import Dict, List, Literal, Optional
@@ -276,30 +276,31 @@ class GetSalaryQueryBase(BaseModel):
     employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    model_config = ConfigDict(populate_by_name=True)
 
-# For /api/instance/{instance}/salaries: instance required
+# For Get/api/instance/{instance}/salaries: instance required
 class GetSalaries(GetSalaryQueryBase):
     pass
 
-# For /api/instance/{instance}/companies/{companyId}/salaries — instance and companyId required
+# For Get/api/instance/{instance}/companies/{companyId}/salaries — instance and companyId required
 class GetSalariesByCompany(GetSalaryQueryBase):
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
 
-#For /api/instance/{instance}/companies/{companyId}/employees/{employeeId}/salaries — instance, companyId and employeeId required
+#For Get/api/instance/{instance}/companies/{companyId}/employees/{employeeId}/salaries — instance, companyId and employeeId required
 class GetSalariesByCompanyAndEmployee(GetSalaryQueryBase):
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
-# For /api/employees/{employeeId}/salaries — instance and employeeId required
+# For Get/api/employees/{employeeId}/salaries —  employeeId required
 class GetSalariesByEmployee(GetSalaryQueryBase):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(None, description="Domain name.")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
-#For /api/salaries — no parameters required
+#For Get/api/salaries — no parameters required
 class GetAllSalaries(GetSalaryQueryBase):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(None, description="Domain name.")
 
-#For /api/employees/{employeeId}/salaries — employeeId required
+#For PUT/api/employees/{employeeId}/salaries — employeeId required
 class UpdateOrCreateSalaries(BaseModel):
     comment: Optional[str] = Field(None, description="Comment. Nullable.")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
@@ -311,21 +312,24 @@ class UpdateOrCreateSalaries(BaseModel):
     is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
     salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
+    model_config = ConfigDict(populate_by_name=True)
 
 class StampingAccountModel(BaseModel):
     accountCode: str = Field(..., min_length=1, description="Account code string.")
     accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
+    model_config = ConfigDict(populate_by_name=True)
 
 class Union(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(None, description="Domain name.")
     company_id: Optional[UUID] = Field(None, description="Company id.")
     company_number: Optional[int] = Field(None, description="Company number.")
-    pageIndex: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
-    pageSize: Optional[int] = Field(20, description="Number of entries per page.")
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+    model_config = ConfigDict(populate_by_name=True)
 
 class ListCompaniesInput(BaseModel):
     instance: Optional[str] = Field(
-        default=DOMAIN,
+        default=None,
         description="Domain name. If not provided, defaults to the default-domain instance."
     )
     page_index: Optional[int] = Field(
@@ -336,9 +340,10 @@ class ListCompaniesInput(BaseModel):
         default=20,
         description="Number of entries per page."
     )
+    model_config = ConfigDict(populate_by_name=True)
 
 class GetUsers(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(None, description="Domain name.")
     username: Optional[str] = Field(None, description="User name.")
     extern_ref: Optional[str] = Field(None, description="External reference.")
     user_type: Optional[int] = Field(None, description="User type: 1 = System, 2 = Instance") 
@@ -347,6 +352,7 @@ class GetUsers(BaseModel):
     no_logon_since: Optional[datetime] = Field(None, description="Did the user not log in since.")
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
     page_size: Optional[int] = Field(20, description="Number of entries per page")
+    model_config = ConfigDict(populate_by_name=True)
 
 class GetUsersByInstance(GetUsers):
     instance: str = Field(INSTANCE, description="Domain name.")
@@ -355,8 +361,9 @@ class GetVehicleType(BaseModel):
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     vechile_type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type string to search for: 0 = Private, 1 = Business")
     comsumption_unit: Optional[int] = Field(None, alias="consumptionUnit", description="Consumption unit: 0 = LPer100Km, 1 = KWhPer100Km")
-    pageIndex: Optional[int] = Field(0, alias="pageIndex", description="Page index for search. Begins at 0.")
-    pageSize: Optional[int] = Field(20, alias="pageSize", description="Number of entries per page")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index for search. Begins at 0.")
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Number of entries per page")
+    model_config = ConfigDict(populate_by_name=True)
 
 class GetVehicleTypeByCompanyId(GetVehicleType):
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
@@ -383,9 +390,10 @@ class VehicleTypeRequestModel(BaseModel):
     type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type: 0 = Private, 1 = Business")
     use_with_allowances: Optional[bool] = Field(None, alias="useWithAllowances", description="Whether this vehicle type can be used together with allowances.")
     use_with_benefit: Optional[bool] = Field(None, alias="useWithBenefit", description="Whether this vehicle type can be used together with benefits.")
+    model_config = ConfigDict(populate_by_name=True)
 
 class GetTravelClaims(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(None, description="Domain name.")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
     payment_from_date: Optional[datetime] = Field(None, alias="paymentFromDate", description="Payment from date.")
@@ -397,6 +405,7 @@ class GetTravelClaims(BaseModel):
     billing_release_to_date: Optional[datetime] = Field(None, alias="billingReleaseToDate", description="Get travel claims by billing release to date-time.")
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    model_config = ConfigDict(populate_by_name=True)
 
 
 

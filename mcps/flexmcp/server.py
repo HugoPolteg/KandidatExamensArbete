@@ -41,7 +41,7 @@ def get_salary_by_id(
     Returns:
         Salary data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/salaries/{salary_id}"
+    url = f"{consts.API_ENDPOINT}/salaries/{salary_id}"
 
     try:
         response = s.get(url, timeout=consts.API_TIMEOUT)
@@ -63,7 +63,7 @@ def update_salary_by_id(
     Returns:
         Updated salary data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/salaries/{salary_id}"
+    url = f"{consts.API_ENDPOINT}/salaries/{salary_id}"
 
     try:
         response = s.put(
@@ -88,7 +88,7 @@ def delete_salary(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/salaries/{salary_id}"
+    url = f"{consts.API_ENDPOINT}/salaries/{salary_id}"
 
     try:
         response = s.delete(
@@ -101,6 +101,7 @@ def delete_salary(
 
     return response.json()
 
+#Works
 @mcp.tool()
 def get_salaries_by_instance(
     query: GetSalaries = Field(..., 
@@ -112,7 +113,7 @@ def get_salaries_by_instance(
     Returns:
         A JSON dict containing the list of salaries.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/salaries"
+    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
 
@@ -139,7 +140,7 @@ def get_salaries_by_company(
     Returns:
         A JSON dict containing the list of salaries.
      """
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/company/{query.company_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/company/{query.company_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id"})
 
@@ -167,7 +168,7 @@ def get_salaries_by_company_and_employee(
         A JSON dict containing the list of salaries.
      """
     
-    url = f"{consts.API_ENDPOINT}/api/instance/{query.instance}/company/{query.company_id}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/company/{query.company_id}/employee/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id", "employee_id"})
 
@@ -187,12 +188,12 @@ def get_salaries_by_employee(
     query: GetSalariesByEmployee = Field(..., description="Full query object. Employee_id is required. All other fields are optional")
     ) -> dict:
     """
-     Get salaries for an employee in a given instance. If no instance is provided, defaults to the default-domain instance.
+     Get salaries for an employee.
 
      Returns: 
         A JSON dict containing the list of salaries.
     """
-    url = f"{consts.API_ENDPOINT}/api/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/employee/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
 
@@ -217,7 +218,7 @@ def update_salaries_by_employee(
      Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/salaries"
 
     payload = query.model_dump(by_alias=True, exclude_none=True)
 
@@ -241,7 +242,7 @@ def get_all_salaries(
     """
      Get salaries.
      """
-    url = f"{consts.API_ENDPOINT}/api/salaries"
+    url = f"{consts.API_ENDPOINT}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True)
 
@@ -266,7 +267,7 @@ def create_salary(
      Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/salaries"
+    url = f"{consts.API_ENDPOINT}/salaries"
 
     payload = query.model_dump(by_alias=True, exclude_none=True)
 
@@ -295,7 +296,7 @@ def get_time_report_by_employee(
     Returns:
         Time report data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}/timereport"
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/timereport"
 
     params = {}
     if report_date is not None:
@@ -322,7 +323,7 @@ def get_employee(
     Returns:
         Employee data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}"
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
 
     try:
         response = s.get(url, timeout=consts.API_TIMEOUT)
@@ -352,7 +353,7 @@ def put_time_report(
 
     try:
         response = s.put(
-            url=f"{consts.API_ENDPOINT}/api/employees/{employee_id}/timereports/{date.isoformat()}",
+            url=f"{consts.API_ENDPOINT}/employees/{employee_id}/timereports/{date.isoformat()}",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=consts.API_TIMEOUT,
@@ -382,7 +383,7 @@ def get_employment_periods_by_employee(
     Returns:
         The employment periods from and to dates, id of resignation cause and type of employment.
     """
-    url = f"/api/employees/{employee_id}/employmentperiods"
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentperiods"
     params = {"pageIndex": page_index, "pageSize": page_size}
     if domain_name is not None:
         params["instance"] = domain_name
@@ -401,6 +402,7 @@ def get_employment_periods_by_employee(
 
     return response.json()
 
+#Works
 @mcp.tool()
 def list_all_companies(
     params: ListCompaniesInput = ListCompaniesInput()
@@ -429,21 +431,22 @@ def get_time_groups(
     page_size: Optional[int] = Field(20, description="Number of entries per page.")
 ) -> dict:
     """Gets a list of time groups. Optional to specify search parameters."""
-    url = f"{consts.API_ENDPOINT}/api/timegroups"
-    parameters = {"pageIndex": page_index, "pageSize": page_size}
+    url = f"{consts.API_ENDPOINT}/timegroups"
+    params = {"pageIndex": page_index, "pageSize": page_size}
     if company_number is not None:
-        parameters["companynumber"] = company_number
+        params["companynumber"] = company_number
     if time_group_code is not None:
-        parameters["code"] = time_group_code
-    
+        params["code"] = time_group_code
+
     try:
-        response = s.get(url, parameters=parameters, timeout=consts.API_TIMEOUT)
+        response = s.get(url, paramsrs=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
 
     return response.json()
 
+#Works
 @mcp.tool()
 def get_company(
     company_id: UUID = Field(..., description="UUID of the company.")
@@ -454,7 +457,7 @@ def get_company(
     Returns:
         The detailed company information as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/companies/{company_id}"
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}"
 
     try:
         response = s.get(url, timeout=consts.API_TIMEOUT)
@@ -475,7 +478,7 @@ def get_project(
     Returns:
         Project data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{project_id}"
+    url = f"{consts.API_ENDPOINT}/projects/{project_id}"
 
     try:
         response = s.get(url, timeout=consts.API_TIMEOUT)
@@ -508,7 +511,7 @@ def get_schedule_days_by_employee(
     Returns:
         List of schedule day objects as JSON.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}/scheduledays"
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/scheduledays"
  
     params = {}
     if from_date is not None:
@@ -547,7 +550,7 @@ def insert_time_row(
     Returns:
         The created time row as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{employee_id}/timerow/{row_date.isoformat()}"
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/timerow/{row_date.isoformat()}"
  
     payload = to_api_time_row(time_row)
  
@@ -585,7 +588,7 @@ def update_project(
     Returns:
         Updated project data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/projects/{project_id}"
+    url = f"{consts.API_ENDPOINT}/projects/{project_id}"
  
     payload = project.model_dump(by_alias=True, exclude_none=True)
  
@@ -616,7 +619,7 @@ def stamping_by_Id  (
         API response as a JSON dict.
     """
 
-    url = f"{consts.API_ENDPOINT}/api/stamping/{userId}/inOut"
+    url = f"{consts.API_ENDPOINT}/stamping/{userId}/inOut"
 
     params = {}
     if internal_comment is not None:
@@ -653,7 +656,7 @@ def stamping_by_employeeId(
         API response as a JSON dict.
 
     """
-    url = f"{consts.API_ENDPOINT}/api/employees/{employeeId}/inOut"
+    url = f"{consts.API_ENDPOINT}/employees/{employeeId}/inOut"
 
     params = {}
     if internal_comment is not None:
@@ -687,7 +690,7 @@ def get_stamping_by_userID(
         A JSON dict containing stamping details for the specified user.
      """
     
-    url = f"{consts.API_ENDPOINT}/api/stamping/{user_id}/timeRows"
+    url = f"{consts.API_ENDPOINT}/stamping/{user_id}/timeRows"
 
     params = {}
     if date_time is not None:
@@ -702,6 +705,7 @@ def get_stamping_by_userID(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+#Works
 @mcp.tool()
 def get_unions(
     filters: Union = Field(..., description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
@@ -712,7 +716,7 @@ def get_unions(
     Returns:
         A JSON dict containing the list of unions.
     """
-    url = f"{consts.API_ENDPOINT}/api/unions"
+    url = f"{consts.API_ENDPOINT}/unions"
     params = filters.model_dump(by_alias=True, exclude_none=True)
     try:
         response = s.get(
@@ -735,7 +739,7 @@ def get_union_by_id(
     Returns:
         A JSON dict containing the union details.
     """
-    url = f"{consts.API_ENDPOINT}/api/unions/{union_id}"
+    url = f"{consts.API_ENDPOINT}/unions/{union_id}"
     try:
         response = s.get(
             url,
@@ -745,6 +749,7 @@ def get_union_by_id(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+
 
 @mcp.tool()
 def get_user_by_id(
@@ -756,7 +761,7 @@ def get_user_by_id(
     Returns:
         User data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/users/{user_id}"
+    url = f"{consts.API_ENDPOINT}/users/{user_id}"
     try:
         response = s.get(url,
         timeout=consts.API_TIMEOUT
@@ -766,18 +771,18 @@ def get_user_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+#Works
 @mcp.tool()
 def get_users(
     filters: GetUsers = Field(..., description="User details for filtering the users list. All fields are optional")
     )->dict:
     """
-    Filter users of instance by specified criteria. If no instance is provided, defaults to the default-domain instance.
-
+    Filter users of instance by specified criteria.
     Returns:
         A JSON dict containing the list of users.
     """
 
-    url = f"{consts.API_ENDPOINT}/api/users"
+    url = f"{consts.API_ENDPOINT}/users"
     try:
         response = s.get(
             url,
@@ -799,7 +804,7 @@ def get_users_by_instance(
     Returns:
         A JSON dict containing the list of users.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{filters.instance}/users"
+    url = f"{consts.API_ENDPOINT}/instance/{filters.instance}/users"
     params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
     try:
         response = s.get(
@@ -812,6 +817,7 @@ def get_users_by_instance(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+#Works
 @mcp.tool()
 def get_vehicle_type(
     filters: GetVehicleType = Field(..., description="Vehicle type details for filtering the vehicle types list. All fields are optional")
@@ -822,7 +828,7 @@ def get_vehicle_type(
     Returns:
         A paginated JSON response containing a list of matching vehicle type objects.
     """
-    url = f"{consts.API_ENDPOINT}/api/vehicletypes"
+    url = f"{consts.API_ENDPOINT}/vehicletypes"
     params = filters.model_dump(by_alias=True, exclude_none=True)
 
     try:
@@ -847,7 +853,7 @@ def create_vehicle_type(
     Returns:
         The created vehicle type object as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/vehicletypes"
+    url = f"{consts.API_ENDPOINT}/vehicletypes"
     payload = vehicle_type.model_dump(by_alias=True, exclude_none=True)
     try:
         response = s.post(
@@ -871,7 +877,7 @@ def get_vehicle_type_by_company_id(
     Returns:
         A paginated JSON response containing a list of matching vehicle type objects.
     """
-    url = f"{consts.API_ENDPOINT}/api/company/{filters.company_id}/vehicletypes"
+    url = f"{consts.API_ENDPOINT}/company/{filters.company_id}/vehicletypes"
     params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"company_id"})
 
     try:
@@ -895,7 +901,7 @@ def get_vehicle_type_by_id(
     Returns:
         The vehicle type information as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
+    url = f"{consts.API_ENDPOINT}/vehicletypes/{id}"
     try:
         response = s.get(
             url,
@@ -917,7 +923,7 @@ def update_vehicle_type(
     Returns:
         The updated vehicle type information as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
+    url = f"{consts.API_ENDPOINT}/vehicletypes/{id}"
     payload = vehicle_type.model_dump(by_alias=True, exclude_none=True)
     try:
         response = s.put(
@@ -941,7 +947,7 @@ def delete_vehicle_type(
     Returns
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/vehicletypes/{id}"
+    url = f"{consts.API_ENDPOINT}/vehicletypes/{id}"
     try:
         response = s.delete(
             url,
@@ -953,17 +959,17 @@ def delete_vehicle_type(
     return response.json()
 
 @mcp.tool()
-def get_travel_claims_by_instance(
+def get_travel_claims(
     filters: GetTravelClaims = Field(..., description="Travel claim details for filtering the travel claims list. All fields are optional")
     )->dict:
     """
-    Filter travel claims by specified criteria for a given instance. If no instance is provided, defaults to the default-domain instance.
+    Filter travel claims by specified criteria for a given instance.
 
     Returns:
         A JSON dict containing the list of travel claims.
      """
-    url = f"{consts.API_ENDPOINT}/api/travelclaim"
-    params = filters.model_dump(by_alias=True, exclude_none=True)
+    url = f"{consts.API_ENDPOINT}/travelclaim"
+    params = filters.model_dump(by_alias=True, exclude_none=True, mode="json")
     try:
         response = s.get(
             url,
@@ -985,7 +991,7 @@ def get_travel_claim_attachment_by_id(
     Returns:
          A dict containing the filename and base64 encoded file content.
     """
-    url = f"{consts.API_ENDPOINT}/api/travelclaim/attachment/{id}"
+    url = f"{consts.API_ENDPOINT}/travelclaim/attachment/{id}"
     try:
         response = s.get(
             url,
@@ -1015,7 +1021,7 @@ def get_travel_claims_by_company_id(
         A JSON dict containing the list of travel claims for the specified company.
     """
 
-    url = f"{consts.API_ENDPOINT}/api/companies/{company_id}/publictravelclaimsauditlevels"
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/publictravelclaimsauditlevels"
     try:
         response = s.get(
             url,
@@ -1036,7 +1042,7 @@ def get_qualification_by_id(
     Returns:
         The qualification information as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/api/qualifications/{id}"
+    url = f"{consts.API_ENDPOINT}/qualifications/{id}"
     try:
         response = s.get(
             url,
@@ -1047,6 +1053,7 @@ def get_qualification_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+#Works
 @mcp.tool()
 def get_qualifications_by_instance(
     instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
@@ -1063,7 +1070,7 @@ def get_qualifications_by_instance(
     Returns:
         A JSON dict containing the list of qualifications.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{instance}/qualifications"
+    url = f"{consts.API_ENDPOINT}/instance/{instance}/qualifications"
     params = {"pageIndex": page_index, "pageSize": page_size, "instance": instance}
     if company_id is not None:
         params["companyId"] = company_id
@@ -1095,7 +1102,7 @@ def get_qualifications_by_company_id(
     Returns:
         A JSON dict containing the list of qualifications for the specified company.
     """
-    url = f"{consts.API_ENDPOINT}/api/instance/{instance}/company/{company_id}/qualifications"
+    url = f"{consts.API_ENDPOINT}/instance/{instance}/companies/{company_id}/qualifications"
     params = {"instance": instance, "companyId": company_id, "pageIndex": page_index, "pageSize": page_size}
     if company_number is not None:
         params["companyNumber"] = company_number
@@ -1110,9 +1117,10 @@ def get_qualifications_by_company_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+#Works
 @mcp.tool()
 def get_all_qualifications(
-    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
+    instance: Optional[str] = Field(None, description="Domain name."),
     company_id: Optional[UUID] = Field(None, description="UUID of the company."),
     comopany_number: Optional[int] = Field(None, description="Company number."),
     page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
@@ -1124,7 +1132,7 @@ def get_all_qualifications(
     Returns:
         A JSON dict containing the list of qualifications.
     """
-    url = f"{consts.API_ENDPOINT}/api/qualifications"
+    url = f"{consts.API_ENDPOINT}/qualifications"
     params = {"pageIndex": page_index, "pageSize": page_size}
     if instance is not None:
         params["instance"] = instance
