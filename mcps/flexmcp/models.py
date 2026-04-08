@@ -8,8 +8,76 @@ from typing import Dict, List, Literal, Optional
 
 INSTANCE = os.getenv("INSTANCE")
 DOMAIN = os.getenv("DOMAIN")
+class AbsenceStatusModel(BaseModel):
+    absence_application_id: UUID = Field(..., alias="absenceApplicationId", description="UUID of the absence application.")
+    id: UUID = Field(..., description="UUID of this status record.")
+    message: Optional[str] = Field(None, description="Message from the approver regarding the absence application.")
+    status: int = Field(..., description="Status of the absence application.")
+    time_stamp: datetime = Field(..., alias="timeStamp", description="Timestamp of the absence status.")
+    user_id: UUID = Field(..., alias="userId", description="UUID of the user who made the status update.")
+    user_signature: Optional[str] = Field(None, alias="userSignature", description="Signature of the user who made the status update.")
 
+class ImportAbsenceApplicationModelAPIBase(BaseModel):
+    absence_type_id: UUID = Field(..., alias="absenceTypeId", description="UUID of the absence type.")
+    child_id: Optional[UUID] = Field(None, alias="childId", description="UUID of the child for which the absence application is made.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    current_status: Optional[AbsenceStatusModel] = Field(None, alias="currentStatus", description="Current status of the absence application if it exists.")
+    employment_number: str = Field(..., min_length=1,alias="employmentNumber", description="Employment number of the applicant.")
+    from_date: date = Field(..., alias="fromDate", description="Start date of the absence.")
+    from_time: Optional[time] = Field(None, alias="fromTime", description="Start time of the absence.")
+    hours: Optional[float] = Field(None, description="Number of hours for the absence.")
+    id: UUID=Field(..., description="UUID of the absence application.")
+    message: Optional[str] = Field(None, description="Message from the applicant regarding the absence application.")
+    part_time_percentage: Optional[float] = Field(None, alias="partTimePercentage", description="Part-time percentage for the absence application.")
+    status: Optional[AbsenceStatusModel] = Field(None, description="Status to which the application whiches to be set")
+    to_date: Optional[date] = Field(..., alias="toDate", description="End date of the absence.")
+    to_time: Optional[time] = Field(None, alias="toTime", description="End time of the absence.")
 
+class AccountModel(BaseModel):
+    account_locations: Optional[List[AccountLocationModel]] = Field(None,alias="accountLocations",description="A list of account locations")
+    active_from_date: Optional[datetime] = Field(None,alias="activeFromDate",description="Account active from date")
+    active_to_date: Optional[datetime] = Field(None,alias="activeTomDate",description="Account active to date")
+    billing: Optional[AccountBillingModel]
+    billing_state_enum: Optional[int] = Field(alias="billingStateEnum",description="Billing state: 0 = No, 1 = Never, 2 = Yes, 3 = Always")
+    budgeting_time_unit: Optional[int] = Field(alias="budgetingTimeUnit", description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month.")
+    code: str = Field(min_length=1, description="Unique account code")
+    external_comment_must_be_stated_about_billable_time: Optional[bool] = Field(None, alias="externalCommentMustBeStatedAboutBillableTime", description="Whether an external comment must be stated about billable time.")
+    id: Optional[UUID] = Field(None, description="UUID of the account.")
+    name: str = Field(..., description="Account name. Minimum length: 1.")
+    travel_billing_state_enum: Optional[int] = Field(None, alias="travelBillingStateEnum", description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
+    work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace details associated with the account.")
+
+class AccountLocationModel(BaseModel):
+    latitude: Optional[float] = Field(None,description="Latitude of the location")
+    location_name: Optional[str] = Field(None,alias="locationName",description="Name of the location")
+    longitude: Optional[float] = Field(None,description="Longitude of the locaiton")
+    radius: Optional[int] = Field(None,description="Radius of the location")
+
+class AccountBillingModel(BaseModel):
+    price_rows: Optional[list[AccountBillingPriceRowModel]] = Field(None, alias="priceRows", description="List of standard billing price rows. Nullable.")
+    price_row_travel: Optional[list[AccountBillingPriceRowModel]] = Field(None, alias="priceRowTravel", description="List of travel billing price rows. Nullable.")
+
+class AccountBillingPriceRowModel(BaseModel):
+    accounts: Optional[list[AccountBillingPriceRowAccountModel]] = Field(None, description="List of accounts associated with this price row.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee associated with this price row. Nullable.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the price row validity period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the billing price row record.")
+    price: Optional[float] = Field(None, description="Price value. Nullable.")
+    price_adjustment: Optional[float] = Field(None, alias="priceAdjustment", description="Price adjustment value. Nullable.")
+    price_adjustment_percentage: Optional[float] = Field(None, alias="priceAdjustmentPercentage", description="Price adjustment percentage. Nullable.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the price row validity period. Nullable.")
+    unit: Optional[int] = Field(None, description="Billing row unit. 0 = Hour, 1 = Row, 2 = HalfDay, 3 = Pos, 4 = Km, 5 = Mil, 6 = Blank.")
+
+class AccountBillingPriceRowAccountModel(BaseModel):
+    account_id: Optional[UUID] = Field(None, alias="accountId", description="UUID of the account.")
+    id: Optional[UUID] = Field(None, description="UUID of the price row account entry.")
+
+class WorkplaceModel(BaseModel):
+    adress: Optional[str] = Field(None, description="Adress of the workplace")
+    city: Optional[str] = Field(None,description="City of the workspace")
+    country: Optional[str] = Field(None,description="Country of the workspace")
+    postal_code: Optional[str] = Field(None,alias="postalCode",description="Postal code of the workplace")
+    type: Optional[int] = Field(description="Type of workspace: 0 = Physical, 1 = Remote, 2 = NotFixed")
 
 class TimeRowAccount(BaseModel):
     account_code: Optional[str] = Field(
