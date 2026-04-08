@@ -856,7 +856,7 @@ def get_allowance_rule_set(
 @mcp.tool()
 def get_audited_time_reports_by_company(
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company"),
-    filters: GetAuditedTimeReportsByCompany = Field(...,description="Fiter parameters all  fields are optional")
+    filters: GetAuditedTimeReportsByCompany = Field(...,description="Fiter parameters all fields are optional")
     )->dict:
     """
     Get audited time reports by comapny id
@@ -878,7 +878,95 @@ def get_audited_time_reports_by_company(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_background_tasks_by_id(
+    id: UUID = Field(...,description="UUID of the backgroundtask")
+    )->dict:
+    url = f"{consts.API_ENDPOINT}/backroundtasks/{id}"
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
+mcp.tool()
+def get_background_task(
+    filters: GetBackGroundTasks = Field(description="Filter parameters all fields are optional")
+    )->dict:
+    """
+    Get background tasks
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/backroundtasks"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def begin_background_task_release_accounts_to_billing(
+    query: BillingReleaseSelectionModel = Field(description="Query object all fields optional")
+    )->dict:
+    """
+    Creates a background task that releases selected accounts to billing.
+    
+    Returns: 
+        API response as a JSON dict containing a background task object with an id 
+        that can be used to track progress by calling get_background_task_by_id.
+    """
+    url = f"{consts.API_ENDPOINT}/backroundtasks/BEGIN_RELEASE_ACCOUNTS_TO_BILLING"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def begin_background_task_rollback_release(
+    query: RollbackReleaseModel = Field(description="Query object all fields optional")
+    )->dict:
+    """
+    Creates a background task that rollbacks a billing release by release ID.
+
+    Returns:
+        API response as a JSON dict containing a background task object with an id 
+        that can be used to track progress by calling get_background_task_by_id.
+    """
+    url = f"{consts.API_ENDPOINT}/backroundtasks/BEGIN_ROLLBACK_RELEASE"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 
 @mcp.tool()
