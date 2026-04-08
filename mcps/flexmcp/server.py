@@ -830,6 +830,29 @@ def get_accumulator_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_allowance_rule_set(
+    filters: GetAllowanceRuleSet = Field(description="Fiter parameters, all fields optional")
+    )->dict:
+    """
+    Get a paged collection of allowance rule sets
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/allowancerulesets"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 @mcp.tool()
 def get_salary_by_id(

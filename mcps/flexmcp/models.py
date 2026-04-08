@@ -163,6 +163,10 @@ class GetAccumulators(BaseModel):
     accumulator_type: Optional[int] = Field(alias="accumulatorType",description="Type of the accumulator:0 = None, 1 = Gross, 2 = Benefit, 3 = Tax, 4 = Allowance, 5 = Deduction, 6 = DebtGross, 7 = DebtNet")
     page_params: PageModel = Field(description="Page parameters")
 
+class GetAllowanceRuleSet(BaseModel):
+    company_id: Optional[UUID] = Field(alias="companyId",description="UUID of the company")
+    page_params: PageModel = Field(description="Page parameters")
+
 class TimeRow(BaseModel):
     start: Optional[str] = Field(
         None,
