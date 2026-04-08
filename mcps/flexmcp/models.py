@@ -1,7 +1,7 @@
 from dotenv import load_dotenv
 import os
 load_dotenv()
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator, field_serializer
 from uuid import UUID
 from datetime import date, time, datetime
 from typing import Dict, List, Literal, Optional
@@ -300,19 +300,32 @@ class GetSalariesByEmployee(GetSalaryQueryBase):
 class GetAllSalaries(GetSalaryQueryBase):
     instance: Optional[str] = Field(None, description="Domain name.")
 
-#For PUT/api/employees/{employeeId}/salaries — employeeId required
-class UpdateOrCreateSalaries(BaseModel):
+
+
+class Salary(BaseModel):
     comment: Optional[str] = Field(None, description="Comment. Nullable.")
-    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
-    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+    company_id: UUID = Field(None, alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(None, alias="employeeId", description="Employee ID (UUID).")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date. Nullable.")
-    full_time_salary: Optional[float] = Field(None, alias="fullTimeSalary", description="Full time salary.")
+    full_time_salary: Optional[float] = Field(None, alias="fullTimeSalary", description="Full time salary per period defined in salary_type (Monthly, hourly or yearly)")
     id: Optional[UUID] = Field(None, description="Salary ID (UUID).")
     instance_id: UUID = Field(INSTANCE, alias="instanceId", description="Instance ID (UUID).")
     is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
     salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
     model_config = ConfigDict(populate_by_name=True)
+
+    @field_serializer("from_date", "to_date")
+    def serialize_datetime(self, value: Optional[datetime]):
+        if value is None:
+            return value
+        return value.strftime("%Y-%m-%dT%H:%M:%S")
+
+#For PUT/api/employees/{employeeId}/salaries — employeeId required
+class UpdateOrCreateSalaries(Salary):
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+
 
 class StampingAccountModel(BaseModel):
     accountCode: str = Field(..., min_length=1, description="Account code string.")
@@ -329,7 +342,7 @@ class Union(BaseModel):
 
 class ListCompaniesInput(BaseModel):
     instance: Optional[str] = Field(
-        default=None,
+        default=DOMAIN,
         description="Domain name. If not provided, defaults to the default-domain instance."
     )
     page_index: Optional[int] = Field(
@@ -343,7 +356,7 @@ class ListCompaniesInput(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 class GetUsers(BaseModel):
-    instance: Optional[str] = Field(None, description="Domain name.")
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
     username: Optional[str] = Field(None, description="User name.")
     extern_ref: Optional[str] = Field(None, description="External reference.")
     user_type: Optional[int] = Field(None, description="User type: 1 = System, 2 = Instance") 

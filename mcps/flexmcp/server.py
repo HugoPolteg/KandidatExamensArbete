@@ -7,7 +7,7 @@ from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
 GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
 GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput
+VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary
 import consts
 from dotenv import load_dotenv
 import os
@@ -32,6 +32,17 @@ def to_api_time_row(row: TimeRow) -> dict:
     }
 
 @mcp.tool()
+def list_instances():
+    url = f"{consts.API_ENDPOINT}/instances"
+
+    try:
+        response = s.get(url, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+#Works
+@mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
 ) -> dict:
@@ -51,11 +62,11 @@ def get_salary_by_id(
 
     return response.json()
 
-
+#Works
 #@mcp.tool()
 def update_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
-    salary_data: dict = Field(..., description="JSON body containing the updated salary fields."),
+    salary_data: Salary = Salary()
 ) -> dict:
     """
     Updates a salary by id.
@@ -64,11 +75,10 @@ def update_salary_by_id(
         Updated salary data as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/salaries/{salary_id}"
-
     try:
         response = s.put(
             url,
-            json=salary_data,
+            json=salary_data.model_dump(by_alias=True, exclude_none=True),
             headers={"Content-Type": "application/json"},
             timeout=consts.API_TIMEOUT,
         )
@@ -78,6 +88,7 @@ def update_salary_by_id(
 
     return response.json()
 
+#Works
 @mcp.tool()
 def delete_salary(
     salary_id: UUID = Field(..., description="UUID of the salary"),
@@ -86,7 +97,7 @@ def delete_salary(
     Deletes a salary by id.
 
     Returns:
-        API response as a JSON dict.
+        Status code. (200 = OK)
     """
     url = f"{consts.API_ENDPOINT}/salaries/{salary_id}"
 
@@ -99,13 +110,12 @@ def delete_salary(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
 
-    return response.json()
+    return response.status_code
 
-#Works
+#Works?
 @mcp.tool()
 def get_salaries_by_instance(
-    query: GetSalaries = Field(..., 
-    description="Full query object, all fields are optional")
+    query: GetSalaries = GetSalaries()
     ) -> dict:
     """
      Get salaries for a given instance. If no instance is provided, defaults to the default-domain instance.
@@ -128,6 +138,7 @@ def get_salaries_by_instance(
         raise RuntimeError(f"API request failed: {e}")
 
     return response.json()
+#print(get_salaries_by_instance(GetSalaries()))
 
 @mcp.tool()
 def get_salaries_by_company(
@@ -155,7 +166,7 @@ def get_salaries_by_company(
         raise RuntimeError(f"API request failed: {e}")
 
     return response.json()
- 
+#print(get_salaries_by_company(GetSalariesByCompany(companyId="b4253a61-f229-4ca9-9831-ad931d9a75a6")))
 @mcp.tool()
 def get_salaries_by_company_and_employee(
     query: GetSalariesByCompanyAndEmployee = Field(...,
@@ -183,9 +194,11 @@ def get_salaries_by_company_and_employee(
         raise RuntimeError(f"API request failed: {e}") 
     return response.json()
 
+
+
 @mcp.tool()
 def get_salaries_by_employee(
-    query: GetSalariesByEmployee = Field(..., description="Full query object. Employee_id is required. All other fields are optional")
+    query: GetSalariesByEmployee = Field(..., description="Full query object. employee_id is required. All other fields are optional")
     ) -> dict:
     """
      Get salaries for an employee.
@@ -207,6 +220,8 @@ def get_salaries_by_employee(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+#print(get_salaries_by_employee(GetSalariesByEmployee(employee_id="640ca4b1-bf59-4740-9fc6-b1c6008861a0")))
+
 
 #@mcp.tool()
 def update_salaries_by_employee(
@@ -237,7 +252,7 @@ def update_salaries_by_employee(
 
 @mcp.tool()
 def get_all_salaries(
-    query: GetAllSalaries = Field(..., description="Full query object. All fields are optional")
+    query: GetAllSalaries = GetAllSalaries()
     ) -> dict:
     """
      Get salaries.
@@ -256,6 +271,7 @@ def get_all_salaries(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+#print(get_all_salaries())
 
 #@mcp.tool()
 def create_salary(
@@ -269,7 +285,7 @@ def create_salary(
     """
     url = f"{consts.API_ENDPOINT}/salaries"
 
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    payload = query.model_dump(mode="json", by_alias=True, exclude_none=True)
 
     try:        
         response = s.post(
@@ -283,6 +299,7 @@ def create_salary(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+#print(create_salary(UpdateOrCreateSalaries(company_id=UUID("b4253a61-f229-4ca9-9831-ad931d9a75a6"), employee_id=UUID("f83fe21a-a90a-4ce8-8a13-b1c60089eca5") ,salary_type=0, full_time_salary=1200, comment="Bombaclat", is_historical_salary=True, from_date=datetime(2026, 4, 3, 0, 0, 0, 0))))
 
 @mcp.tool()
 def get_time_report_by_employee(
@@ -414,7 +431,6 @@ def list_all_companies(
         The company names, numbers and customer instances within the range.
     """
     url = f"{consts.API_ENDPOINT}/instance/{params.instance}/companies"
-    print(url)
     params = {"pageIndex": params.page_index, "pageSize": params.page_size}
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
@@ -774,7 +790,7 @@ def get_user_by_id(
 #Works
 @mcp.tool()
 def get_users(
-    filters: GetUsers = Field(..., description="User details for filtering the users list. All fields are optional")
+    filters: GetUsers = GetUsers()
     )->dict:
     """
     Filter users of instance by specified criteria.
@@ -820,7 +836,7 @@ def get_users_by_instance(
 #Works
 @mcp.tool()
 def get_vehicle_type(
-    filters: GetVehicleType = Field(..., description="Vehicle type details for filtering the vehicle types list. All fields are optional")
+    filters: GetVehicleType = GetVehicleType()
     )->dict:
     """"
     Filter vehicle types by specified criteria.
@@ -1021,7 +1037,7 @@ def get_travel_claims_by_company_id(
         A JSON dict containing the list of travel claims for the specified company.
     """
 
-    url = f"{consts.API_ENDPOINT}/companies/{company_id}/publictravelclaimsauditlevels"
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/publictravelclaimauditlevels"
     try:
         response = s.get(
             url,
@@ -1053,7 +1069,7 @@ def get_qualification_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
-#Works
+#Works (not)
 @mcp.tool()
 def get_qualifications_by_instance(
     instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
@@ -1117,7 +1133,7 @@ def get_qualifications_by_company_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
-#Works
+#Works (not)
 @mcp.tool()
 def get_all_qualifications(
     instance: Optional[str] = Field(None, description="Domain name."),
@@ -1127,7 +1143,7 @@ def get_all_qualifications(
     page_size: Optional[int] = Field(20, description="Number of entries per page.")
     )->dict:
     """
-    Gets qualifications for all isntances if no instance is provided, filtered by company_id or company_number.
+    Gets qualifications for all instances. If no instance is provided, filtered by company_id or company_number.
 
     Returns:
         A JSON dict containing the list of qualifications.
@@ -1150,6 +1166,8 @@ def get_all_qualifications(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+#print(get_all_qualifications())
+
 
 if __name__ == "__main__":
     mcp.run()
