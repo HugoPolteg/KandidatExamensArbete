@@ -206,6 +206,22 @@ class BillingReleaseSelectionEmployee(BaseModel):
 class RollbackReleaseModel(BaseModel):
     release_id: Optional[UUID] = Field(alias="releaseId",description="UUID of the release")
 
+class GetBalances(BaseModel):
+    instance: Optional[str] = Field(INSTANCE,description="Domain name")
+    company_number: Optional[int] = Field(alias="companyNumber",description="Company Number")
+    balance_code: Optional[str] = Field(alias="balanceCode", description="Balance Code")
+    balance_type: Optional[int] = Field(alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
+
+class GetBalancesByCompanyId(BaseModel):
+    balance_code: Optional[str] = Field(alias="balanceCode", description="Balance Code")
+    balance_type: Optional[int] = Field(alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
+
+
+
+
+
 
 class TimeRow(BaseModel):
     start: Optional[str] = Field(

@@ -894,7 +894,7 @@ def get_background_tasks_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
-mcp.tool()
+@mcp.tool()
 def get_background_task(
     filters: GetBackGroundTasks = Field(description="Filter parameters all fields are optional")
     )->dict:
@@ -968,7 +968,77 @@ def begin_background_task_rollback_release(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_balances(
+    filters: GetBalances = Field(description="Filter object all fields are optional")
+    )->dict:
+    """
+    Get balances by filter parameters
 
+    Retruns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balances"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_balances_by_company_id(
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company"),
+    filters: GetBalancesByCompanyId = Field(None, description="Filter object, all fields are optional.")
+) -> dict:
+    """
+    Get balances for a company by company id optionaly filterd by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/balances"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_balance_by_id(
+    id: UUID = Field(description="UUID of the balance")
+    )->dict:
+    """
+    Get a balance by id
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balances"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+    
 @mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
@@ -986,7 +1056,6 @@ def get_salary_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
-
     return response.json()
 
 #Works
