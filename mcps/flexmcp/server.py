@@ -7,11 +7,7 @@ from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
 GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
 GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-<<<<<<< Updated upstream
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary
-=======
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, ImportAbsenceApplicationModelAPIBase, AccountModel
->>>>>>> Stashed changes
+VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary, ImportAbsenceApplicationModelAPIBase, AccountModel
 import consts
 from dotenv import load_dotenv
 import os
@@ -36,7 +32,6 @@ def to_api_time_row(row: TimeRow) -> dict:
     }
 
 @mcp.tool()
-<<<<<<< Updated upstream
 def list_instances():
     url = f"{consts.API_ENDPOINT}/instances"
 
@@ -47,7 +42,6 @@ def list_instances():
         raise RuntimeError(f"API request failed: {e}")
 
 #Works
-=======
 def get_absence_applications_by_company_id(
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company."),
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
@@ -270,7 +264,6 @@ def create_new_accounts(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
->>>>>>> Stashed changes
 @mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
