@@ -4,11 +4,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
-GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
-GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary, \
-ImportAbsenceApplicationModelAPIBase, AccountModel, GetAccountByAccountDistributionId, PageModel, GetReportedHoursModel
+from models import *
 import consts
 from dotenv import load_dotenv
 import os
@@ -405,6 +401,77 @@ def get_reported_hours(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+
+@mcp.tool()
+def get_account_budget_by_account_id(
+    account_id: UUID = Field(...,description="Account id. Get account budget from the given account."),
+    filters: GetAccountBudgetByAccountId = Field(description="Filers to filter the budgets within the upon")
+)->dict:
+    """
+    Get budgets within a given account.
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accounts/{account_id}/accountbudgets"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_account_budget_for_account_id(
+    account_id: UUID = Field(alias="accountid",description="Account id. The account that the account budget is posted to."),
+    query: AccountBudgetModel = Field(description="Id is optional all other parameters requierd")
+    )->dict:
+    """
+    Creates new account budget instances for given account by the account id
+
+    Response:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/account/{account_id}/accountbudgets"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_account_budget_by_id(
+    id: UUID = Field(...,description="UUID of the account budget"),
+    query: AccountBudgetModel = Field(description="Id is optional all other parameters requierd")
+    )->dict:
+    url = f"{consts.API_ENDPOINT}/accountbudgets/{id}"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
 
 @mcp.tool()
 def get_salary_by_id(

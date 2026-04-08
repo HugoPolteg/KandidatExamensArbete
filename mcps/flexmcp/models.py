@@ -117,7 +117,25 @@ class GetReportedHoursModel(BaseModel):
     include_undefined_timecodes: Optional[bool] = Field(alias="includeUndefinedTimeCodes",description="Whether to include undefined time codes")
     max_hours_open_time_row: Optional[int] = Field(None, alias="maxHoursOpenTimeRow", description="The maximum amount of hours selected timerows should be have been open for")
     time_group_id: Optional[UUID] = Field(None, alias="timeGroupId",description="Id of the timegroup")
-    to_date_time: Optional[datetime] = Field(None,alias="TomDateTime",description="Get hours reported uo to this time")   
+    to_date_time: Optional[datetime] = Field(None,alias="TomDateTime",description="Get hours reported uo to this time")
+
+class GetAccountBudgetByAccountId(BaseModel):
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="From date. Get account budget from date.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="From date. Get account budget from date.")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
+
+class AccountBudgetModel(BaseModel):
+    actual_sales: float = Field(...,alias="actualSales",description="The observed sales")
+    budgeted_cost: float = Field(...,alias="budgetedCost",description="The budgeted costs")
+    budgeted_hours: float = Field(...,alias="budgetedHours",description="The budgeted hours")
+    budgeted_sales: float = Field(...,alias="budgetedSales",description="The budgeted sales")
+    date_time: str = Field(...,min_length=1,alias="dateTime",description="Budget period identifier as a string.")
+    id: UUID = Field(None, description="UUID of the Account budget record")
+
+
+
+    
 
 class TimeRow(BaseModel):
     start: Optional[str] = Field(
