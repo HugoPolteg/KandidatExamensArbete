@@ -4,10 +4,7 @@ from pydantic import Field
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
-GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
-GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary
+from models import *
 import consts
 from dotenv import load_dotenv
 import os
@@ -31,7 +28,6 @@ def to_api_time_row(row: TimeRow) -> dict:
         "timeCode": {"code": row.time_code} if row.time_code else None,
     }
 
-@mcp.tool()
 def list_instances():
     url = f"{consts.API_ENDPOINT}/instances"
 
@@ -63,7 +59,7 @@ def get_salary_by_id(
     return response.json()
 
 #Works
-#@mcp.tool()
+@mcp.tool()
 def update_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
     salary_data: Salary = Salary()
@@ -112,34 +108,6 @@ def delete_salary(
 
     return response.status_code
 
-#Works?
-@mcp.tool()
-def get_salaries_by_instance(
-    query: GetSalaries = GetSalaries()
-    ) -> dict:
-    """
-     Get salaries for a given instance. If no instance is provided, defaults to the default-domain instance.
-
-    Returns:
-        A JSON dict containing the list of salaries.
-    """
-    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/salaries"
-
-    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
-
-    try:
-        response = s.get(
-            url, 
-            params=params, 
-            timeout=consts.API_TIMEOUT
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-
-    return response.json()
-#print(get_salaries_by_instance(GetSalaries()))
-
 @mcp.tool()
 def get_salaries_by_company(
     query: GetSalariesByCompany = Field(..., 
@@ -151,7 +119,7 @@ def get_salaries_by_company(
     Returns:
         A JSON dict containing the list of salaries.
      """
-    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/company/{query.company_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/companies/{query.company_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id"})
 
@@ -166,7 +134,7 @@ def get_salaries_by_company(
         raise RuntimeError(f"API request failed: {e}")
 
     return response.json()
-#print(get_salaries_by_company(GetSalariesByCompany(companyId="b4253a61-f229-4ca9-9831-ad931d9a75a6")))
+
 @mcp.tool()
 def get_salaries_by_company_and_employee(
     query: GetSalariesByCompanyAndEmployee = Field(...,
@@ -179,7 +147,7 @@ def get_salaries_by_company_and_employee(
         A JSON dict containing the list of salaries.
      """
     
-    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/company/{query.company_id}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/instance/{query.instance}/companies/{query.company_id}/employees/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"instance", "company_id", "employee_id"})
 
@@ -206,7 +174,7 @@ def get_salaries_by_employee(
      Returns: 
         A JSON dict containing the list of salaries.
     """
-    url = f"{consts.API_ENDPOINT}/employee/{query.employee_id}/salaries"
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/salaries"
 
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
 
@@ -223,19 +191,19 @@ def get_salaries_by_employee(
 #print(get_salaries_by_employee(GetSalariesByEmployee(employee_id="640ca4b1-bf59-4740-9fc6-b1c6008861a0")))
 
 
-#@mcp.tool()
+@mcp.tool()
 def update_salaries_by_employee(
-    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Employee_id, and company_id are required. All other fields are optional")
+    query: UpdateOrCreateSalaries = Field(..., description="Full query object. employee_id is required. All other fields are optional")
     ) -> dict:
     """
-     Update salaries for an employee of a given company for a given isntance-id. If no instanceid is provided, uses default instance-id. 
+     Update salaries for an employee.
 
      Returns:
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/salaries"
 
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    payload = query.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -271,11 +239,10 @@ def get_all_salaries(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
-#print(get_all_salaries())
 
 #@mcp.tool()
 def create_salary(
-    query: UpdateOrCreateSalaries = Field(..., description="Full query object. Employee_id, and company_id are required. All other fields are optional")
+    query: UpdateOrCreateSalaries = Field(..., description="Full query object. employee_id is required. All other fields are optional")
     ) -> dict:
     """
      Create a salary for an employee of a given company for a given instance-id. If no instance id is provided, uses default instance-id. 
@@ -286,7 +253,6 @@ def create_salary(
     url = f"{consts.API_ENDPOINT}/salaries"
 
     payload = query.model_dump(mode="json", by_alias=True, exclude_none=True)
-
     try:        
         response = s.post(
             url, 
@@ -303,9 +269,7 @@ def create_salary(
 
 @mcp.tool()
 def get_time_report_by_employee(
-    employee_id: UUID = Field(..., description="UUID of the employee."),
-    report_date: Optional[date] = Field(None, description="Date of the time report (YYYY-MM-DD). Defaults to today if omitted."),
-    generated: Optional[bool] = Field(True, description="Whether to include generated time rows. Defaults to True."),
+    query: GetTimeReportByEmployee = Field(..., description="Full query object. employee_id is required. All other fields are optional")
 ) -> dict:
     """
     Gets a time report for an employee.
@@ -313,22 +277,35 @@ def get_time_report_by_employee(
     Returns:
         Time report data as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/timereport"
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/timereport"
 
-    params = {}
-    if report_date is not None:
-        params["date"] = report_date.isoformat()
-    if generated is not None:
-        params["generated"] = generated
-
+    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
     try:
-        response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response = s.get(url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
 
     return response.json()
 
+@mcp.tool()
+def get_all_employees() -> dict:
+    """
+    Gets all employees
+
+    Returns:
+        Employee data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees"
+
+    try:
+        response = s.get(url, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 @mcp.tool()
 def get_employee(
@@ -350,7 +327,7 @@ def get_employee(
 
     return response.json()
 
-#@mcp.tool()
+@mcp.tool()
 def put_time_report(
     employee_id: UUID = Field(..., description="Employee ID"),
     date: datetime = Field(..., description="Date of the report"),
@@ -367,7 +344,7 @@ def put_time_report(
 
     # Convert model to API payload using aliases
     payload = entry.model_dump(by_alias=True, exclude_none=True)
-
+    print(payload)
     try:
         response = s.put(
             url=f"{consts.API_ENDPOINT}/employees/{employee_id}/timereports/{date.isoformat()}",
@@ -835,8 +812,8 @@ def get_users_by_instance(
 
 #Works
 @mcp.tool()
-def get_vehicle_type(
-    filters: GetVehicleType = GetVehicleType()
+def get_vehicle_types(
+    filters: GetVehicleTypes = GetVehicleTypes()
     )->dict:
     """"
     Filter vehicle types by specified criteria.
@@ -1069,40 +1046,6 @@ def get_qualification_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
-#Works (not)
-@mcp.tool()
-def get_qualifications_by_instance(
-    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided, defaults to the default-domain instance."),
-    company_id: Optional[UUID] = Field(None, description="UUID of the company."),
-    company_number: Optional[int] = Field(None, description="Company number."),
-    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
-    page_size: Optional[int] = Field(20, description="Number of entries per page.")
-    )->dict:
-
-    """
-    Get qualifications, optionally filtered by instance or company. If no instance is provided, defaults to the default-domain instance.
-    Pagination parameters are supported to control result format.
-
-    Returns:
-        A JSON dict containing the list of qualifications.
-    """
-    url = f"{consts.API_ENDPOINT}/instance/{instance}/qualifications"
-    params = {"pageIndex": page_index, "pageSize": page_size, "instance": instance}
-    if company_id is not None:
-        params["companyId"] = company_id
-    if company_number is not None:
-        params["companyNumber"] = company_number
-
-    try:
-        response = s.get(
-            url,
-            params=params,
-            timeout=consts.API_TIMEOUT
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-    return response.json()
 
 @mcp.tool()
 def get_qualifications_by_company_id(
@@ -1136,11 +1079,7 @@ def get_qualifications_by_company_id(
 #Works (not)
 @mcp.tool()
 def get_all_qualifications(
-    instance: Optional[str] = Field(None, description="Domain name."),
-    company_id: Optional[UUID] = Field(None, description="UUID of the company."),
-    comopany_number: Optional[int] = Field(None, description="Company number."),
-    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0."),
-    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+    params: GetAllQualifications = GetAllQualifications()
     )->dict:
     """
     Gets qualifications for all instances. If no instance is provided, filtered by company_id or company_number.
@@ -1149,17 +1088,10 @@ def get_all_qualifications(
         A JSON dict containing the list of qualifications.
     """
     url = f"{consts.API_ENDPOINT}/qualifications"
-    params = {"pageIndex": page_index, "pageSize": page_size}
-    if instance is not None:
-        params["instance"] = instance
-    if company_id is not None:
-        params["companyId"] = company_id
-    if comopany_number is not None:
-        params["companyNumber"] = comopany_number
     try:
         response = s.get(
             url,
-            params=params,
+            params=params.model_dump(by_alias=True, exclude_none=True),
             timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()

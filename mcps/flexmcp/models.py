@@ -38,17 +38,20 @@ class TimeRowAccount(BaseModel):
  
     model_config = {"populate_by_name": True}
 
+class TimeCode(BaseModel):
+    code: str
+
 class TimeRow(BaseModel):
-    start: Optional[str] = Field(
+    start: Optional[datetime] = Field(
         None,
-        alias="fromTime",
+        alias="fromTimeDateTime",
         description=(
             "Start time of the work period (ISO 8601 datetime)."
         )
     )
-    end: Optional[str] = Field(
+    end: Optional[datetime] = Field(
         None,
-        alias="tomTime",
+        alias="toTimeDateTime",
         description=(
             "End time of the work period (ISO 8601 datetime)."
         )
@@ -59,8 +62,9 @@ class TimeRow(BaseModel):
             "Whether the time is billable."
         )
     )
-    time_code: Optional[str] = Field(
+    time_code: Optional[TimeCode] = Field(
         None,
+        alias="timeCode",
         description="Optional time code (e.g. 'WORK', 'OVERTIME')."
     )
     comment: Optional[str] = Field(
@@ -69,6 +73,12 @@ class TimeRow(BaseModel):
     )
  
     model_config = {"populate_by_name": True}
+    @field_serializer("start", "end")
+    def serialize_datetime(self, value: Optional[datetime]):
+        if value is None:
+            return value
+        return value.isoformat(timespec="milliseconds") + "Z"
+        #return value.strftime("%Y-%m-%dT%H:%M:%S")
     
 class DayEntry(BaseModel):
     overtime_marking_after: Optional[UUID] = Field(
@@ -88,7 +98,7 @@ class DayEntry(BaseModel):
     )
 
     model_config = {"populate_by_name": True}
-
+    
 class AccountLocation(BaseModel):
     latitude: Optional[float] = Field(None, description="Latitude of the account location.")
     longitude: Optional[float] = Field(None, description="Longitude of the account location.")
@@ -110,8 +120,18 @@ class Participant(BaseModel):
     )
  
     model_config = {"populate_by_name": True}
- 
- 
+
+class GetAllQualifications(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, description="UUID of the company.")
+    comopany_number: Optional[int] = Field(None, description="Company number.")
+    page_index: Optional[int] = Field(0, description="Page index for search. Begins at 0.")
+    page_size: Optional[int] = Field(20, description="Number of entries per page.")
+
+    model_config = {"populate_by_name": True}
+
+
+
 class ProjectAccount(BaseModel):
     account_id: UUID = Field(alias="accountId", description="UUID of the account.")
     account_distribution_id: UUID = Field(alias="accountDistributionId", description="UUID of the account distribution.")
@@ -269,7 +289,7 @@ class ProjectModel(BaseModel):
 
 
 class GetSalaryQueryBase(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
@@ -319,13 +339,21 @@ class Salary(BaseModel):
     def serialize_datetime(self, value: Optional[datetime]):
         if value is None:
             return value
-        return value.strftime("%Y-%m-%dT%H:%M:%S")
+        return value.strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + "Z"
+        #return value.strftime("%Y-%m-%dT%H:%M:%S")
+
+
 
 #For PUT/api/employees/{employeeId}/salaries — employeeId required
 class UpdateOrCreateSalaries(Salary):
-    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
 
+class GetTimeReportByEmployee(BaseModel):
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    report_date: Optional[date] = Field(None, alias="date", description="Date of the time report (YYYY-MM-DD). Defaults to today if omitted.")
+    generated: Optional[bool] = Field(True, description="Whether to include generated time rows. Defaults to True.")
+    
+    model_config = ConfigDict(populate_by_name=True)
 
 class StampingAccountModel(BaseModel):
     accountCode: str = Field(..., min_length=1, description="Account code string.")
@@ -370,7 +398,7 @@ class GetUsers(BaseModel):
 class GetUsersByInstance(GetUsers):
     instance: str = Field(INSTANCE, description="Domain name.")
 
-class GetVehicleType(BaseModel):
+class GetVehicleTypes(BaseModel):
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     vechile_type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type string to search for: 0 = Private, 1 = Business")
     comsumption_unit: Optional[int] = Field(None, alias="consumptionUnit", description="Consumption unit: 0 = LPer100Km, 1 = KWhPer100Km")
@@ -378,7 +406,7 @@ class GetVehicleType(BaseModel):
     page_size: Optional[int] = Field(20, alias="pageSize", description="Number of entries per page")
     model_config = ConfigDict(populate_by_name=True)
 
-class GetVehicleTypeByCompanyId(GetVehicleType):
+class GetVehicleTypeByCompanyId(GetVehicleTypes):
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
 
 class VehicleTypeRequestModel(BaseModel):
