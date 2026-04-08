@@ -73,6 +73,9 @@ def get_absence_application_by_parameters(
 )-> dict:
     """
     Gets absence applications filtered by the provided parameters. All parameters are optional.
+
+    Returns:
+        API response as JSON ditct
     """
     url = f"{consts.API_ENDPOINT}/absenceapplications"
     params = {"pageIndex": page_index, "pageSize": page_size}
@@ -324,7 +327,7 @@ def update_account_by_id(
     """
     Update account by id
 
-    Response: 
+    Returns: 
         API response as JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accounts/{id}"
@@ -434,7 +437,7 @@ def create_account_budget_for_account_id(
     """
     Creates new account budget instances for given account by the account id
 
-    Response:
+    Retruns:
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/account/{account_id}/accountbudgets"
@@ -477,7 +480,7 @@ def create_account_combination(
     """
     Creates an account combination
 
-    Response:
+    Returns:
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accountcombinations"
@@ -502,7 +505,7 @@ def update_account_combination_by_id(
     """
     Updates an account combination
 
-    Response:
+    Returns:
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accountcombinations/{id}"
@@ -571,7 +574,7 @@ def get_account_combination_by_account_id(
     """
     Get account combinations for an account by accont id
 
-    Reponse:
+    Returns:
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accounts/{account_id}/accountcombinations"
@@ -646,7 +649,7 @@ def get_account_distribution_by_company_id(
     """
     Get account distribution for a company id.
 
-    Response:
+    Returns:
         API response as JSON dict
     """
     url = f"{consts.API_ENDPOINT}/companies{company}/accountdistributions"
@@ -656,6 +659,124 @@ def get_account_distribution_by_company_id(
         response = s.get(
             url,
             params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_part_approval_permissions_by_id(
+    id: UUID = Field(...,description="Account part approval permission id.")
+    )->dict:
+    """
+    Get account part approval permission by id
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributionpartapprovalpermissions/{id}"
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_company_account_part_aproval_permission_by_id(
+    id: UUID = Field(...,description="Company account part approval id."),
+    query: AccountDistributionPartApprovalPermissionModel = Field(...,description="Full query object, all parameters are requiered")
+    )->dict:
+    """
+    Update company account part apporval permission for a given id.
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributionpartapprovalpermissions/{id}"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_compamny_account_approval_permission_by_id(
+    id: UUID = Field(...,description="The user account part aproval permission id"),
+    )->dict:
+    """
+    Delete company part approval permission for a given id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributionpartapprovalpermissions/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_company_account_approval_permissions(
+    filters: GetCompanyAccountApprovalPermississons = Field(description="Paramters to filter the results by, all parameters are optional")
+    )->dict:
+    """
+    Get company account approval permissions accordning to filer parameters.
+
+    Retruns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributionpartapprovalpermissions"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_company_account_part_approval_permissios_by_user_id(
+    user_id: UUID = Field(...,alias="userId",description="UUID of the user"),
+    query: AccountDistributionPartApprovalPermissionModel = Field(..., "Query object all parameters requiered")
+    )->dict:
+    """
+    Creates new company account part approval permissions for a user
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributionpartapprovalpermissions"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            josn=payload,
             timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()
@@ -1327,7 +1448,7 @@ def get_stamping_by_userID(
 #Works
 @mcp.tool()
 def get_unions(
-    filters: Union = Field(..., description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
+    filters: Union = Field(description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
 )-> dict:
     """
     Filter unions by specified criteria.
@@ -1415,7 +1536,7 @@ def get_users(
 
 @mcp.tool()
 def get_users_by_instance(
-    filters: GetUsersByInstance = Field(..., description="User details for filtering the users list. All fields are optional")
+    filters: GetUsersByInstance = Field(description="User details for filtering the users list. All fields are optional")
     )->dict:
     """
     Filter users of a given instance by specified criteria. If no instance is provided, defaults to the default-domain instance.
@@ -1579,7 +1700,7 @@ def delete_vehicle_type(
 
 @mcp.tool()
 def get_travel_claims(
-    filters: GetTravelClaims = Field(..., description="Travel claim details for filtering the travel claims list. All fields are optional")
+    filters: GetTravelClaims = Field(description="Travel claim details for filtering the travel claims list. All fields are optional")
     )->dict:
     """
     Filter travel claims by specified criteria for a given instance.
