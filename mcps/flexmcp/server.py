@@ -1019,7 +1019,7 @@ def get_balances_by_company_id(
 
 @mcp.tool()
 def get_balance_by_id(
-    id: UUID = Field(description="UUID of the balance")
+    id: UUID = Field(...,description="UUID of the balance")
     )->dict:
     """
     Get a balance by id
@@ -1027,7 +1027,7 @@ def get_balance_by_id(
     Returns: 
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/balances"
+    url = f"{consts.API_ENDPOINT}/balances/{id}"
 
     try:
         response = s.get(
@@ -1038,7 +1038,176 @@ def get_balance_by_id(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
+
+@mcp.tool()
+def get_balance_adjustment_by_id(
+    id: UUID = Field(...,description="UUID of the balance adjustment")
+    )->dict:
+    """
+     Get a balance adjustment by id
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balanceadjustments/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_balance_adjustment_by_id(
+    id: UUID = Field(...,description="UUID of the balance adjustment")
+    )->dict:
+    """
+     delete a balance adjustment by id
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balanceadjustments/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_balance_adjustment_by_id(
+    query: BalanceAdjustmentModel  = Field(...,description="Query object")
+    )->dict:
+    """
+    Update a balance adjustment record by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balanceadjustments/{id}"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_balance_adjustment_by_employee_id(
+    id: UUID = Field(...,description="UUID of the employee"),
+    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(description="Optinal filter parameters")
+    )->dict:
+    """
+    Get balande adjustment for an employee given by employee id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{id}/balanceadjustments"
+    params = filter.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_balance_adjustment_by_company_id(
+    id: UUID = Field(...,description="UUID of the company"),
+    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(description="Optinal filter parameters")
+    )->dict:
+    """
+    Get balande adjustment for a company given by company id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{id}/balanceadjustments"
+    params = filter.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_balance_adjustments(
+    filters: Optional[GetBalanceAdjustments] = Field(description="Filer parameters all feilds are optinal")
+    )->dict:
+    """
+    Get balance adjustments filtered by filter parameters
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balanceadjustments"
+    params = filter.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+mcp.tool()
+def create_balance_adjustment_batch_by_company(
+    id: UUID = Field(...,description="UUID of the company"),
+    query: BalanceAdjustmentModel  = Field(...,description="Query object")
+    )->dict:
+    """
+    Post a batch of balance adjustmets by company
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{id}/balanceadjustments/batch"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
     
+
 @mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),

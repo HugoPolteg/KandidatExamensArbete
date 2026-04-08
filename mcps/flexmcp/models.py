@@ -218,10 +218,30 @@ class GetBalancesByCompanyId(BaseModel):
     balance_type: Optional[int] = Field(alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
     page_params: Optional[PageModel] = Field(description="Page parameters")
 
+class BalanceAdjustmentModel(BaseModel):
+    adjustment_value: Optional[float] = Field(None, alias="adjustmentValue", description="Adjustment value as a double.")
+    balance_adjustment_type: int = Field(..., alias="balanceAdjustmentType", description="Type of balance adjustment. 0 = JusteraUtgaende, 1 = JusteraIngaende, 2 = SattIngaende.")
+    balance_code: str = Field(..., alias="balanceCode", min_length=1, description="Balance code.")
+    employee_number: str = Field(..., alias="employeeNumber", min_length=1, description="Employee number.")
+    entity_description: Optional[str] = Field(None, alias="entityDescription", description="Entity description.")
+    flex_sql_sort_order: Optional[int] = Field(None, alias="flexSqlSortOrder", description="FlexSQL sort order: 0 = Ascending, 1 = Descending, -1 = Unspecified ")
+    id: Optional[UUID] = Field(None, description="UUID of the balance adjustment.")
+    is_generated: bool = Field(..., alias="isGenerated", description="Filter on is generated")
+    period_determination_date: datetime = Field(..., alias="periodDeterminationDate", description="Date used to determine the period for this balance adjustment.")
 
+class GetBalanceAdjustmentByEmployeeOrCompany(BaseModel):
+    employee_number: Optional[str] = Field(alias="employeeNumber",description="Employee number.")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
 
-
-
+class GetBalanceAdjustments(BaseModel):
+    instance: Optional[str] = Field(description="Domain Name")
+    companynumber: Optional[int] = Field(description="companynumber")
+    employee_number: Optional[str] = Field(alias="employeeNumber", description="Employee number.")
+    balance_code: Optional[str] = Field(alias="balanceCode", description="Balance code.")
+    adjustment_date: Optional[datetime] = Field(alias="adjustmentDate",description="adjustment date")
+    adjustment_type: Optional[int] = Field(alias="balanceAdjustmentType", description="Type of balance adjustment. 0 = JusteraUtgaende, 1 = JusteraIngaende, 2 = SattIngaende.")
+    is_generated: Optional[bool] = Field(alias="isGenerated", description="Filter on is generated")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
 
 class TimeRow(BaseModel):
     start: Optional[str] = Field(
