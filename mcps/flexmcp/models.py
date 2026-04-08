@@ -143,7 +143,7 @@ class AccountCombinationAccountModel(BaseModel):
 class GetAccountDistribution(BaseModel):
     company: str = Field(...,description="Company number"),
     instance: str = Field(INSTANCE,description="Domain name"),
-    page_params: PageModel = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
 
 class AccountDistributionPartApprovalPermissionModel(BaseModel):
     account_distribution_id: UUID = Field(...,alias="accountDistributionId",description="UUID of the account distribution")
@@ -161,11 +161,23 @@ class GetCompanyAccountApprovalPermississons(BaseModel):
 class GetAccumulators(BaseModel):
     company_id: Optional[UUID] = Field(alias="companyId",description="UUID of the company")
     accumulator_type: Optional[int] = Field(alias="accumulatorType",description="Type of the accumulator:0 = None, 1 = Gross, 2 = Benefit, 3 = Tax, 4 = Allowance, 5 = Deduction, 6 = DebtGross, 7 = DebtNet")
-    page_params: PageModel = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
 
 class GetAllowanceRuleSet(BaseModel):
     company_id: Optional[UUID] = Field(alias="companyId",description="UUID of the company")
-    page_params: PageModel = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
+
+class GetAuditedTimeReportsByCompany(BaseModel):
+    company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
+    salary_transfer_id: Optional[UUID] = Field(alias="salartTransferId",description="Get timereports that have been sent to salary using the salary tranfer id")
+    from_date: Optional[datetime] = Field(alias="fromDate",description="Time repoerts reported after this date")
+    to_date: Optional[datetime] = Field(alias="fromDate", description="Time reports reported before this date")
+    approved_from_date: Optional[datetime] = Field(alias="approvedFromDate",description="Get timereports that have been audited after this date")
+    approved_to_date: Optional[datetime]  = Field(alias="approvedToDate",description="Get timereports that have been audited before this date")
+    audit_level_id: Optional[str] = Field(alias="auditLevelId",description="Get timereports that have been audited with this audit level id. If empty all audit levels will be selected")
+    page_params: Optional[PageModel] = Field(description="Page parameters")
+
+
 
 class TimeRow(BaseModel):
     start: Optional[str] = Field(
