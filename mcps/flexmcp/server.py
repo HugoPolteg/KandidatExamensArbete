@@ -471,6 +471,198 @@ def update_account_budget_by_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def create_account_combination(
+    query: AccountCombinationModel = Field(description="Full query object, id is optional all other parameters required")
+)->dict:
+    """
+    Creates an account combination
+
+    Response:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountcombinations"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_account_combination_by_id(
+    id: UUID = Field(...,description="UUID of the account combination"),
+    query: AccountCombinationModel = Field(description="Full query object, id is optional all other parameters required")
+    )->dict:
+    """
+    Updates an account combination
+
+    Response:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountcombinations/{id}"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_combination_by_id(
+    id: UUID = Field(...,description="UUID of the account combination")
+    )->dict:
+    """
+    Get an account combination by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountcombinations/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_account_combination_by_id(
+    id: UUID = Field(...,description="UUID of the account combination")
+    )->dict:
+    """
+    Delete an account combination by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountcombinations/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_combination_by_account_id(
+    account_id: UUID = Field(...,description="UUID of the acccount"),
+    page_params: PageModel = Field(description="Page parameters")
+    )->dict:
+    """
+    Get account combinations for an account by accont id
+
+    Reponse:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accounts/{account_id}/accountcombinations"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_combination_by_account_distribution_id_and_account_code(
+    account_distribution_id: UUID = Field(...,alias="accountDistributionId",description="UUID of the account distribution"),
+    account_code: str = Field(...,alias="accountCode",description="Accound code"),
+    page_params: PageModel = Field(description="Page parameters")
+)->dict:
+    """
+    Get account combinations by accountdistribution and account code.
+
+    Returns: 
+        API response as a JSON Dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distribution_id}/accounts/{account_code}/accountcombinations"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_distribution_by_company_number(
+    query: GetAccountDistribution = Field(...,description="Full query object, company requiered, instance will default to default instance if not provided ")
+    )->dict:
+    """
+    Get account distribution for a given company number in a given instance, if no instance is provided will use default instance.
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributions"
+    params = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_distribution_by_company_id(
+    company: UUID = Field(...,description="UUID of the company"),
+    page_params: PageModel = Field(description="Page parameters")
+    )->dict:
+    """
+    Get account distribution for a company id.
+
+    Response:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/companies{company}/accountdistributions"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 
 @mcp.tool()
@@ -1602,5 +1794,3 @@ def get_all_qualifications(
 
 if __name__ == "__main__":
     mcp.run()
-
-

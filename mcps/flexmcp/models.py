@@ -131,11 +131,16 @@ class AccountBudgetModel(BaseModel):
     budgeted_hours: float = Field(...,alias="budgetedHours",description="The budgeted hours")
     budgeted_sales: float = Field(...,alias="budgetedSales",description="The budgeted sales")
     date_time: str = Field(...,min_length=1,alias="dateTime",description="Budget period identifier as a string.")
-    id: UUID = Field(None, description="UUID of the Account budget record")
+    id: UUID = Field(None, description="UUID of the Account budget")
 
+class AccountCombinationModel(BaseModel):
+    account_combination_accounts: Optional[List[AccountCombinationAccountModel]] = Field(None,alias="accountCombinationAccounts",description="List of combination accounts")
+    combination_rule: int = Field(...,alias="combinationRule",description="Whether or not to allow posting combination: 1 = Allow, -1 = Do not Allow")
+    company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
 
-
-    
+class AccountCombinationAccountModel(BaseModel):
+    account_distribution: UUID = Field(...,alias="accountDistribution",description="UUID of the account distribution")
+    account_selection: str = Field(...,min_length=1,alias="accountSelection",description="Code identifying the selected account within the distribution.")
 
 class TimeRow(BaseModel):
     start: Optional[str] = Field(
