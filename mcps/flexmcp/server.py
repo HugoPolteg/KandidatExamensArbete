@@ -784,6 +784,52 @@ def create_company_account_part_approval_permissios_by_user_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_accumulators(
+    filters: GetAccumulators = Field(description="Parameters to filer the accumulator selection by, all parameters optional")
+    )->dict:
+    """
+    Get accumulators based on fitler parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accumulators"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_accumulator_by_id(
+    id: UUID = Field(...,description="UUID of the accumulator")
+    )->dict:
+    """
+    Get accumulator by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accumulators/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 @mcp.tool()
 def get_salary_by_id(

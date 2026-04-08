@@ -158,6 +158,11 @@ class GetCompanyAccountApprovalPermississons(BaseModel):
     page_params: Optional[PageModel] = Field(description="Page parameters")
     user_id: Optional[UUID] = Field(alias="userId",description="UUID of the user")
 
+class GetAccumulators(BaseModel):
+    company_id: Optional[UUID] = Field(alias="companyId",description="UUID of the company")
+    accumulator_type: Optional[int] = Field(alias="accumulatorType",description="Type of the accumulator:0 = None, 1 = Gross, 2 = Benefit, 3 = Tax, 4 = Allowance, 5 = Deduction, 6 = DebtGross, 7 = DebtNet")
+    page_params: PageModel = Field(description="Page parameters")
+
 class TimeRow(BaseModel):
     start: Optional[str] = Field(
         None,
