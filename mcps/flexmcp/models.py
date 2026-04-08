@@ -8,6 +8,11 @@ from typing import Dict, List, Literal, Optional
 
 INSTANCE = os.getenv("INSTANCE")
 DOMAIN = os.getenv("DOMAIN")
+
+class PageModel(BaseModel):
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
+
 class AbsenceStatusModel(BaseModel):
     absence_application_id: UUID = Field(..., alias="absenceApplicationId", description="UUID of the absence application.")
     id: UUID = Field(..., description="UUID of this status record.")
@@ -79,15 +84,12 @@ class WorkplaceModel(BaseModel):
     postal_code: Optional[str] = Field(None,alias="postalCode",description="Postal code of the workplace")
     type: Optional[int] = Field(description="Type of workspace: 0 = Physical, 1 = Remote, 2 = NotFixed")
 
-class TimeRowAccount(BaseModel):
-    account_code: Optional[str] = Field(
-        None,
-        alias="accountCode",
-        description=(
-            "Account code string. Use together with accountDistributionId to identify "
-            "the account, or supply id instead."
-        )
-    )
+class GetAccountByAccountDistributionId(BaseModel):
+    code: Optional[str] = Field(None, description="Account code")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
+    modified_since: Optional[datetime] = Field(alias="modifiedSince",description="Get accounts that have been created or modified from this date and time.")
+
     account_distribution_id: Optional[UUID] = Field(
         None,
         alias="accountDistributionId",
@@ -105,6 +107,17 @@ class TimeRowAccount(BaseModel):
     )
  
     model_config = {"populate_by_name": True}
+
+class GetReportedHoursModel(BaseModel):
+    account_distribution_ids: Optional[list[str]] = Field(None,alias="accountDistributionIds",description="A list of account distribution ids")
+    from_date_time: Optional[datetime] = Field(None,alias="fromDateTime",description="Get hours reported after this time")
+    hide_projects_with_no_reported_hours: Optional[bool] = Field(alias="hideProjectsWithNoReportedHours",description="Whether to hide project with no repoted hours")
+    include_allowances: Optional[bool] = Field(alias="includeAllowances",description="Whether to include Employements")
+    include_open_timerows: Optional[bool] = Field(alias="includeOpenTimerows",description="Whether to include open timerows")
+    include_undefined_timecodes: Optional[bool] = Field(alias="includeUndefinedTimeCodes",description="Whether to include undefined time codes")
+    max_hours_open_time_row: Optional[int] = Field(None, alias="maxHoursOpenTimeRow", description="The maximum amount of hours selected timerows should be have been open for")
+    time_group_id: Optional[UUID] = Field(None, alias="timeGroupId",description="Id of the timegroup")
+    to_date_time: Optional[datetime] = Field(None,alias="TomDateTime",description="Get hours reported uo to this time")   
 
 class TimeRow(BaseModel):
     start: Optional[str] = Field(

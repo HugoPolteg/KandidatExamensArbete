@@ -7,7 +7,8 @@ from typing import Optional
 from models import DayEntry,TimeRow, ProjectModel, GetSalaries, GetSalariesByCompany,\
 GetSalariesByCompanyAndEmployee, GetSalariesByEmployee, UpdateOrCreateSalaries, \
 GetAllSalaries, StampingAccountModel, Union, GetUsers, GetVehicleType, GetVehicleTypeByCompanyId, \
-VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary, ImportAbsenceApplicationModelAPIBase, AccountModel
+VehicleTypeRequestModel, GetTravelClaims, GetUsersByInstance, ListCompaniesInput, Salary, \
+ImportAbsenceApplicationModelAPIBase, AccountModel, GetAccountByAccountDistributionId, PageModel, GetReportedHoursModel
 import consts
 from dotenv import load_dotenv
 import os
@@ -171,6 +172,38 @@ def delete_absence_application_by_id(
     return response.json()
 
 @mcp.tool()
+def update_absence_application(
+    id: UUID = Field(description="Absence application id"),
+    apply_approval: Optional[bool] = Field(False, description="Decides whether the absence application has automatic approval to the highest level. Default value false."),
+    is_part_time_absence: Optional[bool] = Field(False, description="Decides whether the absence application is part time absence. Default false."),
+    application: ImportAbsenceApplicationModelAPIBase = Field(description="Updated parameters for the application. absenceTypeId, companyId, employmentNumber, fromDate and Id are required")
+)->dict:
+    """
+    Updates a specfied absence applicaiton
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/absenceapplications/{id}"
+    params = {}
+    if apply_approval is not None:
+        params["applyApproval"] = apply_approval
+    if is_part_time_absence is not None:
+        params["isPartTimeAbsence"] = is_part_time_absence
+    payload = application.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
 def get_absence_types_by_company_id(
     comapany_id: UUID = Field(..., description="UUID of the company."),
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
@@ -242,7 +275,7 @@ def get_absence_type_by_id(
 
 @mcp.tool()
 def create_new_accounts(
-    accountdistributionid: UUID = Field(..., description="The id of the account distribution that the accounts is created in."),
+    account_distribution_id: UUID = Field(..., description="The id of the account distribution that the accounts is created in."),
     account_model: AccountModel = Field(description="All relevant information surrounding the account. Account name and code are requiered")    
 )->dict:
     """
@@ -251,15 +284,124 @@ def create_new_accounts(
     Returns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/accountdistributions/{accountdistributionid}/accounts"
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distribution_id}/accounts"
     payload = account_model.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = s.get(
+        response = s.post(
             url,
             json=payload,
             timeout=consts.API_TIMEOUT
         )
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_accounts_by_account_distribution_id(
+    account_distribution_id: UUID = Field(..., alias="accountDistributionId",description="Account distribution id to select by"),
+    filters: GetAccountByAccountDistributionId = Field(description="filter parameters, all parameters optional")
+)->dict:
+    """
+    Get accounts by distribution id
+
+    Returns: 
+        API response as a a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distribution_id}/accounts"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_account_by_id(
+    id: UUID = Field(..., description="Account id"),
+    query: AccountModel = Field(description="query parameters, code and name are requiered")
+)->dict:
+    """
+    Update account by id
+
+    Response: 
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accounts/{id}"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_account_by_id(
+    id: UUID = Field(..., description="Account id"),
+    page_params: PageModel = Field(description="Page parameters")
+)->dict:
+    url = f"{consts.API_ENDPOINT}/accounts/{id}"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_account_by_id(
+    id: UUID = Field(..., description="Account id"),
+)->dict:
+    url = f"{consts.API_ENDPOINT}/accounts/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+#This GET operation requires a body payload and cannot be tested in swagger. 
+# The body should be a JSON/XML object of type GetReportedHoursModel.
+@mcp.tool()
+def get_reported_hours(
+    query: GetReportedHoursModel = Field(description="full query object all parameters are optional")
+)->dict:
+    """
+    Gets reported hours
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accounts/GetReportedHours"
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            json = payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
