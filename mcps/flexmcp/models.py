@@ -398,15 +398,117 @@ class GetCustomersByComopany(BaseModel):
     company: str = Field(..., description="Company number. Required.")
     instance: str = Field(INSTANCE, description="Domain name. Required.")
     code: Optional[str] = Field(None, description="Customer code filter.")
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
-    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
 
 class GetCustomersByAccountDistribution (BaseModel):
     code: Optional[str] = Field(None, description="Customer code filter.")
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
-    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
+
+class GetTimeScheduleByEmployeeAndDate(BaseModel):
+    employee_id: UUID = Field(...,alias="employeeId",description="Employee id as a GUID"),
+    date_string: str = Field(...,alias="dateString",description="Date to getdat schedule time from")
+
+class EmploymentModel(BaseModel):
+    account_number: Optional[str] = Field(None, alias="accountNumber", description="Bank account number. Nullable.")
+    advance_vacation_depreciation_date: Optional[datetime] = Field(None, alias="advanceVacationDepreciationDate", description="Date for advance vacation depreciation. Nullable.")
+    advance_vacation_ingoing: Optional[float] = Field(None, alias="advanceVacationIngoing", description="Ingoing advance vacation value. Nullable.")
+    auto_calculate_salaries: Optional[bool] = Field(None, alias="autoCalculateSalaries", description="Whether salaries are automatically calculated. Nullable.")
+    automatic_calculation_discrete_tax: Optional[bool] = Field(None, alias="automaticCalculationDiscreteTax", description="Whether discrete tax is automatically calculated. Nullable.")
+    bic: Optional[str] = Field(None, description="BIC/SWIFT code for international bank transfers. Nullable.")
+    clearing_number: Optional[str] = Field(None, alias="clearingNumber", description="Bank clearing number. Nullable.")
+    company_number_in_salary_system: Optional[str] = Field(None, alias="companyNumberInSalarySystem", description="Company number as registered in the salary system. Nullable.")
+    daily_rest_period_breaking_time: Optional[datetime] = Field(None, alias="dailyRestPeriodBreakingTime", description="Time at which the daily rest period is broken. Nullable.")
+    discrete_tax: Optional[float] = Field(None, alias="discreteTax", description="Discrete tax value. Nullable.")
+    employment_adjustments_from_date: Optional[datetime] = Field(None, alias="employmentAdjustmentsFromDate", description="Start date for employment salary adjustments. Nullable.")
+    employment_adjustments_kronor: Optional[float] = Field(None, alias="employmentAdjustmentsKronor", description="Employment salary adjustment amount in kronor. Nullable.")
+    employment_adjustments_percent: Optional[float] = Field(None, alias="employmentAdjustmentsPercent", description="Employment salary adjustment percentage. Nullable.")
+    employment_adjustments_to_amount: Optional[float] = Field(None, alias="employmentAdjustmentsToAmount", description="Target amount for employment salary adjustments. Nullable.")
+    employment_adjustments_to_date: Optional[datetime] = Field(None, alias="employmentAdjustmentsToDate", description="End date for employment salary adjustments. Nullable.")
+    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number. Nullable.")
+    employment_number_in_salary_system: Optional[str] = Field(None, alias="employmentNumberInSalarySystem", description="Employment number as registered in the salary system. Nullable.")
+    fixed_balance_adjustment_value: Optional[float] = Field(None, alias="fixedBalanceAdjustmentValue", description="Fixed balance adjustment value. Nullable.")
+    has_mobile_license: Optional[bool] = Field(None, alias="hasMobileLicense", description="Whether the employee has a mobile license.")
+    has_plan_license: Optional[bool] = Field(None, alias="hasPlanLicense", description="Whether the employee has a plan license.")
+    has_time_license: Optional[bool] = Field(None, alias="hasTimeLicense", description="Whether the employee has a time license.")
+    has_travel_license: Optional[bool] = Field(None, alias="hasTravelLicense", description="Whether the employee has a travel license.")
+    iban: Optional[str] = Field(None, description="IBAN for international bank transfers. Nullable.")
+    norwegian_account_number: Optional[str] = Field(None, alias="norwegianAccountNumber", description="Norwegian bank account number. Nullable.")
+    regional_aid: Optional[bool] = Field(None, alias="regionalAid", description="Whether the employee is eligible for regional aid. Nullable.")
+    research_deduction: Optional[bool] = Field(None, alias="researchDeduction", description="Whether the employee is eligible for research deduction. Nullable.")
+    show_in_presence_tableau: Optional[bool] = Field(None, alias="showInPresenceTableau", description="Whether the employee is shown in the presence tableau. Nullable.")
+    supplementary_income: Optional[bool] = Field(None, alias="supplementaryIncome", description="Whether the employee has supplementary income. Nullable.")
+    tax_column: Optional[int] = Field(None, alias="taxColumn", description="Tax column. 0 = None, 1 = Column1, 2 = Column2, 3 = Column3, 4 = Column4, 5 = Column5, 6 = Column6, 7 = Column7.")
+    tax_table: Optional[int] = Field(None, alias="taxTable", description="Tax table. 0 = None, 29 = Table29, 30 = Table30, 31 = Table31, 32 = Table32, 33 = Table33, 34 = Table34, 35 = Table35, 36 = Table36, 37 = Table37, 38 = Table38, 39 = Table39, 40 = Table40, 41 = Table41, 42 = Table42.")
+    weekly_rest_breaking_day: Optional[int] = Field(None, alias="weeklyRestBreakingDay", description="Day of the week when weekly rest period is broken. 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday, 7 = Sunday.")
+    weekly_rest_breaking_time: Optional[datetime] = Field(None, alias="weeklyRestBreakingTime", description="Time at which the weekly rest period is broken. Nullable.")
+    work_place_number_scb: Optional[int] = Field(None, alias="workPlaceNumberScb", description="Workplace number as registered with SCB (Statistics Sweden). Nullable.")
+
+
+class EmployeeModel(BaseModel):
+    address_row1: Optional[str] = Field(None, alias="addressRow1", description="First row of the employee's address. Nullable.")
+    address_row2: Optional[str] = Field(None, alias="addressRow2", description="Second row of the employee's address. Nullable.")
+    city: Optional[str] = Field(None, description="City of the employee's address. Nullable.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="UUID of the company the employee belongs to.")
+    country: Optional[str] = Field(None, description="Country of the employee's address. Nullable.")
+    date_of_birth: Optional[datetime] = Field(None, alias="dateOfBirth", description="Employee's date of birth. Nullable.")
+    email_private: Optional[str] = Field(None, alias="emailPrivate", description="Employee's private email address. Nullable.")
+    email_work: Optional[str] = Field(None, alias="emailWork", description="Employee's work email address. Nullable.")
+    employment: Optional[list[EmploymentModel]] = Field(None, description="List of employment records for the employee. Nullable.")
+    first_name: Optional[str] = Field(None, alias="firstName", description="Employee's first name. Nullable.")
+    gender: Optional[int] = Field(None, description="Employee's gender. 0 = Unknown, 1 = Man, 2 = Woman.")
+    id: Optional[UUID] = Field(None, description="UUID of the employee record.")
+    immediate_manager_employee_id: Optional[UUID] = Field(None, alias="immediateManagerEmployeeId", description="UUID of the employee's immediate manager. Nullable.")
+    instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance this employee belongs to.")
+    is_in_audit_process: Optional[bool] = Field(None, alias="isInAuditProcess", description="Whether the employee is currently in an audit process.")
+    last_name: Optional[str] = Field(None, alias="lastName", description="Employee's last name. Nullable.")
+    mailing_email_private: Optional[bool] = Field(None, alias="mailingEmailPrivate", description="Whether to use private email for mailing. Nullable.")
+    mailing_email_work: Optional[bool] = Field(None, alias="mailingEmailWork", description="Whether to use work email for mailing. Nullable.")
+    name: Optional[str] = Field(None, description="Employee's full name. Nullable.")
+    national_identification_number: Optional[str] = Field(None, alias="nationalIdentificationNumber", description="Employee's national identification number. Nullable.")
+    nationality: Optional[str] = Field(None, description="Employee's nationality. Nullable.")
+    phone1: Optional[str] = Field(None, description="Employee's primary phone number. Nullable.")
+    phone2: Optional[str] = Field(None, description="Employee's secondary phone number. Nullable.")
+    phone3: Optional[str] = Field(None, description="Employee's tertiary phone number. Nullable.")
+    phone4: Optional[str] = Field(None, description="Employee's quaternary phone number. Nullable.")
+    postal_code: Optional[str] = Field(None, alias="postalCode", description="Postal code of the employee's address. Nullable.")
+    salary_revision_year: Optional[int] = Field(None, alias="salaryRevisionYear", description="Year of the employee's last salary revision. Nullable.")
+    union_id: Optional[UUID] = Field(None, alias="unionId", description="UUID of the union the employee belongs to. Nullable.")
+
+class GetEmployees(BaseModel):
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
+    email: Optional[str] = Field(None, description="Email address of the employee.")
+    modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter employees created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
+    national_identification_number: Optional[str] = Field(None, alias="nationalIdentificationNumber", description="Filter employees by national identification number.")
+    is_in_audit_process: Optional[bool] = Field(None, alias="isInAuditProcess", description="Filter employees by whether they are currently in an audit process.")
+    employment_type: Optional[int] = Field(None, alias="employmentType", description="Filter employees by employment type of their current employment period.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
+class EmployeeCreateParams(BaseModel):
+    employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employee with use of selected employment template. If left empty then company default template will be used.")
+    employment_period_start: datetime = Field(None,alias="employmentPeriodStart",description="Set start date of the default employmentPeriod created. Must be specified for the employment templates assignment template to be applied.")
+    employement_period_end: datetime = Field(None,alias="employmentPeriodEnd",description="Set end date of the default employmentPeriod created.")
+
+class EmployeeCreateModel(EmployeeModel):
+    email_visma_connect: Optional[str] = Field(None, alias="emailVismaConnect", description="Employee's Visma Connect email address used for system authentication. Nullable.")
+
+class EmployeeImageModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company the employee belongs to.")
+    compressed_image: Optional[str] = Field(None, alias="compressedImage", description="Compressed version of the employee image as a base64 encoded string. Nullable.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    id: Optional[UUID] = Field(None, description="UUID of the employee image record.")
+    image: str = Field(..., min_length=1, description="Employee image as a base64 encoded string. Minimum length: 1.")
+
+class GetEmployeeImgaes(BaseModel):
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
+
 
 class TimeCode(BaseModel):
     code:str

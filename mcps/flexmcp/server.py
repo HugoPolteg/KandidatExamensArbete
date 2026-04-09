@@ -1618,7 +1618,7 @@ def update_customer_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
-    return response.json()¨
+    return response.json()
 
 @mcp.tool()
 def detlete_customer_by_id(
@@ -1664,7 +1664,8 @@ def get_customers_by_company(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
-mcp.tool()
+
+@mcp.tool()
 def get_customers_by_account_distribution_id(
     account_distirbution_id: UUID = Field(...,description="UUID of the account distribution."),
     filters: GetCustomersByAccountDistribution = Field(None,description="Filter parameters to fitler the search by, all fields optional")
@@ -1714,6 +1715,283 @@ def post_customers_by_account_distribution_id(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_from_time_schedule_by_employee_and_date(
+    filters: GetTimeScheduleByEmployeeAndDate = Field(..., description="Filter parameters to fitler the search by, all fields requiered")
+    )->dict:
+    """
+    Gets the from time  of a given employees day schedule for a given date
+
+    Returns:
+        API response as a JSON dict¨
+    """
+    url = f"{consts.API_ENDPOINT}/DaySchedule/GetScheduleFromTime"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    try:
+        response = requests.post(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_to_time_schedule_by_employee_and_date(
+    filters: GetTimeScheduleByEmployeeAndDate = Field(..., description="Filter parameters to fitler the search by, all fields requiered")
+    )->dict:
+    """
+    Gets the from time  of a given employees day schedule for a given date
+
+    Returns:
+        API response as a JSON dict¨
+    """
+    url = f"{consts.API_ENDPOINT}/DaySchedule/GetScheduleToTime"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    try:
+        response = requests.post(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+mcp.tool()
+def get_employee_by_id(
+    employee_id: UUID = Field(..., description="Employee ID"),
+) -> dict:
+    """
+    Gets employee information by ID
+
+    Returns:
+        Employee data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
+@mcp.tool()
+def update_employee_by_id_put(
+    employee_id: UUID = Field(..., description="Employee ID"),
+    query: EmployeeModel = Field(...,description="Full query object all fields optional")
+    )->dict:
+    """
+    Update employee by employee id (put)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employee_by_id_post(
+    employee_id: UUID = Field(..., description="Employee ID"),
+    query: EmployeeModel = Field(...,description="Full query object all fields optional")
+    )->dict:
+    """
+    Update employee by employee id (put)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
+@mcp.tool()
+def get_employees(
+    filters: GetEmployees = Field(...,description="Fitler parameters to optionaly filter the search by")
+    ) -> dict:
+    """
+    Gets employees optionaly filterd fy filter parameters
+
+    Returns:
+        Employee data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url, 
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_employee(
+    parameters: EmployeeCreateParams = Field(...,description="Params object all fields optional"),
+    query: EmployeeCreateModel = Field(...,description="Query object all filed optional")
+    )->dict:
+    """
+    Create a new employee
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employees"
+    params = parameters.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url, 
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_user_by_employee_id(
+    employee_id: UUID = Field(..., description="Employee ID"),
+    )->dict:
+    """
+    Get a user by employee id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/user"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employee_image_by_id(
+    id: UUID = Field(..., description="Employee ID"),
+    )->dict:
+    """
+    Get an employee image by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeeimages/{id}"
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employee_image_by_id(
+    id: UUID = Field(..., description="Employee ID"),
+    )->dict:
+    """
+    Delte an employee image by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeeimages/{id}"
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def add_or_replace_employee_image(
+    query: EmployeeImageModel = Field(...,description="Query object, companyId, employeeId and iamge are requiered.")
+    )->dict:
+    """
+    Adds or replaces an employee image
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeeimages"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    
+    try:
+        response = s.delete(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employee_images(
+    filters: GetEmployeeImgaes = Field(None, description="Fitler parameters to optionaly filter the search by.")
+    )->dict:
+    """
+    Get employee images optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeeimages"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    
+    try:
+        response = s.delete(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 
 @mcp.tool()
@@ -1734,8 +2012,6 @@ def get_salary_by_id(
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
-
-
 
 #Works
 @mcp.tool()
@@ -1969,42 +2245,7 @@ def get_time_report_by_employee(
 
     return response.json()
 
-@mcp.tool()
-def get_all_employees() -> dict:
-    """
-    Gets all employees
 
-    Returns:
-        Employee data as a JSON dict.
-    """
-    url = f"{consts.API_ENDPOINT}/employees"
-
-    try:
-        response = s.get(url, timeout=consts.API_TIMEOUT)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-    return response.json()
-
-@mcp.tool()
-def get_employee(
-    employee_id: UUID = Field(..., description="Employee ID"),
-) -> dict:
-    """
-    Gets employee information by ID
-
-    Returns:
-        Employee data as a JSON dict.
-    """
-    url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
-
-    try:
-        response = s.get(url, timeout=consts.API_TIMEOUT)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-
-    return response.json()
 
 @mcp.tool()
 def put_time_report(
