@@ -254,7 +254,7 @@ class BalanceAdjustmentModel(BaseModel):
 
 class GetBalanceAdjustmentByEmployeeOrCompany(BaseModel):
     employee_number: Optional[str] = Field(None,alias="employeeNumber",description="Employee number.")
-    page_params: Optional[PageModel] = Field(PageModel(), PageModel(),description="Page parameters")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
 
 class GetAbsenceApplicationByParameters(BaseModel):
     employmentnumber: Optional[str] = Field(None,description="Employment number.")
@@ -288,6 +288,18 @@ class GetBillingReleasesByCompany(BaseModel):
     hide_completed_releasees: Optional[bool] = Field(None,description="Hides the billing releases that is fully released")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
+class UserViewModel(BaseModel):
+    card_badge_id: Optional[str] = Field(None, alias="cardBadgeId", description="Card bade ID")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee.")
+    employee_number: Optional[str] = Field(None, alias="employeeNumber", description="Employee's unique identification number.")
+    first_name: Optional[str] = Field(None, alias="firstName", description="Employee's first name.")
+    id: Optional[UUID] = Field(None, description="UUID of the user.")
+    is_day_reporting_today: Optional[bool] = Field(None, alias="isDayReportingToday", description="Whether the employee is reporting by day today.")
+    last_name: Optional[str] = Field(None, alias="lastName", description="Employee's last name.")
+    show_week_number: Optional[bool] = Field(None, alias="showWeekNumber", description="Whether to show the week number for this employee.")
+    username: Optional[str] = Field(None, alias="username", max_length=100, description="User name")
+    username_alias: Optional[str] = Field(None, alias="usernameAlias", description="Alternative username or alias.")
+
 class ChildModel(BaseModel):
     child_country_code: Optional[str] = Field(None,alias="childCountryKod",description="Country code of the child.")
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
@@ -300,17 +312,7 @@ class ChildModel(BaseModel):
     name: Optional[str] = Field(None, description="Name of the child")
     user: Optional[UserViewModel] = Field(None, )
 
-class UserViewModel(BaseModel):
-    card_badge_id: Optional[str] = Field(None, alias="cardBadgeId", description="Card bade ID")
-    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee.")
-    employee_number: Optional[str] = Field(None, alias="employeeNumber", description="Employee's unique identification number.")
-    first_name: Optional[str] = Field(None, alias="firstName", description="Employee's first name.")
-    id: Optional[UUID] = Field(None, description="UUID of the user.")
-    is_day_reporting_today: Optional[bool] = Field(None, alias="isDayReportingToday", description="Whether the employee is reporting by day today.")
-    last_name: Optional[str] = Field(None, alias="lastName", description="Employee's last name.")
-    show_week_number: Optional[bool] = Field(None, alias="showWeekNumber", description="Whether to show the week number for this employee.")
-    username: Optional[str] = Field(None, alias="username", max_length=100, description="User name")
-    username_alias: Optional[str] = Field(None, alias="usernameAlias", description="Alternative username or alias.")
+
 
 class GetChildren(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")

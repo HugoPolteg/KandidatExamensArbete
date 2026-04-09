@@ -1193,7 +1193,7 @@ def create_balance_adjustment_batch_by_company(
 @mcp.tool()
 def get_balance_report_by_balance_id_and_employee_id(
     balance_id: UUID = Field(...,alias="balanceId",description="UUID of the balance"),
-    filters: GetBalanceReportByBalanceIdAndEmployeeId = Field(...,"Parameters to filter the results by, employeeId and balanceTypeValueEnum requiered all other fields optional")
+    filters: GetBalanceReportByBalanceIdAndEmployeeId = Field(..., description="Parameters to filter the results by, employeeId and balanceTypeValueEnum requiered all other fields optional")
     )->dict:
     """
     Get a balance report by balance id and employee id
