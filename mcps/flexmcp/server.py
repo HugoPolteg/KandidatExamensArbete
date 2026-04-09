@@ -2137,7 +2137,7 @@ def update_employment_default_accunt_by_id_put(
 @mcp.tool()
 
 def update_employment_default_accunt_by_id_post(
-    id: UUID = Field(..., description="Employement default accoutn id"),
+    id: UUID = Field(..., description="Employement default account id"),
     query: EmploymentDefaultAccountModel = Field(..., description="Query object, companyId, employeeId and instanceId are required")
     )->dict:
     """
@@ -2161,9 +2161,9 @@ def update_employment_default_accunt_by_id_post(
 
 @mcp.tool()
 def delete_employment_default_accunt_by_id_(
-    id: UUID = Field(..., description="Employee qulification id")
+    id: UUID = Field(..., description="Employment default account id")
     )->dict:
-    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts"
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts/{id}"
     
     try:
         response = s.delete(
@@ -2176,11 +2176,11 @@ def delete_employment_default_accunt_by_id_(
 
 @mcp.tool()
 def get_employment_default_accounts(
-    filters: GenericGetModel = Field(None, description="Parameters to search the qualifications by, all feilds optinal")
+    filters: GenericGetModel = Field(None, description="Parameters to search the employment default accounts by, all feilds optinal")
     )->dict:
     """
     Get employment default accounts optinaly filted by filter parameters
-    
+
     Retruns:
         API response as a JSON dict
     """
@@ -2197,8 +2197,168 @@ def get_employment_default_accounts(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool
+def create_employment_default_accunt(
+    query: EmploymentDefaultAccountModel = Field(..., description="Query object, companyId, employeeId and instanceId are required")
+    )->dict:
+    """
+    Create employment default accoun
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 @mcp.tool()
+def get_employment_default_account_interval_by_id(
+    id: UUID = Field(..., description="Employement default accunt inteval id")
+    )->dict:
+    """
+    Get an employment default account interval by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employment_default_account_interval_by_id(
+    id: UUID = Field(..., description="Employement default accunt inteval id")
+    )->dict:
+    """
+    Delete employment defautl account intervall. 
+    An employee must have at least one employment defalut account intervall.
+    If deleting the last interval on an employee a new empty one will be created.
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals/{id}"
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employment_default_account_interval_by_id_put(
+    id: UUID = Field(..., description="Employement default accunt inteval id"),
+    query: EmploymentDefaultAccountIntervalModel = Field(..., description="Query object. companyId, employeeId and instanceId are required")
+    )->dict:
+    """
+    Update an employment default account interval by id (put)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employment_default_account_interval_by_id_post(
+    id: UUID = Field(..., description="Employement default accunt inteval id"),
+    query: EmploymentDefaultAccountIntervalModel = Field(..., description="Query object. companyId, employeeId and instanceId are required")
+    )->dict:
+    """
+    Update an employment default account interval by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employment_default_account_intervals(
+    filters: GenericGetModel = Field(None, description="Parameters to search the employment default account intervals by, all feilds optinal")
+    )->dict:
+    """
+    Get employment default account intervals optinaly filted by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_employment_default_account_interval(
+    query: EmploymentDefaultAccountIntervalModel = Field(..., description="Query object. companyId, employeeId and instanceId are required")
+    )->dict:
+    """
+    Create an employment default account interval
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
 ) -> dict:

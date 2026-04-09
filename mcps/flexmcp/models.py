@@ -527,6 +527,22 @@ class EmploymentDefaultAccountModel(BaseModel):
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="tomDate", description="End date of the default account validity period. Nullable.")
 
+class EmploymentDefaultAccountModelBase(BaseModel):
+    account_code: Optional[str] = Field(None, alias="accountCode", description="Account code. Nullable.")
+    account_distribution_id: Optional[UUID] = Field(None, alias="accountDistributionId", description="UUID of the account distribution.")
+    account_id: Optional[UUID] = Field(None, alias="accountId", description="UUID of the account. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment default account record.")
+
+
+class EmploymentDefaultAccountIntervalModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    employee_number: Optional[str] = Field(None, alias="employeeNumber", description="Employee number. Nullable.")
+    employment_default_account: Optional[list[EmploymentDefaultAccountModelBase]] = Field(None, alias="employmentDefaultAccount", description="List of default accounts for this employment interval. Nullable.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the employment default account interval. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment default account interval record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment default account interval. Nullable.")
 
 
 class TimeCode(BaseModel):
