@@ -27,7 +27,7 @@ class WorkplaceModel(BaseModel):
     city: Optional[str] = Field(None,description="City of the workspace")
     country: Optional[str] = Field(None,description="Country of the workspace")
     postal_code: Optional[str] = Field(None,alias="postalCode",description="Postal code of the workplace")
-    type: Optional[int] = Field(description="Type of workspace: 0 = Physical, 1 = Remote, 2 = NotFixed")
+    type: Optional[int] = Field(None, description="Type of workspace: 0 = Physical, 1 = Remote, 2 = NotFixed")
 
 class ImportAbsenceApplicationModelAPIBase(BaseModel):
     absence_type_id: UUID = Field(..., alias="absenceTypeId", description="UUID of the absence type.")
@@ -80,8 +80,8 @@ class AccountBillingModel(BaseModel):
 
 class GetAccountByAccountDistributionId(BaseModel):
     code: Optional[str] = Field(None, description="Account code")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
-    modified_since: Optional[datetime] = Field(alias="modifiedSince",description="Get accounts that have been created or modified from this date and time.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    modified_since: Optional[datetime] = Field(None, alias="modifiedSince",description="Get accounts that have been created or modified from this date and time.")
 
     account_distribution_id: Optional[UUID] = Field(
         None,
@@ -104,10 +104,10 @@ class GetAccountByAccountDistributionId(BaseModel):
 class GetReportedHoursModel(BaseModel):
     account_distribution_ids: Optional[list[str]] = Field(None,alias="accountDistributionIds",description="A list of account distribution ids")
     from_date_time: Optional[datetime] = Field(None,alias="fromDateTime",description="Get hours reported after this time")
-    hide_projects_with_no_reported_hours: Optional[bool] = Field(alias="hideProjectsWithNoReportedHours",description="Whether to hide project with no repoted hours")
-    include_allowances: Optional[bool] = Field(alias="includeAllowances",description="Whether to include Employements")
-    include_open_timerows: Optional[bool] = Field(alias="includeOpenTimerows",description="Whether to include open timerows")
-    include_undefined_timecodes: Optional[bool] = Field(alias="includeUndefinedTimeCodes",description="Whether to include undefined time codes")
+    hide_projects_with_no_reported_hours: Optional[bool] = Field(None, alias="hideProjectsWithNoReportedHours",description="Whether to hide project with no repoted hours")
+    include_allowances: Optional[bool] = Field(None, alias="includeAllowances",description="Whether to include Employements")
+    include_open_timerows: Optional[bool] = Field(None,alias="includeOpenTimerows",description="Whether to include open timerows")
+    include_undefined_timecodes: Optional[bool] = Field(None,alias="includeUndefinedTimeCodes",description="Whether to include undefined time codes")
     max_hours_open_time_row: Optional[int] = Field(None, alias="maxHoursOpenTimeRow", description="The maximum amount of hours selected timerows should be have been open for")
     time_group_id: Optional[UUID] = Field(None, alias="timeGroupId",description="Id of the timegroup")
     to_date_time: Optional[datetime] = Field(None,alias="TomDateTime",description="Get hours reported uo to this time")
@@ -115,7 +115,7 @@ class GetReportedHoursModel(BaseModel):
 class GetAccountBudgetByAccountId(BaseModel):
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="From date. Get account budget from date.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="From date. Get account budget from date.")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class AccountBudgetModel(BaseModel):
     actual_sales: float = Field(...,alias="actualSales",description="The observed sales")
@@ -129,10 +129,10 @@ class AccountModel(BaseModel):
     account_locations: Optional[List[AccountLocationModel]] = Field(None, alias="accountLocations", description="A list of account locations")
     active_from_date: Optional[datetime] = Field(None,alias="activeFromDate",description="Account active from date")
     active_to_date: Optional[datetime] = Field(None,alias="activeTomDate",description="Account active to date")
-    billing: Optional[AccountBillingModel]
-    billing_state_enum: Optional[int] = Field(alias="billingStateEnum",description="Billing state: 0 = No, 1 = Never, 2 = Yes, 3 = Always")
-    budgeting_time_unit: Optional[int] = Field(alias="budgetingTimeUnit", description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month.")
-    code: str = Field(min_length=1, description="Unique account code")
+    billing: Optional[AccountBillingModel] = Field(None,description="billing")
+    billing_state_enum: Optional[int] = Field(None,alias="billingStateEnum",description="Billing state: 0 = No, 1 = Never, 2 = Yes, 3 = Always")
+    budgeting_time_unit: Optional[int] = Field(None,alias="budgetingTimeUnit", description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month.")
+    code: str = Field(None, min_length=1, description="Unique account code")
     external_comment_must_be_stated_about_billable_time: Optional[bool] = Field(None, alias="externalCommentMustBeStatedAboutBillableTime", description="Whether an external comment must be stated about billable time.")
     id: Optional[UUID] = Field(None, description="UUID of the account.")
     name: str = Field(..., description="Account name. Minimum length: 1.")
@@ -153,7 +153,7 @@ class AccountCombinationModel(BaseModel):
 class GetAccountDistribution(BaseModel):
     company: str = Field(...,description="Company number"),
     instance: str = Field(INSTANCE,description="Domain name"),
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class AccountDistributionPartApprovalPermissionModel(BaseModel):
     account_distribution_id: UUID = Field(...,alias="accountDistributionId",description="UUID of the account distribution")
@@ -163,28 +163,28 @@ class AccountDistributionPartApprovalPermissionModel(BaseModel):
     user_id: UUID = Field(..., alias="userId", description="UUID of the user this permission applies to.")
 
 class GetCompanyAccountApprovalPermississons(BaseModel):
-    instance: Optional[str] = Field(description="instance")
-    companynumber: Optional[int] = Field(description="companynumber")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
-    user_id: Optional[UUID] = Field(alias="userId",description="UUID of the user")
+    instance: Optional[str] = Field(None,description="instance")
+    companynumber: Optional[int] = Field(None,description="companynumber")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    user_id: Optional[UUID] = Field(None,alias="userId",description="UUID of the user")
 
 class GetAccumulators(BaseModel):
-    company_id: Optional[UUID] = Field(alias="companyId",description="UUID of the company")
-    accumulator_type: Optional[int] = Field(alias="accumulatorType",description="Type of the accumulator:0 = None, 1 = Gross, 2 = Benefit, 3 = Tax, 4 = Allowance, 5 = Deduction, 6 = DebtGross, 7 = DebtNet")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    company_id: Optional[UUID] = Field(None,alias="companyId",description="UUID of the company")
+    accumulator_type: Optional[int] = Field(None,alias="accumulatorType",description="Type of the accumulator:0 = None, 1 = Gross, 2 = Benefit, 3 = Tax, 4 = Allowance, 5 = Deduction, 6 = DebtGross, 7 = DebtNet")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class GetAllowanceRuleSet(BaseModel):
-    company_id: Optional[UUID] = Field(alias="companyId",description="UUID of the company")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    company_id: Optional[UUID] = Field(None,alias="companyId",description="UUID of the company")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class GetAuditedTimeReportsByCompany(BaseModel):
-    salary_transfer_id: Optional[UUID] = Field(alias="salartTransferId",description="Get time reports that have been sent to salary using the salary tranfer id")
-    from_date: Optional[datetime] = Field(alias="fromDate",description="Time reports reported after this date")
-    to_date: Optional[datetime] = Field(alias="fromDate", description="Time reports reported before this date")
-    approved_from_date: Optional[datetime] = Field(alias="approvedFromDate",description="Get time reports that have been audited after this date")
-    approved_to_date: Optional[datetime]  = Field(alias="approvedToDate",description="Get time reports that have been audited before this date")
-    audit_level_id: Optional[str] = Field(alias="auditLevelId",description="Get time reports that have been audited with this audit level id. If empty all audit levels will be selected")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    salary_transfer_id: Optional[UUID] = Field(None,alias="salartTransferId",description="Get time reports that have been sent to salary using the salary tranfer id")
+    from_date: Optional[datetime] = Field(None,alias="fromDate",description="Time reports reported after this date")
+    to_date: Optional[datetime] = Field(None,alias="fromDate", description="Time reports reported before this date")
+    approved_from_date: Optional[datetime] = Field(None,alias="approvedFromDate",description="Get time reports that have been audited after this date")
+    approved_to_date: Optional[datetime]  = Field(None,alias="approvedToDate",description="Get time reports that have been audited before this date")
+    audit_level_id: Optional[str] = Field(None,alias="auditLevelId",description="Get time reports that have been audited with this audit level id. If empty all audit levels will be selected")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class GetTimeReportByEmployee(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="employee id")
@@ -192,44 +192,44 @@ class GetTimeReportByEmployee(BaseModel):
     generated: Optional[bool] = Field(True, description="Include generated time rows")
 
 class GetBackGroundTasks(BaseModel):
-    worker_state: Optional[int] = Field(alias="workerState", description="Worker state of the background task: 0 = Enqueued, 1 = Scheduled, 2 = Processing, 3 = Succeeded, 4 = Failed, 5 = Deleted, 6 = Awaiting")
-    worker_function: Optional[int] = Field(alias="workerFunction", description="Function of the worker: 0 = None, 1 = Exempelfunktion, 2 = Dygnsrutin, 3 = Mailer, 4 = ValutakursImport, 5 = PaminnelseTidrapport, 6 = Paminnelse, 7 = RensaReserakningar, 8 = RensaTidrapporter, 9 = UtrikesTraktamenteImport, 10 = CreateForetag, 11 = ResaLoneoverforing, 12 = TidLoneoverforing, 13 = CreateForetagsinstallningarFil, 14 = Importmallsimport, 15 = DeleteForetag, 16 = DeleteKundinstans, 17 = DeleteForetagsinstallningarFil, 18 = OverwriteForetag, 19 = Lonekorning, 20 = FrislappTillFakturering, 21 = JeevesQueueSender, 22 = RollbackFrislappTillFakturering, 23 = FirstCardFileRetreivalAndKontokortImport, 24 = EurocardKontokortImport, 25 = Meddelanden, 26 = SkattetabellImport, 27 = Export, 28 = SchemalagdKorning, 29 = UppdateraAckumulator, 30 = ExportAnstalld, 31 = RefreshTidrapporter, 32 = Lonerevision, 33 = CalculateLonekorningAnstallning, 34 = UpdateDatabase, 35 = FortnoxKonteringsimport, 36 = DanskeBankKontokortImport, 37 = FortnoxBokforingsoverforing, 38 = TidDelbifall, 39 = RecalculateReserakningar, 40 = KopieraSchema, 41 = FlexOnlineSystemInformationSender, 42 = AutoBemanning, 43 = Felmeddelandeutskick, 44 = LonBokforingsunderlag, 45 = Kontrolluppgifter, 46 = UpdateNarvarotablaData, 47 = InitiatePayroll, 48 = Semesterarsskifte, 49 = SenAnkomstPaminnelse, 50 = UtbetalningAvLon, 51 = AnonymiseringPersonuppgifter, 52 = Semesterskuld, 53 = PassforfraganAnswer, 54 = Formel, 55 = TidregistreringAvvikelseinstallning, 56 = Tidregistreringsinstallning, 57 = TidregistreringStamplinginstallning, 58 = TidrapporteringColumnLayoutinstallning, 59 = TidregistreringAvvikelsetyperInstallning, 60 = Agi, 61 = Kontokortsfil, 62 = KvittoScanning, 63 = SprakFilerFromFlexOnline, 64 = StandardvardenForDynamiskOversattningFromFlexOnline, 65 = StandardvardenForDynamiskOversattningTillFlexOnline, 66 = FlexKontokort, 67 = PensionOchForsakring, 68 = LonerevisionClearInactiveRowLocks, 69 = LicensFromFlexOnline, 70 = XledgerIntegration, 71 = Onboarding, 72 = UteblivenStamplingPaminnelse, 73 = UteblivenStamplingPaminnelseScheduler, 74 = Arbetsgivarintyg, 75 = FragaOmSkatteavdrag, 76 = KonjunkturstatistikKLP, 77 = KopieraForetag, 79 = OfflineStamplingar, 80 = KonjunkturstatistikKSju, 81 = KonjunkturstatistikKSP, 82 = LonestrukturstatistikSLP, 83 = CalculateTidrapportdagDataWorkerService, 84 = ResetTidrapportdagDataWorkerService, 85 = Retrolon, 86 = KomprimeraBilagor, 87 = VerifiedSync, 88 = AnstallningSemesterinstallning, 89 = AnstallningSemesterarIngaendeVarde, 90 = AnstallningSemesterarSemestersaldo, 91 = LonekorningAnstallningSemesterarSemestersaldo, 92 = AnstallningBankkontouppgift, 93 = AnstallningKontrolluppgiftsinstallning, 94 = AnstallningPensionOchForsakring, 95 = Uppmarkningskod, 96 = UtbetalningAvLonInstallningLeverantorinformation, 97 = LonBokforingsfilinstallning, 98 = LonSIE4Mall, 99 = LonSIE4Konteringsdimension, 100 = Styrforetag, 101 = ExporteraSaldon, 102 = TripletexIntegration, 103 = EuStatistikLcs, 104 = LonespecifikationerKivra, 105 = LasTurordning, 106 = Semesterberakning, 107 = GranskningAvAnstallningsperiodPaminnelse, 108 = AltinnIntegration, 109 = ExportUrval, 110 = Exportintervall, 111 = ExporturvalHemkontering, 112 = ExporturvalKontering, 113 = ExporturvalUtlaggsurval, 114 = AtkAtfArsskifte, 115 = PowerOfficeGoIntegration, 116 = AtkAtfSkuld, 117 = BkyIntegration, 118 = Ackumulatorskuld, 119 = ScriveSync, 120 = LonekartlaggningCreate, 121 = LonekartlaggningCreateAnstallning, 122 = LonekartlaggningCalculate, 123 = Nyhetsflode, 124 = VerifiedSparaSigneradeDokument, 125 = LonekartlaggningDelete, 126 = VismaNetIntegration, 127 = AutomatiskGranskning, 128 = LonerevisionPaminnelse, 129 = SemesterdagUppdatering, 130 = ScriveSparaSigneradeDokument, 131 = LasTillsvidareCreate, 132 = LasTillsvidareCalculate, 133 = Winningtemp, 134 = RemoveUnmappedKontokort, 135 = LasForetradeCalculate, 140 = PaminnelseNarAllaTidrapporterBlivitGranskade, 141 = EgnaProcesser, 142 = BeraknaBevakningar, 143 = BorttagningAvraknadeReserakningar, 144 = BorttagningAvraknadePeriodavrakningar, 145 = RaderaPersonuppgifter, 146 = EnklaKonverteringar, 147 = VismaNetErp, 148 = VismaConnectRoller, 149 = WebhookSender, 150 = VismaConnectOnboarding, 151 = Bygglosen, 152 = TidBifallAll, 153 = ResBifallAll")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    worker_state: Optional[int] = Field(None,alias="workerState", description="Worker state of the background task: 0 = Enqueued, 1 = Scheduled, 2 = Processing, 3 = Succeeded, 4 = Failed, 5 = Deleted, 6 = Awaiting")
+    worker_function: Optional[int] = Field(None,alias="workerFunction", description="Function of the worker: 0 = None, 1 = Exempelfunktion, 2 = Dygnsrutin, 3 = Mailer, 4 = ValutakursImport, 5 = PaminnelseTidrapport, 6 = Paminnelse, 7 = RensaReserakningar, 8 = RensaTidrapporter, 9 = UtrikesTraktamenteImport, 10 = CreateForetag, 11 = ResaLoneoverforing, 12 = TidLoneoverforing, 13 = CreateForetagsinstallningarFil, 14 = Importmallsimport, 15 = DeleteForetag, 16 = DeleteKundinstans, 17 = DeleteForetagsinstallningarFil, 18 = OverwriteForetag, 19 = Lonekorning, 20 = FrislappTillFakturering, 21 = JeevesQueueSender, 22 = RollbackFrislappTillFakturering, 23 = FirstCardFileRetreivalAndKontokortImport, 24 = EurocardKontokortImport, 25 = Meddelanden, 26 = SkattetabellImport, 27 = Export, 28 = SchemalagdKorning, 29 = UppdateraAckumulator, 30 = ExportAnstalld, 31 = RefreshTidrapporter, 32 = Lonerevision, 33 = CalculateLonekorningAnstallning, 34 = UpdateDatabase, 35 = FortnoxKonteringsimport, 36 = DanskeBankKontokortImport, 37 = FortnoxBokforingsoverforing, 38 = TidDelbifall, 39 = RecalculateReserakningar, 40 = KopieraSchema, 41 = FlexOnlineSystemInformationSender, 42 = AutoBemanning, 43 = Felmeddelandeutskick, 44 = LonBokforingsunderlag, 45 = Kontrolluppgifter, 46 = UpdateNarvarotablaData, 47 = InitiatePayroll, 48 = Semesterarsskifte, 49 = SenAnkomstPaminnelse, 50 = UtbetalningAvLon, 51 = AnonymiseringPersonuppgifter, 52 = Semesterskuld, 53 = PassforfraganAnswer, 54 = Formel, 55 = TidregistreringAvvikelseinstallning, 56 = Tidregistreringsinstallning, 57 = TidregistreringStamplinginstallning, 58 = TidrapporteringColumnLayoutinstallning, 59 = TidregistreringAvvikelsetyperInstallning, 60 = Agi, 61 = Kontokortsfil, 62 = KvittoScanning, 63 = SprakFilerFromFlexOnline, 64 = StandardvardenForDynamiskOversattningFromFlexOnline, 65 = StandardvardenForDynamiskOversattningTillFlexOnline, 66 = FlexKontokort, 67 = PensionOchForsakring, 68 = LonerevisionClearInactiveRowLocks, 69 = LicensFromFlexOnline, 70 = XledgerIntegration, 71 = Onboarding, 72 = UteblivenStamplingPaminnelse, 73 = UteblivenStamplingPaminnelseScheduler, 74 = Arbetsgivarintyg, 75 = FragaOmSkatteavdrag, 76 = KonjunkturstatistikKLP, 77 = KopieraForetag, 79 = OfflineStamplingar, 80 = KonjunkturstatistikKSju, 81 = KonjunkturstatistikKSP, 82 = LonestrukturstatistikSLP, 83 = CalculateTidrapportdagDataWorkerService, 84 = ResetTidrapportdagDataWorkerService, 85 = Retrolon, 86 = KomprimeraBilagor, 87 = VerifiedSync, 88 = AnstallningSemesterinstallning, 89 = AnstallningSemesterarIngaendeVarde, 90 = AnstallningSemesterarSemestersaldo, 91 = LonekorningAnstallningSemesterarSemestersaldo, 92 = AnstallningBankkontouppgift, 93 = AnstallningKontrolluppgiftsinstallning, 94 = AnstallningPensionOchForsakring, 95 = Uppmarkningskod, 96 = UtbetalningAvLonInstallningLeverantorinformation, 97 = LonBokforingsfilinstallning, 98 = LonSIE4Mall, 99 = LonSIE4Konteringsdimension, 100 = Styrforetag, 101 = ExporteraSaldon, 102 = TripletexIntegration, 103 = EuStatistikLcs, 104 = LonespecifikationerKivra, 105 = LasTurordning, 106 = Semesterberakning, 107 = GranskningAvAnstallningsperiodPaminnelse, 108 = AltinnIntegration, 109 = ExportUrval, 110 = Exportintervall, 111 = ExporturvalHemkontering, 112 = ExporturvalKontering, 113 = ExporturvalUtlaggsurval, 114 = AtkAtfArsskifte, 115 = PowerOfficeGoIntegration, 116 = AtkAtfSkuld, 117 = BkyIntegration, 118 = Ackumulatorskuld, 119 = ScriveSync, 120 = LonekartlaggningCreate, 121 = LonekartlaggningCreateAnstallning, 122 = LonekartlaggningCalculate, 123 = Nyhetsflode, 124 = VerifiedSparaSigneradeDokument, 125 = LonekartlaggningDelete, 126 = VismaNetIntegration, 127 = AutomatiskGranskning, 128 = LonerevisionPaminnelse, 129 = SemesterdagUppdatering, 130 = ScriveSparaSigneradeDokument, 131 = LasTillsvidareCreate, 132 = LasTillsvidareCalculate, 133 = Winningtemp, 134 = RemoveUnmappedKontokort, 135 = LasForetradeCalculate, 140 = PaminnelseNarAllaTidrapporterBlivitGranskade, 141 = EgnaProcesser, 142 = BeraknaBevakningar, 143 = BorttagningAvraknadeReserakningar, 144 = BorttagningAvraknadePeriodavrakningar, 145 = RaderaPersonuppgifter, 146 = EnklaKonverteringar, 147 = VismaNetErp, 148 = VismaConnectRoller, 149 = WebhookSender, 150 = VismaConnectOnboarding, 151 = Bygglosen, 152 = TidBifallAll, 153 = ResBifallAll")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class BillingReleaseSelectionAccount(BaseModel):
     code: Optional[str] = Field(None, description="Account code of an account to include in the release")
 
 class BillingReleaseSelectionAccountdistribution(BaseModel):
     accounts: Optional[List[BillingReleaseSelectionAccount]] = Field(None, description="List of specific accounts to include in the release")
-    id: Optional[UUID] = Field(description="UUID of the account distribution to release")
+    id: Optional[UUID] = Field(None,description="UUID of the account distribution to release")
 
 class BillingReleaseSelectionEmployee(BaseModel):
     employee_number: Optional[str] = Field(None, alias="employeeNumber", description="Employee number to filter the release by.")
 
 class RollbackReleaseModel(BaseModel):
-    release_id: Optional[UUID] = Field(alias="releaseId",description="UUID of the release")
+    release_id: Optional[UUID] = Field(None,alias="releaseId",description="UUID of the release")
 
 class BillingReleaseSelectionModel(BaseModel):
     accountdistributions: Optional[List[BillingReleaseSelectionAccountdistribution]] = Field(None, alias="accountdistributions", description="List of account distributions to include in the release.")
     company: UUID = Field(..., description="UUID of the company to release accounts to billing for.")
     employees: Optional[list[BillingReleaseSelectionEmployee]] = Field(None, description="List of employees to filter the release by.")
-    invoice_date: Optional[datetime] = Field(alias="invoiceDate", description="Date to use as the invoice date for the billing release.")
-    release_to_date: Optional[datetime] = Field(alias="releaseToDate", description="Release all billable entries up to and including this date.")
+    invoice_date: Optional[datetime] = Field(None,alias="invoiceDate", description="Date to use as the invoice date for the billing release.")
+    release_to_date: Optional[datetime] = Field(None,alias="releaseToDate", description="Release all billable entries up to and including this date.")
     signature: Optional[str] = Field(None, description="Signature or identifier of the user initiating the release.")
-    time: Optional[bool] = Field(description="Whether to include time entries in the billing release.")
-    travel: Optional[bool] = Field(description="Whether to include travel entries in the billing release.")
+    time: Optional[bool] = Field(None,description="Whether to include time entries in the billing release.")
+    travel: Optional[bool] = Field(None,description="Whether to include travel entries in the billing release.")
 
 class GetBalances(BaseModel):
     instance: Optional[str] = Field(INSTANCE,description="Domain name")
-    company_number: Optional[int] = Field(alias="companyNumber",description="Company Number")
-    balance_code: Optional[str] = Field(alias="balanceCode", description="Balance Code")
-    balance_type: Optional[int] = Field(alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    company_number: Optional[int] = Field(None,alias="companyNumber",description="Company Number")
+    balance_code: Optional[str] = Field(None,alias="balanceCode", description="Balance Code")
+    balance_type: Optional[int] = Field(None,alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class GetBalancesByCompanyId(BaseModel):
-    balance_code: Optional[str] = Field(alias="balanceCode", description="Balance Code")
-    balance_type: Optional[int] = Field(alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    balance_code: Optional[str] = Field(None,alias="balanceCode", description="Balance Code")
+    balance_type: Optional[int] = Field(None,alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class BalanceAdjustmentModel(BaseModel):
     adjustment_value: Optional[float] = Field(None, alias="adjustmentValue", description="Adjustment value as a double.")
@@ -243,18 +243,18 @@ class BalanceAdjustmentModel(BaseModel):
     period_determination_date: datetime = Field(..., alias="periodDeterminationDate", description="Date used to determine the period for this balance adjustment.")
 
 class GetBalanceAdjustmentByEmployeeOrCompany(BaseModel):
-    employee_number: Optional[str] = Field(alias="employeeNumber",description="Employee number.")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    employee_number: Optional[str] = Field(None,alias="employeeNumber",description="Employee number.")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class GetBalanceAdjustments(BaseModel):
-    instance: Optional[str] = Field(description="Domain Name")
-    companynumber: Optional[int] = Field(description="companynumber")
-    employee_number: Optional[str] = Field(alias="employeeNumber", description="Employee number.")
-    balance_code: Optional[str] = Field(alias="balanceCode", description="Balance code.")
-    adjustment_date: Optional[datetime] = Field(alias="adjustmentDate",description="adjustment date")
-    adjustment_type: Optional[int] = Field(alias="balanceAdjustmentType", description="Type of balance adjustment. 0 = JusteraUtgaende, 1 = JusteraIngaende, 2 = SattIngaende.")
-    is_generated: Optional[bool] = Field(alias="isGenerated", description="Filter on is generated")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    instance: Optional[str] = Field(None,description="Domain Name")
+    companynumber: Optional[int] = Field(None,description="companynumber")
+    employee_number: Optional[str] = Field(None,alias="employeeNumber", description="Employee number.")
+    balance_code: Optional[str] = Field(None,alias="balanceCode", description="Balance code.")
+    adjustment_date: Optional[datetime] = Field(None,alias="adjustmentDate",description="adjustment date")
+    adjustment_type: Optional[int] = Field(None,alias="balanceAdjustmentType", description="Type of balance adjustment. 0 = JusteraUtgaende, 1 = JusteraIngaende, 2 = SattIngaende.")
+    is_generated: Optional[bool] = Field(None,alias="isGenerated", description="Filter on is generated")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class TimeCode(BaseModel):
     code:str
@@ -332,8 +332,8 @@ class Participant(BaseModel):
  
  
 class ProjectAccount(BaseModel):
-    account_id: UUID = Field(alias="accountId", description="UUID of the account.")
-    account_distribution_id: UUID = Field(alias="accountDistributionId", description="UUID of the account distribution.")
+    account_id: UUID = Field(None,alias="accountId", description="UUID of the account.")
+    account_distribution_id: UUID = Field(None,alias="accountDistributionId", description="UUID of the account distribution.")
     account_code: Optional[str] = Field(None, alias="accountCode", description="Account code string.")
     put_blank: Optional[bool] = Field(None, alias="putBlank", description="Whether to put a blank value for this account.")
     rule_enum: Optional[int] = Field(
@@ -346,8 +346,8 @@ class ProjectAccount(BaseModel):
  
  
 class BillingPriceRowAccount(BaseModel):
-    account_id: UUID = Field(alias="accountId", description="UUID of the account.")
-    id: UUID = Field(description="UUID of the price row account entry.")
+    account_id: UUID = Field(None,alias="accountId", description="UUID of the account.")
+    id: UUID = Field(None,description="UUID of the price row account entry.")
  
     model_config = {"populate_by_name": True}
  
@@ -385,9 +385,9 @@ class AccountBilling(BaseModel):
  
  
 class ProjectTimeReportControl(BaseModel):
-    limit: float = Field(description="The threshold value for the control.")
-    summary: int = Field(description="Control summary scope. 0 = Hierarchic, 1 = Individual.")
-    type: int = Field(description="Control type. 0 = Warning, 1 = Error.")
+    limit: float = Field(None,description="The threshold value for the control.")
+    summary: int = Field(None,description="Control summary scope. 0 = Hierarchic, 1 = Individual.")
+    type: int = Field(None,description="Control type. 0 = Warning, 1 = Error.")
  
     model_config = {"populate_by_name": True}
  
@@ -406,8 +406,8 @@ class Workplace(BaseModel):
  
  
 class ProjectModel(BaseModel):
-    code: str = Field(min_length=1, description="Project code. Required.")
-    name: str = Field(min_length=1, description="Project name. Required.")
+    code: str = Field(None,min_length=1, description="Project code. Required.")
+    name: str = Field(None,min_length=1, description="Project name. Required.")
     id: Optional[UUID] = Field(None, description="UUID of the project. Include when updating an existing project.")
     comment: Optional[str] = Field(None, description="Free-text comment.")
     status_enum: Optional[int] = Field(
@@ -552,10 +552,10 @@ class StampingAccountModel(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 class Union(BaseModel):
-    instance: Optional[str] = Field(description="Domain name.")
-    company_id: Optional[UUID] = Field(description="Company id.")
-    company_number: Optional[int] = Field(description="Company number.")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    instance: Optional[str] = Field(None,description="Domain name.")
+    company_id: Optional[UUID] = Field(None,description="Company id.")
+    company_number: Optional[int] = Field(None,description="Company number.")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
 
 class ListCompaniesInput(BaseModel):
@@ -633,7 +633,7 @@ class GetTravelClaims(BaseModel):
     public_travel_claim_audit_level_id: Optional[UUID] = Field(None, alias="publicTravelClaimAuditLevelId", description="UUID of the public travel claim audit level.  Must be used in combination with atleast one of auditFromDate/auditToDate. If not specified, will check all audit levels.")
     billing_release_from_date: Optional[datetime] = Field(None, alias="billingReleaseFromDate", description="Get travel claims by billing release from date-time.")
     billing_release_to_date: Optional[datetime] = Field(None, alias="billingReleaseToDate", description="Get travel claims by billing release to date-time.")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
 
 
