@@ -312,8 +312,6 @@ class ChildModel(BaseModel):
     name: Optional[str] = Field(None, description="Name of the child")
     user: Optional[UserViewModel] = Field(None, )
 
-
-
 class GetChildren(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
@@ -321,6 +319,61 @@ class GetChildren(BaseModel):
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
     employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+
+class CompanyModel(BaseModel):
+    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    id: Optional[UUID] = Field(None, description="UUID of the company record.")
+    is_bky_licensed: Optional[bool] = Field(None, alias="isBkyLicensed", description="Whether the company is licensed for BKY. Nullable.")
+    is_coins_licensed: Optional[bool] = Field(None, alias="isCoinsLicensed", description="Whether the company is licensed for Coins. Nullable.")
+    is_digital_signering_licensed: Optional[bool] = Field(None, alias="isDigitalSigneringLicensed", description="Whether the company is licensed for Digital Signering (digital signing). Nullable.")
+    is_franvarouppfoljning_licensed: Optional[bool] = Field(None, alias="isFranvarouppfoljningLicensed", description="Whether the company is licensed for Franvarouppfoljning (absence tracking). Nullable.")
+    is_hr_licensed: Optional[bool] = Field(None, alias="isHrLicensed", description="Whether the company is licensed for HR. Nullable.")
+    is_koncern_licensed: Optional[bool] = Field(None, alias="isKoncernLicensed", description="Whether the company is licensed for Koncern (group/corporate). Nullable.")
+    is_lonekartlaggning_licensed: Optional[bool] = Field(None, alias="isLonekartlaggningLicensed", description="Whether the company is licensed for Lonekartlaggning (salary mapping). Nullable.")
+    is_lonerevision_licensed: Optional[bool] = Field(None, alias="isLonerevisionLicensed", description="Whether the company is licensed for Lonerevision (salary revision). Nullable.")
+    is_lonespecifikation_till_kivra_licensed: Optional[bool] = Field(None, alias="isLonespecifikationTillKivraLicensed", description="Whether the company is licensed for sending salary specifications to Kivra. Nullable.")
+    is_mobile_licensed: Optional[bool] = Field(None, alias="isMobileLicensed", description="Whether the company is licensed for Mobile. Nullable.")
+    is_pay_equity_compass_licensed: Optional[bool] = Field(None, alias="isPayEquityCompassLicensed", description="Whether the company is licensed for Pay Equity Compass. Nullable.")
+    is_payroll_licensed: Optional[bool] = Field(None, alias="isPayrollLicensed", description="Whether the company is licensed for Payroll. Nullable.")
+    is_plan_licensed: Optional[bool] = Field(None, alias="isPlanLicensed", description="Whether the company is licensed for Plan (scheduling). Nullable.")
+    is_qnister_licensed: Optional[bool] = Field(None, alias="isQnisterLicensed", description="Whether the company is licensed for Qnister. Nullable.")
+    is_rapportgenerator_licensed: Optional[bool] = Field(None, alias="isRapportgeneratorLicensed", description="Whether the company is licensed for Rapportgenerator (report generator). Nullable.")
+    is_statistikcentral_licensed: Optional[bool] = Field(None, alias="isStatistikcentralLicensed", description="Whether the company is licensed for Statistikcentral (statistics center). Nullable.")
+    is_time_licensed: Optional[bool] = Field(None, alias="isTimeLicensed", description="Whether the company is licensed for Time. Nullable.")
+    is_travel_licensed: Optional[bool] = Field(None, alias="isTravelLicensed", description="Whether the company is licensed for Travel. Nullable.")
+    is_winningtemp_licensed: Optional[bool] = Field(None, alias="isWinningtempLicensed", description="Whether the company is licensed for Winningtemp. Nullable.")
+    name: Optional[str] = Field(None, description="Company name. Nullable.")
+    organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Company organization number. Nullable.")
+    start_date: Optional[datetime] = Field(None, alias="startDate", description="Date from which the company is active. Nullable.")
+
+class GetCompanies(BaseModel):
+    instance: Optional[str] = Field(INSTANCE,description="Domain Name")
+    companynumber: Optional[int] = Field(None,description="companynumber")
+    organizationnumber: Optional[int] = Field(None,description="organizationnumber")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+
+class CompanyPostRequestModel(BaseModel):
+    company_number: int = Field(..., alias="companyNumber", description="Company number.")
+    country_code: str = Field(..., alias="countryCode", min_length=1, description="Country code for the company. Minimum length: 1.")
+    currency_code: str = Field(..., alias="currencyCode", min_length=1, description="Currency code for the company. Minimum length: 1.")
+    is_bky_licensed: Optional[bool] = Field(None, alias="isBkyLicensed", description="Whether the company is licensed for BKY.")
+    is_digital_signering_licensed: Optional[bool] = Field(None, alias="isDigitalSigneringLicensed", description="Whether the company is licensed for Digital Signering (digital signing).")
+    is_franvarouppfoljning_licensed: Optional[bool] = Field(None, alias="isFranvarouppfoljningLicensed", description="Whether the company is licensed for Franvarouppfoljning (absence tracking).")
+    is_hr_licensed: Optional[bool] = Field(None, alias="isHrLicensed", description="Whether the company is licensed for HR.")
+    is_koncern_licensed: Optional[bool] = Field(None, alias="isKoncernLicensed", description="Whether the company is licensed for Koncern (group/corporate).")
+    is_lonekartlaggning_licensed: Optional[bool] = Field(None, alias="isLonekartlaggningLicensed", description="Whether the company is licensed for Lonekartlaggning (salary mapping).")
+    is_lonerevision_licensed: Optional[bool] = Field(None, alias="isLonerevisionLicensed", description="Whether the company is licensed for Lonerevision (salary revision).")
+    is_mobile_licensed: Optional[bool] = Field(None, alias="isMobileLicensed", description="Whether the company is licensed for Mobile.")
+    is_pay_equity_compass_licensed: Optional[bool] = Field(None, alias="isPayEquityCompassLicensed", description="Whether the company is licensed for Pay Equity Compass.")
+    is_payroll_licensed: Optional[bool] = Field(None, alias="isPayrollLicensed", description="Whether the company is licensed for Payroll.")
+    is_plan_licensed: Optional[bool] = Field(None, alias="isPlanLicensed", description="Whether the company is licensed for Plan (scheduling).")
+    is_qnister_licensed: Optional[bool] = Field(None, alias="isQnisterLicensed", description="Whether the company is licensed for Qnister.")
+    is_statistikcentral_licensed: Optional[bool] = Field(None, alias="isStatistikcentralLicensed", description="Whether the company is licensed for Statistikcentral (statistics center).")
+    is_time_licensed: Optional[bool] = Field(None, alias="isTimeLicensed", description="Whether the company is licensed for Time.")
+    is_travel_licensed: Optional[bool] = Field(None, alias="isTravelLicensed", description="Whether the company is licensed for Travel.")
+    is_winningtemp_licensed: Optional[bool] = Field(None, alias="isWinningtempLicensed", description="Whether the company is licensed for Winningtemp.")
+    name: str = Field(..., min_length=1, description="Company name. Minimum length: 1.")
+    organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Company organization number. Nullable.")
 
 class TimeCode(BaseModel):
     code:str
