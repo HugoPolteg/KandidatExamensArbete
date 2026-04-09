@@ -29,21 +29,30 @@ class WorkplaceModel(BaseModel):
     postal_code: Optional[str] = Field(None,alias="postalCode",description="Postal code of the workplace")
     type: Optional[int] = Field(description="Type of workspace: 0 = Physical, 1 = Remote, 2 = NotFixed")
 
+class CreateAbsenceApplicationQuery(BaseModel):
+    apply_approval: Optional[bool] = Field(False, alias="applyApproval", description="Decides whether the absence application has automatic approval to the highest level. Default value false.")
+    is_part_time_absence: Optional[bool] = Field(False, alias="isPartTimeAbsence", description="Decides whether the absence application is part time absence. Default false.")
+
 class ImportAbsenceApplicationModelAPIBase(BaseModel):
     absence_type_id: UUID = Field(..., alias="absenceTypeId", description="UUID of the absence type.")
     child_id: Optional[UUID] = Field(None, alias="childId", description="UUID of the child for which the absence application is made.")
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
     current_status: Optional[AbsenceStatusModel] = Field(None, alias="currentStatus", description="Current status of the absence application if it exists.")
     employment_number: str = Field(..., min_length=1,alias="employmentNumber", description="Employment number of the applicant.")
-    from_date: date = Field(..., alias="fromDate", description="Start date of the absence.")
+    from_date: datetime = Field(..., alias="fromDate", description="Start date of the absence.")
     from_time: Optional[time] = Field(None, alias="fromTime", description="Start time of the absence.")
     hours: Optional[float] = Field(None, description="Number of hours for the absence.")
-    id: UUID=Field(..., description="UUID of the absence application.")
+    id: UUID=Field(..., description="UUID of the absence application that information is imported from.")
     message: Optional[str] = Field(None, description="Message from the applicant regarding the absence application.")
     part_time_percentage: Optional[float] = Field(None, alias="partTimePercentage", description="Part-time percentage for the absence application.")
     status: Optional[AbsenceStatusModel] = Field(None, description="Status to which the application whiches to be set")
-    to_date: Optional[date] = Field(..., alias="toDate", description="End date of the absence.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the absence.")
     to_time: Optional[time] = Field(None, alias="toTime", description="End time of the absence.")
+    model_config = {"populate_by_name": True}
+    @field_serializer("from_date", "to_date")
+    def serialize_datetime(self, value: datetime):
+        return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
+
 
 class AccountLocationModel(BaseModel):
     latitude: Optional[float] = Field(None, description="Latitude of the account location.")
@@ -190,6 +199,7 @@ class GetTimeReportByEmployee(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="employee id")
     date: Optional[datetime] = Field(None, description="Time reports reported after this date")
     generated: Optional[bool] = Field(True, description="Include generated time rows")
+    model_config = ConfigDict(populate_by_name=True)
 
 class GetBackGroundTasks(BaseModel):
     worker_state: Optional[int] = Field(alias="workerState", description="Worker state of the background task: 0 = Enqueued, 1 = Scheduled, 2 = Processing, 3 = Succeeded, 4 = Failed, 5 = Deleted, 6 = Awaiting")
@@ -244,7 +254,17 @@ class BalanceAdjustmentModel(BaseModel):
 
 class GetBalanceAdjustmentByEmployeeOrCompany(BaseModel):
     employee_number: Optional[str] = Field(alias="employeeNumber",description="Employee number.")
-    page_params: Optional[PageModel] = Field(description="Page parameters")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
+class GetAbsenceApplicationByParameters(BaseModel):
+    employmentnumber: Optional[str] = Field(None,description="Employment number.")
+    instance: Optional[str] = Field(None, description="Domain name.")
+    companynumber: Optional[int] = Field(None, description="Company number.")
+    absence_type_id: Optional[UUID] = Field(None, alias="absenceTypeId", description="UUID of the absence type.")
+    absence_type_name: Optional[str] = Field(None, alias="absenceTypeName", description="Name of the absence type.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = ConfigDict(populate_by_name=True)
+
 
 class GetBalanceAdjustments(BaseModel):
     instance: Optional[str] = Field(description="Domain Name")
@@ -343,7 +363,6 @@ class ProjectAccount(BaseModel):
     )
  
     model_config = {"populate_by_name": True}
- 
  
 class BillingPriceRowAccount(BaseModel):
     account_id: UUID = Field(alias="accountId", description="UUID of the account.")

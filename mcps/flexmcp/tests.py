@@ -30,8 +30,12 @@ def print_test(input, update = False, update_param = "", update_value = None, pu
 #print("Testing list_instances")
 #print_test(server.list_instances())
 alt_employee = "f83fe21a-a90a-4ce8-8a13-b1c60089eca5"
+alt_employee_nr = "TEST2"
 employee_id = "640ca4b1-bf59-4740-9fc6-b1c6008861a0"
 company_id="b4253a61-f229-4ca9-9831-ad931d9a75a6"
+absence_type_id = '88c85624-a2ae-4955-b67e-ad9500df8e6c'
+
+
 print("Testing get_salary_by_id")
 print_test(server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae"))
 
@@ -74,7 +78,7 @@ print_test(server.get_salaries_by_company_and_employee(models.GetSalariesByCompa
 
 print("Testing get_salaries_by_employee")
 print_test(server.get_salaries_by_employee(models.GetSalariesByEmployee(employeeId=employee_id)))
-print(server.get_salaries_by_employee(models.GetSalariesByEmployee(employeeId=employee_id)))
+#print(server.get_salaries_by_employee(models.GetSalariesByEmployee(employeeId=employee_id)))
 
 
 print("Testing create_salary")
@@ -92,18 +96,32 @@ print("Works")
 #print(server.get_time_report_by_employee(models.GetTimeReportByEmployee(employee_id=alt_employee)))
 
 print("Testing put_time_report")
-print(server.put_time_report(employee_id=alt_employee, date=datetime.now(),
+print(server.put_time_report(employee_id=alt_employee, date=datetime(2026, 4, 9, 0, 0, 0),
     entry=models.DayEntry(
     timeRows=[
         models.TimeRow(
-            fromTimeDateTime=datetime.now()-timedelta(hours=4),
-            toTimeDateTime=datetime.now(),
+            fromTimeDateTime=datetime(2026, 4, 9, 8, 0, 0),
+            toTimeDateTime=datetime(2026, 4, 9, 16, 0, 0),
             timeCode=models.TimeCode(code="ARB")
         ),
         models.TimeRow(
-            fromTimeDateTime=datetime.now()-timedelta(hours=8),
-            toTimeDateTime=datetime.now()-timedelta(hours=5),
+            fromTimeDateTime=datetime(2026, 4, 9, 7, 0, 0),
+            toTimeDateTime=datetime(2026, 4, 9, 8, 0, 0),
             timeCode=models.TimeCode(code="RAST")
         )
     ]
 )))
+
+print("Testing get_absence_applications_by_company_id")
+print_test(server.get_absence_applications_by_company_id(company_id=company_id))
+
+print("Testing get_absence_application_by_parameters")
+print_test(server.get_absence_application_by_parameters())
+print(server.get_absence_application_by_parameters())
+
+print("Testing create_absence_application")
+id = print_test(server.create_absence_application(application=models.ImportAbsenceApplicationModelAPIBase(
+    absenceTypeId=absence_type_id, companyId=company_id, message="Hunden", employmentNumber=alt_employee_nr, fromDate=datetime(2026, 4, 9, 0, 0, 0), toDate=datetime(2026, 4, 10, 0, 0, 0), hours=8, id="ed3dd816-4a46-41de-b708-b427009d8545")), put=True)
+
+print("Testing delete_absence_application_by_id")
+print(server.delete_absence_application_by_id(id=id))
