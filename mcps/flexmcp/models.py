@@ -276,6 +276,50 @@ class GetBalanceAdjustments(BaseModel):
     is_generated: Optional[bool] = Field(None,alias="isGenerated", description="Filter on is generated")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
+class GetBalanceReportByBalanceIdAndEmployeeId(BaseModel):
+    employee_id: UUID = Field(None,alias="employeeId",description="UUID of the employee")
+    balance_type_value_enum: int = Field(None,alias="balaneTypeValueEnum",description="Type of balance value: 0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Get billings from this date")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="Get billings upp to this date.")
+
+class GetBillingReleasesByCompany(BaseModel):
+    company: str = Field(...,description="company")
+    instance: str = Field(INSTANCE,description="The customer instance (domain)")
+    hide_completed_releasees: Optional[bool] = Field(None,description="Hides the billing releases that is fully released")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+
+class ChildModel(BaseModel):
+    child_country_code: Optional[str] = Field(None,alias="childCountryKod",description="Country code of the child.")
+    company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
+    employee_id: UUID = Field(...,alias="employeeId",description="UUID of the employee") 
+    id: Optional[UUID] = Field(None,description="UUID child")
+    identification_string: Optional[str] = Field(None, max_length=100, alias="identificationString", description="Identification string")
+    identification_type: Optional[int] = Field(None,alias="identificationType",description="Type of identification: 0 = Birth date, 1 = Social security number, 2 = Optional identification number, 3 = Birth Year")
+    instance_id: UUID = Field(..., alias="instanceId",description="Instance Id")
+    is_chronically_ill: Optional[bool] = Field(None,alias="isChronicallyIll",description="If the child is chronically ill")
+    name: Optional[str] = Field(None, description="Name of the child")
+    user: Optional[UserViewModel] = Field(None, )
+
+class UserViewModel(BaseModel):
+    card_badge_id: Optional[str] = Field(None, alias="cardBadgeId", description="Card bade ID")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee.")
+    employee_number: Optional[str] = Field(None, alias="employeeNumber", description="Employee's unique identification number.")
+    first_name: Optional[str] = Field(None, alias="firstName", description="Employee's first name.")
+    id: Optional[UUID] = Field(None, description="UUID of the user.")
+    is_day_reporting_today: Optional[bool] = Field(None, alias="isDayReportingToday", description="Whether the employee is reporting by day today.")
+    last_name: Optional[str] = Field(None, alias="lastName", description="Employee's last name.")
+    show_week_number: Optional[bool] = Field(None, alias="showWeekNumber", description="Whether to show the week number for this employee.")
+    username: Optional[str] = Field(None, alias="username", max_length=100, description="User name")
+    username_alias: Optional[str] = Field(None, alias="usernameAlias", description="Alternative username or alias.")
+
+class GetChildren(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+
 class TimeCode(BaseModel):
     code:str
 
