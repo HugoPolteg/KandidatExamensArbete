@@ -1206,7 +1206,248 @@ def create_balance_adjustment_batch_by_company(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_balance_report_by_balance_id_and_employee_id(
+    balance_id: UUID = Field(...,alias="balanceId",description="UUID of the balance"),
+    filters: GetBalanceReportByBalanceIdAndEmployeeId = Field(...,"Parameters to filter the results by, employeeId and balanceTypeValueEnum requiered all other fields optional")
+    )->dict:
+    """
+    Get a balance report by balance id and employee id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/balance/{balance_id}/balancereport"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_billing_releases_by_company(
+    filters: GetBillingReleasesByCompany = Field(...,description="Parameters to filter the search by: company and instance are required, if no isntance is provied will use default instance.")
+    )->dict:
+    """"
+    Gets billing releases for a company in a given isntance,if no isntance is provied will use default instance."
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/billingreleases"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_billing_releases_by_id(
+    id: UUID = Field(...,description="UUID of the billing release")
+    )->dict:
+    url = f"{consts.API_ENDPOINT}/billingreleases/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def check_status()->dict:
+    """
+    Check API status
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/CheckStatus"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def check_status()->dict:
+    """
+    Check API server status
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/CheckStatusWorkServer"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_child_by_id(
+    id: UUID = Field(...,description="UUID of the child")
+    )->dict:
+    """
+    Get a child by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/child/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_child_by_id_put(
+    id: UUID = Field(...,description="UUID of the child"),
+    query: ChildModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Update a child by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/child/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_child_by_id_post(
+    id: UUID = Field(...,description="UUID of the child"),
+    query: ChildModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Create a child by id
+
+    Returns:
+        API response as a JSON dict
+    """
+
+    url = f"{consts.API_ENDPOINT}/child/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_child_by_id(
+    id: UUID = Field(...,description="UUID of the child")
+    )->dict:
+    """
+    Delete a child by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/child/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_children(   
+    filters: Optional[GetChildren] = Field(None, description="Parameters to the children search by, all feilds optinal")
+    )->dict:
+    url = f"{consts.API_ENDPOINT}/child"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
     
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_child(
+    query: ChildModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Create a new child
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/child"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 @mcp.tool()
 def get_salary_by_id(
