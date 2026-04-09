@@ -53,7 +53,6 @@ class ImportAbsenceApplicationModelAPIBase(BaseModel):
     def serialize_datetime(self, value: datetime):
         return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
 
-
 class AccountLocationModel(BaseModel):
     latitude: Optional[float] = Field(None, description="Latitude of the account location.")
     longitude: Optional[float] = Field(None, description="Longitude of the account location.")
@@ -61,9 +60,6 @@ class AccountLocationModel(BaseModel):
     radius: Optional[int] = Field(None, description="Geofence radius in metres (int32).")
  
     model_config = {"populate_by_name": True}
-
-
-
 
 
 class AccountBillingPriceRowAccountModel(BaseModel):
@@ -374,6 +370,43 @@ class CompanyPostRequestModel(BaseModel):
     is_winningtemp_licensed: Optional[bool] = Field(None, alias="isWinningtempLicensed", description="Whether the company is licensed for Winningtemp.")
     name: str = Field(..., min_length=1, description="Company name. Minimum length: 1.")
     organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Company organization number. Nullable.")
+
+class CustomerModel(BaseModel):
+    account_locations: Optional[list[AccountLocationModel]] = Field(None, alias="accountLocations", description="List of geographic locations associated with the customer. Nullable.")
+    active_from_date: Optional[datetime] = Field(None, alias="activeFromDate", description="Date from which the customer is active. Nullable.")
+    active_tom_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the customer is active. Nullable.")
+    billing: Optional[AccountBillingModel] = Field(None, description="Billing details for the customer.")
+    billing_state_enum: Optional[int] = Field(None, alias="billingStateEnum", description="Billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
+    budgeting_time_unit: Optional[int] = Field(None, alias="budgetingTimeUnit", description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month.")
+    city: Optional[str] = Field(None, description="City of the customer. Nullable.")
+    code: str = Field(..., description="Unique customer code. Minimum length: 1.")
+    contact_person: Optional[str] = Field(None, alias="contactperson", description="Contact person at the customer. Nullable.")
+    corporate_number: Optional[str] = Field(None, alias="corporatenumber", description="Corporate registration number of the customer. Nullable.")
+    country: Optional[str] = Field(None, description="Country of the customer. Nullable.")
+    email: Optional[str] = Field(None, description="Email address of the customer. Nullable.")
+    external_comment_must_be_stated_about_billable_time: Optional[bool] = Field(None, alias="externalCommentMustBeStatedAboutBillableTime", description="Whether an external comment must be stated about billable time. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the customer record.")
+    mailing_address: Optional[str] = Field(None, alias="mailingaddress", description="Mailing address of the customer. Nullable.")
+    name: str = Field(..., description="Customer name. Minimum length: 1.")
+    phone_number: Optional[str] = Field(None, alias="phonenumber", description="Phone number of the customer. Nullable.")
+    post_code: Optional[str] = Field(None, alias="postcode", description="Postal code of the customer. Nullable.")
+    travel_billing_state_enum: Optional[int] = Field(None, alias="travelBillingStateEnum", description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
+    visiting_address: Optional[str] = Field(None, alias="visitingaddress", description="Visiting address of the customer. Nullable.")
+    work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace details associated with the customer.")
+
+class GetCustomersByComopany(BaseModel):
+    company: str = Field(..., description="Company number. Required.")
+    instance: str = Field(INSTANCE, description="Domain name. Required.")
+    code: Optional[str] = Field(None, description="Customer code filter.")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
+
+class GetCustomersByAccountDistribution (BaseModel):
+    code: Optional[str] = Field(None, description="Customer code filter.")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
 
 class TimeCode(BaseModel):
     code:str

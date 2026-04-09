@@ -1554,7 +1554,7 @@ def create_company(
         A JSON dict containing the created company object.
     """
 
-    url = f"{consts.API_ENDPOINT}/api/companies"
+    url = f"{consts.API_ENDPOINT}/companies"
     payload = query.model_dump(by_alias=True, exclude_none=True),
     params = {}
     if company_id_to_copy_from is not None:
@@ -1572,8 +1572,150 @@ def create_company(
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
-
     return response.json()
+
+@mcp.tool()
+def get_customer_by_id(
+    id: UUID = Field(..., description="UUID of the customer."),
+    )->dict:
+    """
+    Get a customer by Id
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/customers/{id}"
+    try:
+        response = requests.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()    
+
+mcp.tool()
+def update_customer_by_id(
+    id: UUID = Field(..., description="UUID of the customer."),
+    query: CustomerModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Updates a customer by customer id
+
+    Retuerns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/customers/{id}"
+    payload = query.model_dump(by_alias=True, exclude_none=True),
+
+    try:
+        response = requests.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()¨
+
+@mcp.tool()
+def detlete_customer_by_id(
+    id: UUID = Field(..., description="UUID of the customer."),
+    )->dict:
+    """
+    delete a customer by Id
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/customers/{id}"
+    try:
+        response = requests.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+mcp.tool()
+def get_customers_by_company(
+    filters: GetCustomersByComopany = Field(...,description="Filter parameters to fitler the search by, company and isntance are requiered, if no isntance is provided will default to default instance")
+    )->dict:
+    """
+    Get customers by company optinaly filtered by filter parameters
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/customers"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+mcp.tool()
+def get_customers_by_account_distribution_id(
+    account_distirbution_id: UUID = Field(...,description="UUID of the account distribution."),
+    filters: GetCustomersByAccountDistribution = Field(None,description="Filter parameters to fitler the search by, all fields optional")
+    )->dict:
+    """
+    Get customers by account distribution id
+
+    Response:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distirbution_id}/customers"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = requests.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def post_customers_by_account_distribution_id(
+    account_distirbution_id: UUID = Field(..., description="UUID of the account distribution."),
+    query: CustomerModel = Field(..., description="Fully query object")
+    )->dict:
+    """
+    Posts customers by account distribution id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distirbution_id}/customers"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = requests.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
+
 @mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
