@@ -2358,6 +2358,110 @@ def create_employment_default_account_interval(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_employment_documents_by_id(
+    id: UUID = Field(..., description="UUID of the employement document"),
+
+    )->dict:
+    """
+    Get employment document by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdocuments/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employment_documents_by_id(
+    id: UUID = Field(..., description="UUID of the employement document"),
+
+    )->dict:
+    """
+    Delete employment document by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdocuments/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employment_documents_collection_by_company(
+    filters: GetEmploymentDocumentCollection = Field(None,description="Filter parameters to filter the search by, companyId is requiered, all other fields optional")
+    )->dict:
+    """
+    Get a collection of employment documents by company, optinaly filtered by filter parameters.
+
+    Returns:
+        API response as a JSON dict. Note: The returned property "title" is the filename
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdocuments"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_employment_document(
+    document_category_id: UUID = Field(..., alias="documentCategoryId", description="UUID of the document category."),
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee."),
+    title: Optional[str] = Field(None, description="Title of the document. If not specified the filename will be used as title."),
+    file_path: str = Field(..., alias="filePath", description="Local path to the file to upload.")
+) -> dict:
+    """
+    Uploads a document for a specific employee.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/employeedocuments"
+
+    params = {
+        "documentCategoryId": str(document_category_id),
+        "employeeId": str(employee_id),
+    }
+    if title is not None:
+        params["title"] = title
+
+    try:
+        with open(file_path, "rb") as f:
+            files = {"file": f}
+            response = requests.post(
+                url,
+                params=params,
+                files=files,
+                timeout=consts.API_TIMEOUT
+            )
+        response.raise_for_status()
+    except FileNotFoundError:
+        raise RuntimeError(f"File not found: {file_path}")
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+
+    return response.json()
+
 
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),

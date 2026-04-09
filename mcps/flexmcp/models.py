@@ -544,6 +544,12 @@ class EmploymentDefaultAccountIntervalModel(BaseModel):
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment default account interval. Nullable.")
 
+class GetEmploymentDocumentCollection(BaseModel):
+    employee_id: Optional[UUID]= Field(None, alias="employeeId", description="UUID of the employee.")
+    document_category_id: Optional[UUID] = Field(None, alias="documentCatagoryId", description="UUID of the document catagory.")
+    created_since: Optional[UUID] = Field(None,alias="createdSince",description="Documents created since this date")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
 
 class TimeCode(BaseModel):
     code:str
