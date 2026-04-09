@@ -1,5 +1,5 @@
-import server
 import models
+import server
 from datetime import date, time, datetime, timedelta
 
 def print_test(input, update = False, update_param = "", update_value = None, put = False):
@@ -32,7 +32,6 @@ def print_test(input, update = False, update_param = "", update_value = None, pu
 alt_employee = "f83fe21a-a90a-4ce8-8a13-b1c60089eca5"
 employee_id = "640ca4b1-bf59-4740-9fc6-b1c6008861a0"
 company_id="b4253a61-f229-4ca9-9831-ad931d9a75a6"
-"""
 print("Testing get_salary_by_id")
 print_test(server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae"))
 
@@ -87,7 +86,6 @@ id = print_test(server.create_salary(models.UpdateOrCreateSalaries(
 
 print("Testing delete_salary")
 print(server.delete_salary(id))
-"""
 
 print("Testing get_time_report_by_employee")
 print("Works")

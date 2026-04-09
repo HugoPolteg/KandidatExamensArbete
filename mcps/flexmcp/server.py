@@ -761,8 +761,8 @@ def get_company_account_approval_permissions(
 
 @mcp.tool()
 def create_company_account_part_approval_permissios_by_user_id(
-    user_id: UUID = Field(...,alias="userId",description="UUID of the user"),
-    query: AccountDistributionPartApprovalPermissionModel = Field(..., "Query object all parameters requiered")
+    user_id: UUID = Field(..., alias="userId", description="UUID of the user"),
+    query: AccountDistributionPartApprovalPermissionModel = Field(..., description="Query object, all parameters requiered")
     )->dict:
     """
     Creates new company account part approval permissions for a user
@@ -1577,7 +1577,7 @@ def list_all_companies(
         The company names, numbers and customer instances within the range.
     """
     url = f"{consts.API_ENDPOINT}/instance/{params.instance}/companies"
-    params = {"pageIndex": params.page_index, "pageSize": params.page_size}
+    params = params.model_dump(by_alias=True, exclude_none=True)
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
