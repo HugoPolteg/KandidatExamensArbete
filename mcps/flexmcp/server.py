@@ -2581,7 +2581,8 @@ def get_employment_empty_schedules(
 
 @mcp.tool()
 def create_employment_empty_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedul is used on reviewed ort ransferred days. Defualt False")
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedul is used on reviewed ort ransferred days. Defualt False"),
+    query: EmptyScheduleModel = Field(...,description="Query object: companyId, employeeId and timeGroupId are requiered") 
     )->dict:
     """
     Create employment empty schedule 
@@ -2590,14 +2591,17 @@ def create_employment_empty_schedule(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentemptyschedules"
-    parms = {
+    params = {
         "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
     }
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
 
     try:
         response = s.put(
             url,
             params=params,
+            json=payload,
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
