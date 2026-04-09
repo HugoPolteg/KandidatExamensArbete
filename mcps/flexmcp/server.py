@@ -2596,7 +2596,6 @@ def create_employment_empty_schedule(
     }
     payload = query.model_dump(by_alias=True,exclude_none=True)
 
-
     try:
         response = s.put(
             url,

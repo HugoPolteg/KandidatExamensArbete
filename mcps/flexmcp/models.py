@@ -555,6 +555,20 @@ class GetEmploymentDocumentCatagories(BaseModel):
     company_id: UUID = Field(None,alias="companyId",description="UUID of the company")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
 
+class EmptyScheduleModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the empty schedule period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the empty schedule record.")
+    time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the empty schedule.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the empty schedule period. Nullable.")
+
+class GetEmploymentEmptySchedules(BaseModel):
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
+    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
 
 
 
