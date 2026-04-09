@@ -308,7 +308,7 @@ class ChildModel(BaseModel):
     name: Optional[str] = Field(None, description="Name of the child")
     user: Optional[UserViewModel] = Field(None, )
 
-class GetChildren(BaseModel):
+class GenericGetModel(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
@@ -374,7 +374,7 @@ class CompanyPostRequestModel(BaseModel):
 class CustomerModel(BaseModel):
     account_locations: Optional[list[AccountLocationModel]] = Field(None, alias="accountLocations", description="List of geographic locations associated with the customer. Nullable.")
     active_from_date: Optional[datetime] = Field(None, alias="activeFromDate", description="Date from which the customer is active. Nullable.")
-    active_tom_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the customer is active. Nullable.")
+    active_to_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the customer is active. Nullable.")
     billing: Optional[AccountBillingModel] = Field(None, description="Billing details for the customer.")
     billing_state_enum: Optional[int] = Field(None, alias="billingStateEnum", description="Billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
     budgeting_time_unit: Optional[int] = Field(None, alias="budgetingTimeUnit", description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month.")
@@ -507,6 +507,25 @@ class GetEmployeeImgaes(BaseModel):
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee")
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
+class EmployeeQualificationModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    id: Optional[UUID] = Field(None, description="UUID of the employee qualification record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    qualification_id: UUID = Field(..., alias="qualificationId", description="UUID of the qualification.")
+    qualification_level: float = Field(..., alias="qualificationLevel", description="Level of the employee's qualification.")
+
+class EmploymentDefaultAccountModel(BaseModel):
+    account_code: Optional[str] = Field(None, alias="accountCode", description="Account code. Nullable.")
+    account_distribution_id: Optional[UUID] = Field(None, alias="accountDistributionId", description="UUID of the account distribution.")
+    account_id: Optional[UUID] = Field(None, alias="accountId", description="UUID of the account. Nullable.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the default account validity period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment default account record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    to_date: Optional[datetime] = Field(None, alias="tomDate", description="End date of the default account validity period. Nullable.")
 
 
 
@@ -698,7 +717,7 @@ class ProjectModel(BaseModel):
     start_date: Optional[datetime] = Field(None, alias="startDate", description="Project start date.")
     end_date: Optional[datetime] = Field(None, alias="endDate", description="Project end date.")
     active_from_date: Optional[datetime] = Field(None, alias="activeFromDate", description="Date from which the project is active.")
-    active_tom_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the project is active.")
+    active_to_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the project is active.")
     tidkod: Optional[str] = Field(None, description="Time code associated with the project.")
     all_employees_are_participants: Optional[bool] = Field(
         None,

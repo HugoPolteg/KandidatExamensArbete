@@ -1408,7 +1408,7 @@ def delete_child_by_id(
 
 @mcp.tool()
 def get_children(   
-    filters: Optional[GetChildren] = Field(None, description="Parameters to the children search by, all feilds optinal")
+    filters: Optional[GenericGetModel] = Field(None, description="Parameters to search the children by, all feilds optinal")
     )->dict:
     url = f"{consts.API_ENDPOINT}/child"
     params = filters.model_dump(by_alias=True,exclude_none=True)
@@ -1959,7 +1959,7 @@ def add_or_replace_employee_image(
 
     
     try:
-        response = s.delete(
+        response = s.post(
             url,
             json=payload,
             timeout=consts.API_TIMEOUT)
@@ -1983,7 +1983,7 @@ def get_employee_images(
 
     
     try:
-        response = s.delete(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT)
@@ -1992,6 +1992,210 @@ def get_employee_images(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+@mcp.tool()
+def get_employee_qualification_by_id(
+    id: UUID = Field(..., description="Employee qulification id")
+    )->dict:
+    """
+    Get employee qualification by id
+
+    Returns:
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeequalifications/{id}"
+
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employmee_qualification_by_id_put(
+    id: UUID = Field(..., description="Employee qulification id"),
+    query: EmployeeQualificationModel = Field(..., description="Query object, all fields other than id are requiered")
+    )->dict:
+    """
+    Update employee qulatification by employee id (put)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeequalifications/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+@mcp.tool()
+
+@mcp.tool()
+def update_employee_qualification_by_id_post(
+    id: UUID = Field(..., description="Employee qulification id"),
+    query: EmployeeQualificationModel = Field(..., description="Query object, all fields other than id are requiered")
+    )->dict:
+    """
+    Update employee qulatification by employee id (post)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeequalifications/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employee_qualification_by_id(
+    id: UUID = Field(..., description="Employee qulification id")
+    )->dict:
+    """
+    Delete employee qualification by id
+
+    Returns: 
+        API response as JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeequalifications/{id}"
+
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employee_qualifications(
+    filters: GenericGetModel = Field(None, description="Parameters to search the qualifications by, all feilds optinal")
+    )->dict:
+    """
+    Get employee qualificaitons optionaly filtered by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employeequalifications"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+
+
+
+@mcp.tool()
+def update_employment_default_accunt_by_id_put(
+    id: UUID = Field(..., description="Employment deafault account id"),
+    query: EmploymentDefaultAccountModel = Field(..., description="Query object, companyId, employeeId and instanceId are required")
+    )->dict:
+    """
+    Update employment default account (put)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+@mcp.tool()
+
+def update_employment_default_accunt_by_id_post(
+    id: UUID = Field(..., description="Employement default accoutn id"),
+    query: EmploymentDefaultAccountModel = Field(..., description="Query object, companyId, employeeId and instanceId are required")
+    )->dict:
+    """
+    Update employment default account (post)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employment_default_accunt_by_id_(
+    id: UUID = Field(..., description="Employee qulification id")
+    )->dict:
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts"
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employment_default_accounts(
+    filters: GenericGetModel = Field(None, description="Parameters to search the qualifications by, all feilds optinal")
+    )->dict:
+    """
+    Get employment default accounts optinaly filted by filter parameters
+    
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 
 @mcp.tool()
