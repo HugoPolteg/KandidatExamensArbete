@@ -2413,6 +2413,7 @@ def get_employment_documents_collection_by_company(
         API response as a JSON dict. Note: The returned property "title" is the filename
     """
     url = f"{consts.API_ENDPOINT}/employmentdocuments"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
 
     try:
         response = s.get(
@@ -2459,8 +2460,150 @@ def create_employment_document(
         raise RuntimeError(f"File not found: {file_path}")
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
-
     return response.json()
+
+@mcp.tool()
+def get_employment_document_categories(
+    filters: GetEmploymentDocumentCatagories = Field(None,description="Filter parameters to filter the search by, all fields are optinal")
+    )->dict:
+    """
+    Get employment documet categories, optinaly filted by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/documentcategories"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employment_empty_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the employment empty schedule"),
+    )->dict:
+    """
+    Get employment empy schedule by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentemptyschedules/{id}"
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employment_empty_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the employment empty schedule"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedul is used on reviewed ort ransferred days. Defualt False"),
+    query: EmptyScheduleModel = Field(...,description="Query object: companyId, employeeId and timeGroupId are requiered") 
+    )->dict:
+    """
+    Update employment empty schedule by id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentemptyschedules/{id}"
+    params = {
+        "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
+    }
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employment_empty_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the employment empty schedule"),
+    )->dict:
+    """
+    Delete employment empy schedule by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentemptyschedules/{id}"
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employment_empty_schedules(
+    filters: GetEmploymentEmptySchedules = Field(None,description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get employment empty schedules optinaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentemptyschedules"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.delete(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_employment_empty_schedule(
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedul is used on reviewed ort ransferred days. Defualt False")
+    )->dict:
+    """
+    Create employment empty schedule 
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentemptyschedules"
+    parms = {
+        "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
+    }
+
+    try:
+        response = s.put(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 
 def get_salary_by_id(

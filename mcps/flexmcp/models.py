@@ -545,10 +545,17 @@ class EmploymentDefaultAccountIntervalModel(BaseModel):
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment default account interval. Nullable.")
 
 class GetEmploymentDocumentCollection(BaseModel):
+    company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
     employee_id: Optional[UUID]= Field(None, alias="employeeId", description="UUID of the employee.")
     document_category_id: Optional[UUID] = Field(None, alias="documentCatagoryId", description="UUID of the document catagory.")
     created_since: Optional[UUID] = Field(None,alias="createdSince",description="Documents created since this date")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
+class GetEmploymentDocumentCatagories(BaseModel):
+    company_id: UUID = Field(None,alias="companyId",description="UUID of the company")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
+
 
 
 class TimeCode(BaseModel):
