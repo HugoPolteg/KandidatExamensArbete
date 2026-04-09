@@ -2570,7 +2570,7 @@ def get_employment_empty_schedules(
     params = filters.model_dump(by_alias=True,exclude_none=True)
 
     try:
-        response = s.delete(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT)
@@ -2607,6 +2607,184 @@ def create_employment_empty_schedule(
         raise RuntimeError(f"API request failed: {e}")
     return response.json()
 
+
+@mcp.tool()
+def get_employment_period_by_id(
+    id: UUID = Field(..., description="UUID of the employment period"),
+    )->dict:
+    """
+    Get employment period by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employment_period_by_id_put(
+    id: UUID = Field(..., description="UUID of the employment period"),
+    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,alias="deleteTimereportsAfterEmployeeTerminationDate",description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
+    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
+    )->dict:
+    """"
+    Update the employment period by employment period id (put)
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    params = {
+        "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
+    }
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employment_period_by_id_post(
+    id: UUID = Field(..., description="UUID of the employment period"),
+    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,alias="deleteTimereportsAfterEmployeeTerminationDate",description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
+    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
+    )->dict:
+    """"
+    Update the employment period by employment period id (post)
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    params = {
+        "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
+    }
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def delete_employment_period_by_id(
+    id: UUID = Field(..., description="UUID of the employment period"),
+    )->dict:
+    """
+    Delete employment period by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_employment_period_by_employee_id(
+    employee_id: UUID = Field(..., description="UUID of the employee"),
+    delete_timereports_after_employee_termination_date: bool = Field(False,alias="deleteTimereportsAfterEmployeeTerminationDate",description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed."),
+    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
+    )->dict:
+    """"
+    Update the employment period for an employee given by employee id
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    params = {
+        "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
+    }
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def get_employment_periods(
+    filters: GenericGetModel = Field(None,description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get employmed periods optinaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
+@mcp.tool()
+def create_employment_period(
+    template: CreateEmploymentPeriod = Field(None,description="Wheter or not to use template"),
+    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
+    )->dict:
+    """"
+    Create employment period
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    params = template.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    return response.json()
 
 
 def get_salary_by_id(

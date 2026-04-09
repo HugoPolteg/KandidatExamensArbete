@@ -570,8 +570,34 @@ class GetEmploymentEmptySchedules(BaseModel):
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
 
+class TravelRuleSetModel(BaseModel):
+    allowance_according_to: Optional[int] = Field(None, alias="allowanceAccordingTo", description="Determines allowance rules source. 0 = Company, 1 = Employment.")
+    allowance_rule_set_id: Optional[UUID] = Field(None, alias="allowanceRuleSetId", description="UUID of the allowance rule set. Nullable.")
+    allow_selection_rule_set: Optional[bool] = Field(None, alias="allowSelectionRuleSet", description="Whether the employee can select their own rule set.")
+    travel_time_according_to: Optional[int] = Field(None, alias="travelTimeAccordingTo", description="Determines travel time rules source. 0 = Company, 1 = Employment.")
+    travel_time_rule_set_id: Optional[UUID] = Field(None, alias="travelTimeRuleSetId", description="UUID of the travel time rule set. Nullable.")
+    use_trip_on_invoice: Optional[bool] = Field(None, alias="useTripOnInvoice", description="Whether to use trip on invoice.")
 
+class EmploymentPeriodModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    create_payroll_transactions: Optional[bool] = Field(None, alias="createPayrollTransactions", description="Whether to automatically create payroll transactions for this employment period.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    employment_type_id: Optional[UUID] = Field(None, alias="employmentTypeId", description="UUID of the employment type. Nullable.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the employment period. Nullable.")
+    has_final_salary: Optional[bool] = Field(None, alias="hasFinalSalary", description="Whether the employment period has a final salary.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment period record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    payment_group_id: Optional[UUID] = Field(None, alias="paymentGroupId", description="UUID of the payment group. Nullable.")
+    resignation_cause_id: Optional[UUID] = Field(None, alias="resignationCauseId", description="UUID of the resignation cause. Nullable.")
+    salary_type: Optional[int] = Field(None, alias="salaryType", description="Salary type. 0 = Monthly, 1 = Hourly, 2 = Yearly.")
+    staff_category_id: Optional[UUID] = Field(None, alias="staffCategoryId", description="UUID of the staff category. Nullable.")
+    title_id: Optional[UUID] = Field(None, alias="titleId", description="UUID of the employee's title. Nullable.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment period. Nullable.")
+    travel_rule_set: Optional[TravelRuleSetModel] = Field(None, alias="travelRuleSet", description="Travel rule set settings for this employment period.")
 
+class CreateEmploymentPeriod(BaseModel):
+    employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employment period with use of employment template. If left empty then no template will be used.")
+    prioritize_employment_template: bool = Field(False,alias="prioritizeEmploymenttemplate",description="Default false. Determines whether values from template or model will be prioritized. False - will ensure all values from model overrite template values.")
 class TimeCode(BaseModel):
     code:str
 
