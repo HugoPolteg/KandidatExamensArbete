@@ -58,7 +58,6 @@ class AccountLocationModel(BaseModel):
     longitude: Optional[float] = Field(None, description="Longitude of the account location.")
     location_name: Optional[str] = Field(None, alias="locationName", description="Display name of the location.")
     radius: Optional[int] = Field(None, description="Geofence radius in metres (int32).")
- 
     model_config = {"populate_by_name": True}
 
 
@@ -79,8 +78,8 @@ class AccountBillingPriceRowModel(BaseModel):
 
 
 class AccountBillingModel(BaseModel):
-    price_rows: Optional[list[AccountBillingPriceRowModel]] = Field(None, alias="priceRows", description="List of standard billing price rows. Nullable.")
-    price_row_travel: Optional[list[AccountBillingPriceRowModel]] = Field(None, alias="priceRowTravel", description="List of travel billing price rows. Nullable.")
+    price_rows: Optional[list[AccountBillingPriceRowModel]] = Field([], alias="priceRows", description="List of standard billing price rows. Nullable.")
+    price_rows_travel: Optional[list[AccountBillingPriceRowModel]] = Field([], alias="priceRowsTravel", description="List of travel billing price rows. Nullable.")
 
 
 class GetAccountByAccountDistributionId(BaseModel):
@@ -131,10 +130,10 @@ class AccountBudgetModel(BaseModel):
     id: UUID = Field(None, description="UUID of the Account budget")
 
 class AccountModel(BaseModel):
-    account_locations: Optional[List[AccountLocationModel]] = Field(None, alias="accountLocations", description="A list of account locations")
+    account_locations: Optional[List[AccountLocationModel]] = Field([], alias="accountLocations", description="A list of account locations")
     active_from_date: Optional[datetime] = Field(None,alias="activeFromDate",description="Account active from date")
     active_to_date: Optional[datetime] = Field(None,alias="activeTomDate",description="Account active to date")
-    billing: Optional[AccountBillingModel] = Field(None,description="billing")
+    billing: Optional[AccountBillingModel] = Field(AccountBillingModel(), description="billing")
     billing_state_enum: Optional[int] = Field(None,alias="billingStateEnum",description="Billing state: 0 = No, 1 = Never, 2 = Yes, 3 = Always")
     budgeting_time_unit: Optional[int] = Field(None,alias="budgetingTimeUnit", description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month.")
     code: str = Field(None, min_length=1, description="Unique account code")
@@ -144,7 +143,14 @@ class AccountModel(BaseModel):
     travel_billing_state_enum: Optional[int] = Field(None, alias="travelBillingStateEnum", description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
     work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace details associated with the account.")
 
+class GetAbsenceTypes(BaseModel):
+    page_params: PageModel = PageModel()
+    absence_type_name: Optional[str] = Field(None, alias="absenceTypeName", description="Name of the absence type.")
 
+class UpdateAbsenceApplicationQuery(BaseModel):
+    apply_approval: Optional[bool] = Field(False, alias="applyApproval", description="Decides whether the absence application has automatic approval to the highest level. Default value false.")
+    is_part_time_absence: Optional[bool] = Field(False, alias="isPartTimeAbsence", description="Decides whether the absence application is part time absence. Default false.")
+    model_config = ConfigDict(populate_by_name=True)
 
 class AccountCombinationAccountModel(BaseModel):
     account_distribution: UUID = Field(...,alias="accountDistribution",description="UUID of the account distribution")
