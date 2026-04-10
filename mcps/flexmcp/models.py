@@ -631,6 +631,15 @@ class EmploymentRateModel(BaseModel):
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment rate period. Nullable.")
 
+class EmploymentTitleModel(BaseModel):
+    active: Optional[bool] = Field(None, description="Whether the employment title is active. Nullable.")
+    code: str = Field(..., min_length=1, description="Unique code for the employment title. Minimum length: 1.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    description: Optional[str] = Field(None, description="Description of the employment title. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment title record.")
+    instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance.")
+    name: str = Field(..., min_length=1, description="Name of the employment title. Minimum length: 1.")
+
 class TimeCode(BaseModel):
     code:str
 
