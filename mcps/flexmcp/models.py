@@ -637,6 +637,13 @@ class EmploymentRateModel(BaseModel):
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment rate period. Nullable.")
 
+class GetEmplploymentTitles(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    active: Optional[bool] = Field(None, description="Whether the employment title is active. Nullable.")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+
 class EmploymentTitleModel(BaseModel):
     active: Optional[bool] = Field(None, description="Whether the employment title is active. Nullable.")
     code: str = Field(..., min_length=1, description="Unique code for the employment title. Minimum length: 1.")
@@ -645,6 +652,12 @@ class EmploymentTitleModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the employment title record.")
     instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance.")
     name: str = Field(..., min_length=1, description="Name of the employment title. Minimum length: 1.")
+
+class GetEmploymentTypes(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class TimeCode(BaseModel):
     code:str

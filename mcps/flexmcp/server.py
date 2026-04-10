@@ -3553,7 +3553,7 @@ def get_employment_templates_by_company_id(
 
 @mcp.tool()
 def get_employment_title_by_id(
-    id: UUID = Field(..., description="UUID of the employment ttile"),
+    id: UUID = Field(..., description="UUID of the employment tile"),
     )->dict:
     """
     Get employment title by id
@@ -3620,7 +3620,7 @@ def update_employment_title_by_id_post(
 
 @mcp.tool()
 def delete_employment_title_by_id(
-    id: UUID = Field(..., description="UUID of the employment ttile"),
+    id: UUID = Field(..., description="UUID of the employment tile"),
     )->dict:
     """
     Delete employment title by id
@@ -3641,7 +3641,7 @@ def delete_employment_title_by_id(
 
 @mcp.tool()
 def get_employment_titles(
-    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GetEmplploymentTitles = Field(GetEmplploymentTitles(),description="Fitler parameters to fitler the search by all feilds optional")
     )->dict:
     """"
     Get employment titles optionaly filtered by filter parameters
@@ -3684,6 +3684,50 @@ def create_employment_title_by_id_post(
         return f"API request failed: {e}\n{response.text}"
     return response.json()
 
+@mcp.tool()
+def get_employment_type_by_id(
+    id: UUID = Field(..., description="UUID of the employment type"),
+    )->dict:
+    """
+    Get employment type by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmenttypes{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+
+@mcp.tool()
+def get_employment_types(
+    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get employment titles optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmenttitles"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
 
 
 
