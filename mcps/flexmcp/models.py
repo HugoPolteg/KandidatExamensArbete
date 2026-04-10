@@ -605,6 +605,47 @@ class EmploymentPeriodModel(BaseModel):
 class CreateEmploymentPeriod(BaseModel):
     employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employment period with use of employment template. If left empty then no template will be used.")
     prioritize_employment_template: bool = Field(False,alias="prioritizeEmploymenttemplate",description="Default false. Determines whether values from template or model will be prioritized. False - will ensure all values from model overrite template values.")
+
+class EmploymentPersonalScheduleModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the personal schedule. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment personal schedule record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    personal_schedule_id: UUID = Field(..., alias="personalScheduleId", description="UUID of the personal schedule.")
+    time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the personal schedule.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the personal schedule. Nullable.")
+
+class EmploymentPublicScheduleModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the public schedule. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment public schedule record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    public_schedule_id: UUID = Field(..., alias="publicScheduleId", description="UUID of the public schedule.")
+    time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the public schedule.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the public schedule. Nullable.")
+
+class EmploymentRateModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    employment_rate_percent: Optional[float] = Field(None, alias="employmentRatePercent", description="Employment rate as a percentage of full time.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the employment rate period. Nullable.")
+    hours_per_full_time_work_week: Optional[float] = Field(None, alias="hoursPerFullTimeWorkWeek", description="Number of hours per week for a full time employee.")
+    hours_per_full_time_work_year: Optional[float] = Field(None, alias="hoursPerFullTimeWorkYear", description="Number of hours per year for a full time employee.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment rate record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment rate period. Nullable.")
+
+class EmploymentTitleModel(BaseModel):
+    active: Optional[bool] = Field(None, description="Whether the employment title is active. Nullable.")
+    code: str = Field(..., min_length=1, description="Unique code for the employment title. Minimum length: 1.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    description: Optional[str] = Field(None, description="Description of the employment title. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment title record.")
+    instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance.")
+    name: str = Field(..., min_length=1, description="Name of the employment title. Minimum length: 1.")
+
 class TimeCode(BaseModel):
     code:str
 

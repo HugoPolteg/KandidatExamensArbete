@@ -3020,7 +3020,7 @@ def update_employment_period_by_employee_id(
     Returns: 
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    url = f"{consts.API_ENDPOINT}/employmentperiods/{employee_id}"
     params = {
         "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
     }
@@ -3077,7 +3077,7 @@ def create_employment_period(
     Returns: 
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/employmentperiods/{id}"
+    url = f"{consts.API_ENDPOINT}/employmentperiods"
     params = template.model_dump(by_alias=True,exclude_none=True)
     payload = query.model_dump(by_alias=True,exclude_none=True)
 
@@ -3094,6 +3094,597 @@ def create_employment_period(
         return response.json()
     else:
         return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_employment_personal_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the personal employment schedule"),
+    )->dict:
+    """
+    Get personal emplotment schedule by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpersonalschedules/{id}"
+    
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_personal_schedule_by_id_put(
+    id: UUID = Field(..., description="UUID of the personal employment schedule"),
+    query: EmploymentPersonalScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId personalScheduleId and timeGroupId are requiered"),
+    )->dict:
+    """
+    Update personal emplotment schedule by id (put)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpersonalschedules/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_personal_schedule_by_id_post(
+    id: UUID = Field(..., description="UUID of the personal employment schedule"),
+    query: EmploymentPersonalScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId personalScheduleId and timeGroupId are requiered"),
+    )->dict:
+    """
+    Update personal emplotment schedule by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpersonalschedules/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+
+@mcp.tool()
+def delete_employment_personal_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the personal employment schedule"),
+    )->dict:
+    """
+    Delete personal emplotment schedule by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpersonalschedules/{id}"
+    
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_personal_schedules(
+    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get employment personal schedules optinaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpersonalschedules"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def create_employment_personal_schedule(
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedule is used on reviewed or transferred days. Defualt False"),
+    query: EmploymentPersonalScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId personalScheduleId and timeGroupId are requiered"),
+    )->dict:
+    """"
+    Create employment personal schedule
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpersonalschedules"
+    params = {
+        "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
+    }
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_public_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the public employment schedule"),
+    )->dict:
+    """
+    Get public emplotment schedule by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpublicschedules/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_public_schedule_by_id_put(
+    id: UUID = Field(..., description="UUID of the public employment schedule"),
+    query: EmploymentPublicScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId publicScheduleId and timeGroupId are requiered"),
+    )->dict:
+    """
+    Update public employment schedule by id (put)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpublicschedules/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_public_schedule_by_id_post(
+    id: UUID = Field(..., description="UUID of the public employment schedule"),
+    query: EmploymentPublicScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId publicScheduleId and timeGroupId are requiered"),
+    )->dict:
+    """
+    Update public emplotment schedule by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpublicschedules/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def delete_employment_public_schedule_by_id(
+    id: UUID = Field(..., description="UUID of the public employment schedule"),
+    )->dict:
+    """
+    Delete public employment schedule by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpublicschedules/{id}"
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_public_schedules(
+    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get public employment schdeules optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpublicschedules"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def create_employment_public_schedule(
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedule is used on reviewed or transferred days. Defualt False"),
+    query: EmploymentPublicScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId publicScheduleId and timeGroupId are requiered"),
+    )->dict:
+    """"
+    Create employment public schedule
+
+    Returns: 
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentpublicschedules"
+    params = {
+        "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
+    }
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_rate_by_id(
+    id: UUID = Field(..., description="UUID of the employment rate"),
+    )->dict:
+    """
+    Get employment rate by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentrates/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_rate_by_id_put(
+    id: UUID = Field(..., description="UUID of the employment rate"),
+    query: EmploymentRateModel = Field(..., description="Query object, companyId, empoyeeId and instanceId are required"),
+    )->dict:
+    """
+    Update employment rate by id (put)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentrate/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_rate_by_id_post(
+    id: UUID = Field(..., description="UUID of the employment rate"),
+    query: EmploymentRateModel = Field(..., description="Query object, companyId, empoyeeId and instanceId are required"),
+    )->dict:
+    """
+    Update employment rate by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentrate/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def delete_employment_rate_by_id(
+    id: UUID = Field(..., description="UUID of the employment rate"),
+    )->dict:
+    """
+    Delete employment rate by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentrates/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def batch_update_employment_rate_by_employee_id(
+    employee_id: UUID = Field(..., description="UUID of the employee"),
+    query: EmploymentRateModel = Field(..., description="Query object, companyId, empoyeeId and instanceId are required"),
+    )->dict:
+    """
+    Batch update employment rate for an employee given by employee id
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentrates"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_rates(
+    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get employment rates optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentates"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def create_employment_rate(
+    query: EmploymentRateModel = Field(..., description="Query object, companyId, empoyeeId and instanceId are required"),
+    )->dict:
+    """
+    Create employment rate
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentrate"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_templates_by_company_id(
+    company_id: UUID = Field(..., description="UUID of the company"),
+    page_params: PageModel = Field(PageModel(),description="Page parameters")
+    )->dict:
+    """
+    Get employment templates by company id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/employmenttemplate"
+    params = page_params.model_dump(by_alias=True,exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_title_by_id(
+    id: UUID = Field(..., description="UUID of the employment ttile"),
+    )->dict:
+    """
+    Get employment title by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmenttitles/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_title_by_id_put(
+    id: UUID = Field(..., description="UUID of the employment title"),
+    query: EmploymentTitleModel = Field(..., description="Query object, code, companyId, and name are required"),
+    )->dict:
+    """
+    Update employment title by id (put)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentitle/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_title_by_id_post(
+    id: UUID = Field(..., description="UUID of the employment title"),
+    query: EmploymentTitleModel = Field(..., description="Query object, code, companyId, and name are required"),
+    )->dict:
+    """
+    Update employment title by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentitle/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def delete_employment_title_by_id(
+    id: UUID = Field(..., description="UUID of the employment ttile"),
+    )->dict:
+    """
+    Delete employment title by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmenttitles/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_titles(
+    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    )->dict:
+    """"
+    Get employment titles optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmenttitles"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def create_employment_title_by_id_post(
+    query: EmploymentTitleModel = Field(..., description="Query object, code, companyId, and name are required"),
+    )->dict:
+    """
+    Create employment title by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentitle"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+
 
 
 def get_salary_by_id(
