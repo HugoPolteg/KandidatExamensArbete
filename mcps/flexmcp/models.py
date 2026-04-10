@@ -599,6 +599,27 @@ class EmploymentPeriodModel(BaseModel):
 class CreateEmploymentPeriod(BaseModel):
     employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employment period with use of employment template. If left empty then no template will be used.")
     prioritize_employment_template: bool = Field(False,alias="prioritizeEmploymenttemplate",description="Default false. Determines whether values from template or model will be prioritized. False - will ensure all values from model overrite template values.")
+
+class EmploymentPersonalScheduleModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the personal schedule. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment personal schedule record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    personal_schedule_id: UUID = Field(..., alias="personalScheduleId", description="UUID of the personal schedule.")
+    time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the personal schedule.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the personal schedule. Nullable.")
+
+class EmploymentPublicScheduleModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the public schedule. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment public schedule record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    public_schedule_id: UUID = Field(..., alias="publicScheduleId", description="UUID of the public schedule.")
+    time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the public schedule.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the public schedule. Nullable.")
+
 class TimeCode(BaseModel):
     code:str
 
