@@ -10,7 +10,7 @@ INSTANCE = os.getenv("INSTANCE")
 DOMAIN = os.getenv("DOMAIN")
 
 class PageModel(BaseModel):
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
+    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0.")
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
 
 class AbsenceStatusModel(BaseModel):
@@ -156,8 +156,8 @@ class AccountCombinationModel(BaseModel):
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
 
 class GetAccountDistribution(BaseModel):
-    company: str = Field(...,description="Company number"),
-    instance: str = Field(INSTANCE,description="Domain name"),
+    company: str = Field(...,description="Company number")
+    instance: str = Field(INSTANCE,description="Domain name")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
 class AccountDistributionPartApprovalPermissionModel(BaseModel):
@@ -343,10 +343,11 @@ class CompanyModel(BaseModel):
     start_date: Optional[datetime] = Field(None, alias="startDate", description="Date from which the company is active. Nullable.")
 
 class GetCompanies(BaseModel):
-    instance: Optional[str] = Field(INSTANCE,description="Domain Name")
-    companynumber: Optional[int] = Field(None,description="companynumber")
+    instance: Optional[str] = Field(None, description="Domain Name")
+    companynumber: Optional[int] = Field(None, description="companynumber")
     organizationnumber: Optional[int] = Field(None,description="organizationnumber")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = ConfigDict(populate_by_name=True)
 
 class CompanyPostRequestModel(BaseModel):
     company_number: int = Field(..., alias="companyNumber", description="Company number.")
@@ -407,7 +408,7 @@ class GetCustomersByAccountDistribution (BaseModel):
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
 
 class GetTimeScheduleByEmployeeAndDate(BaseModel):
-    employee_id: UUID = Field(...,alias="employeeId",description="Employee id as a GUID"),
+    employee_id: UUID = Field(...,alias="employeeId",description="Employee id as a GUID")
     date_string: str = Field(...,alias="dateString",description="Date to getdat schedule time from")
 
 class EmploymentModel(BaseModel):
@@ -897,14 +898,6 @@ class Union(BaseModel):
     company_id: Optional[UUID] = Field(None,description="Company id.")
     company_number: Optional[int] = Field(None,description="Company number.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
-    model_config = ConfigDict(populate_by_name=True)
-
-class ListCompaniesInput(BaseModel):
-    instance: Optional[str] = Field(
-        default=DOMAIN,
-        description="Domain name. If not provided, defaults to the default-domain instance."
-    )
-    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
 
 class GetUsers(BaseModel):

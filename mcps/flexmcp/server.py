@@ -35,9 +35,30 @@ def list_instances():
         response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+
+
+
+@mcp.tool()
+def get_all_employees() -> dict:
+    """
+    Gets all employees
+
+    Returns:
+        Employee data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees"
+
+    try:
+        response = s.get(url, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
+    return response.json()
+
 
 #Works
+@mcp.tool()
 def get_absence_applications_by_company_id(
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company."),
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
@@ -58,18 +79,12 @@ def get_absence_applications_by_company_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
 def get_absence_application_by_parameters(
-    employmentnumber: Optional[str] = Field(None,description="Employment number."),
-    instance: Optional[str] = Field(None, description="Domain name."),
-    companynumber: Optional[int] = Field(None, description="Company number."),
-    absence_type_id: Optional[UUID] = Field(None, alias="absenceTypeId", description="UUID of the absence type."),
-    absence_type_name: Optional[str] = Field(None, alias="absenceTypeName", description="Name of the absence type."),
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
-    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
+    params: GetAbsenceApplicationByParameters = GetAbsenceApplicationByParameters()
 )-> dict:
     """
     Gets absence applications filtered by the provided parameters. All parameters are optional.
@@ -78,17 +93,7 @@ def get_absence_application_by_parameters(
         API response as JSON ditct
     """
     url = f"{consts.API_ENDPOINT}/absenceapplications"
-    params = {"pageIndex": page_index, "pageSize": page_size}
-    if employmentnumber is not None:
-        params["employmentnumber"] = employmentnumber
-    if instance is not None:
-        params["instance"] = instance
-    if companynumber is not None:
-        params["companynumber"] = companynumber
-    if absence_type_id is not None:
-        params["absenceTypeId"] = absence_type_id
-    if absence_type_name is not None:
-        params["absenceTypeName"] = absence_type_name
+    params = params.model_dump(by_alias=True, exclude_none=True)
     try:
         response = s.get(
             url,
@@ -96,13 +101,12 @@ def get_absence_application_by_parameters(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
 def create_absence_application(
-    apply_approval: Optional[bool] = Field(False, description="Decides whether the absence application has automatic approval to the highest level. Default value false."),
-    is_part_time_absence: Optional[bool] = Field(False, description="Decides whether the absence application is part time absence. Default false."),
+    params: CreateAbsenceApplicationQuery = CreateAbsenceApplicationQuery(),
     application: ImportAbsenceApplicationModelAPIBase = Field(..., description="Full absence application object. absenceTypeId, companyID, employmentNumber, fromDate,and Id are requiered. All other fields are optional ")
     )-> dict:
     """
@@ -112,8 +116,8 @@ def create_absence_application(
         API response as a JSON dict.
      """
     url = f"{consts.API_ENDPOINT}/absenceapplications"
-    params = {"applyApproval": apply_approval, "isPartTimeAbsence": is_part_time_absence}
-    payload = application.model_dump(by_alias=True, exclude_none=True)
+    params = params.model_dump(by_alias=True, exclude_none=True)
+    payload = application.model_dump(by_alias=True, exclude_none=True, mode="json")
     try:
         response = s.post(
             url,
@@ -124,10 +128,10 @@ def create_absence_application(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
-@mcp.tool()
 
+@mcp.tool()
 def get_absence_application_by_id(
     id: UUID = Field(..., description="UUID of the absence application.")
     )-> dict:
@@ -145,7 +149,7 @@ def get_absence_application_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -166,8 +170,8 @@ def delete_absence_application_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-    return response.json()
+        return f"API request failed: {e}\n{response.text}"
+    return response.status_code
 
 @mcp.tool()
 def update_absence_application(
@@ -198,7 +202,7 @@ def update_absence_application(
             timeout=consts.API_TIMEOUT
         )
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -226,7 +230,7 @@ def get_absence_types_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -247,7 +251,7 @@ def get_absence_type_by_parameters(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -268,7 +272,7 @@ def get_absence_type_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -292,7 +296,7 @@ def create_new_accounts(
             timeout=consts.API_TIMEOUT
         )
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -316,7 +320,7 @@ def get_accounts_by_account_distribution_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -341,7 +345,7 @@ def update_account_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -359,7 +363,7 @@ def get_account_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -375,7 +379,7 @@ def delete_account_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #This GET operation requires a body payload and cannot be tested in swagger. 
@@ -401,7 +405,7 @@ def get_reported_hours(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -426,7 +430,7 @@ def get_account_budget_by_account_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -451,7 +455,7 @@ def create_account_budget_for_account_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -470,7 +474,7 @@ def update_account_budget_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -494,7 +498,7 @@ def create_account_combination(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -519,7 +523,7 @@ def update_account_combination_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -541,7 +545,7 @@ def get_account_combination_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -563,7 +567,7 @@ def delete_account_combination_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -588,7 +592,7 @@ def get_account_combination_by_account_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -614,7 +618,7 @@ def get_account_combination_by_account_distribution_id_and_account_code(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -638,7 +642,7 @@ def get_account_distribution_by_company_number(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -663,7 +667,7 @@ def get_account_distribution_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -685,7 +689,7 @@ def get_account_part_approval_permissions_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -710,7 +714,7 @@ def update_company_account_part_aproval_permission_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -732,7 +736,7 @@ def delete_compamny_account_approval_permission_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -756,7 +760,7 @@ def get_company_account_approval_permissions(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -781,7 +785,7 @@ def create_company_account_part_approval_permissios_by_user_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -805,7 +809,7 @@ def get_accumulators(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -827,7 +831,7 @@ def get_accumulator_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -850,7 +854,7 @@ def get_allowance_rule_set(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -875,7 +879,7 @@ def get_audited_time_reports_by_company(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -891,7 +895,7 @@ def get_background_tasks_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -915,7 +919,7 @@ def get_background_task(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -940,7 +944,7 @@ def begin_background_task_release_accounts_to_billing(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -965,7 +969,7 @@ def begin_background_task_rollback_release(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -989,7 +993,7 @@ def get_balances(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1014,7 +1018,7 @@ def get_balances_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1036,7 +1040,7 @@ def get_balance_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1058,7 +1062,7 @@ def get_balance_adjustment_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1080,7 +1084,7 @@ def delete_balance_adjustment_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1104,7 +1108,7 @@ def update_balance_adjustment_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1129,7 +1133,7 @@ def get_balance_adjustment_by_employee_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1154,7 +1158,7 @@ def get_balance_adjustment_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1178,7 +1182,7 @@ def get_balance_adjustments(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 mcp.tool()
@@ -1203,13 +1207,13 @@ def create_balance_adjustment_batch_by_company(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
 def get_balance_report_by_balance_id_and_employee_id(
     balance_id: UUID = Field(...,alias="balanceId",description="UUID of the balance"),
-    filters: GetBalanceReportByBalanceIdAndEmployeeId = Field(...,"Parameters to filter the results by, employeeId and balanceTypeValueEnum requiered all other fields optional")
+    filters: GetBalanceReportByBalanceIdAndEmployeeId = Field(..., description="Parameters to filter the results by, employeeId and balanceTypeValueEnum requiered all other fields optional")
     )->dict:
     """
     Get a balance report by balance id and employee id
@@ -1228,7 +1232,7 @@ def get_balance_report_by_balance_id_and_employee_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1252,7 +1256,7 @@ def get_billing_releases_by_company(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1268,7 +1272,7 @@ def get_billing_releases_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1286,30 +1290,16 @@ def check_status()->dict:
             url,
             timeout=consts.API_TIMEOUT
         )
+        url = f"{consts.API_ENDPOINT}/CheckStatusWorkServer"
         response.raise_for_status()
-    except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-    return response.json()
-
-@mcp.tool()
-def check_status()->dict:
-    """
-    Check API server status
-
-    Returns:
-        API response as a JSON dict
-    """
-    url = f"{consts.API_ENDPOINT}/CheckStatusWorkServer"
-
-    try:
-        response = s.get(
+        response = response = s.get(
             url,
             timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
-    return response.json()
+        return f"API request failed: {e}\n{response.text}"
+    return response.status_code
 
 @mcp.tool()
 def get_child_by_id(
@@ -1330,7 +1320,7 @@ def get_child_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1355,7 +1345,7 @@ def update_child_by_id_put(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1381,7 +1371,7 @@ def update_child_by_id_post(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1403,7 +1393,7 @@ def delete_child_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1421,7 +1411,7 @@ def get_children(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1445,7 +1435,7 @@ def create_child(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works
@@ -1467,7 +1457,7 @@ def get_company_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1491,13 +1481,13 @@ def update_company_by_id_put(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
 def update_company_by_id_post(
     id: UUID = Field(..., description="UUID of the company."),
-    query: Optional[CompanyModel] = Field(None,description="Full query obejct, all fields optional")
+    query: Optional[CompanyModel] = CompanyModel()
     )->dict:
     """
     Update company by id (post)
@@ -1515,30 +1505,30 @@ def update_company_by_id_post(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
 def get_companies(
-    filters: Optional[GetCompanies] = Field(None,description="Fitler parameters to fitler the search by")
+    filters: Optional[GetCompanies] = GetCompanies()
     )->dict:
     """"
-    Get companies optionaly filtered by filter parameters
+    Get companies optionally filtered by filter parameters
 
     Returns:
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/companies"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True, exclude_none=True)
 
     try:
-        response = s.post(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1571,7 +1561,7 @@ def create_company(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1592,7 +1582,7 @@ def get_customer_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()    
 
 mcp.tool()
@@ -1617,7 +1607,7 @@ def update_customer_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1638,7 +1628,7 @@ def detlete_customer_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 mcp.tool()
@@ -1662,7 +1652,7 @@ def get_customers_by_company(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1687,7 +1677,7 @@ def get_customers_by_account_distribution_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1712,7 +1702,7 @@ def post_customers_by_account_distribution_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1735,7 +1725,7 @@ def get_from_time_schedule_by_employee_and_date(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1758,7 +1748,7 @@ def get_to_time_schedule_by_employee_and_date(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 mcp.tool()
@@ -1774,9 +1764,7 @@ def get_employee_by_id(
     url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
 
     try:
-        response = s.get(
-            url,
-            timeout=consts.API_TIMEOUT)
+        response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         raise RuntimeError(f"API request failed: {e}")
@@ -1804,7 +1792,7 @@ def update_employee_by_id_put(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1828,7 +1816,7 @@ def update_employee_by_id_post(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 
@@ -1852,7 +1840,7 @@ def get_employees(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1878,7 +1866,7 @@ def create_employee(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1899,7 +1887,7 @@ def get_user_by_employee_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1920,7 +1908,7 @@ def get_employee_image_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1941,7 +1929,7 @@ def delete_employee_image_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1965,7 +1953,7 @@ def add_or_replace_employee_image(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -1989,7 +1977,7 @@ def get_employee_images(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2011,7 +1999,7 @@ def get_employee_qualification_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2035,9 +2023,8 @@ def update_employmee_qualification_by_id_put(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
-@mcp.tool()
 
 @mcp.tool()
 def update_employee_qualification_by_id_post(
@@ -2060,7 +2047,7 @@ def update_employee_qualification_by_id_post(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2082,7 +2069,7 @@ def delete_employee_qualification_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2105,7 +2092,7 @@ def get_employee_qualifications(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 
@@ -2132,7 +2119,7 @@ def update_employment_default_accunt_by_id_put(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 @mcp.tool()
 
@@ -2156,7 +2143,7 @@ def update_employment_default_accunt_by_id_post(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2171,7 +2158,7 @@ def delete_employment_default_accunt_by_id_(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2194,10 +2181,10 @@ def get_employment_default_accounts(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
-@mcp.tool
+@mcp.tool()
 def create_employment_default_accunt(
     query: EmploymentDefaultAccountModel = Field(..., description="Query object, companyId, employeeId and instanceId are required")
     )->dict:
@@ -2217,7 +2204,7 @@ def create_employment_default_accunt(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2238,7 +2225,7 @@ def get_employment_default_account_interval_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2261,7 +2248,7 @@ def delete_employment_default_account_interval_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2285,7 +2272,7 @@ def update_employment_default_account_interval_by_id_put(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2309,7 +2296,7 @@ def update_employment_default_account_interval_by_id_post(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2332,7 +2319,7 @@ def get_employment_default_account_intervals(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2355,7 +2342,7 @@ def create_employment_default_account_interval(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2377,7 +2364,7 @@ def get_employment_documents_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2399,7 +2386,7 @@ def delete_employment_documents_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2421,7 +2408,7 @@ def get_employment_documents_collection_by_company(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2459,7 +2446,7 @@ def create_employment_document(
     except FileNotFoundError:
         raise RuntimeError(f"File not found: {file_path}")
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2482,7 +2469,7 @@ def get_employment_document_categories(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2503,7 +2490,7 @@ def get_employment_empty_schedule_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2532,7 +2519,7 @@ def update_employment_empty_schedule_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2553,7 +2540,7 @@ def delete_employment_empty_schedule_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2576,7 +2563,7 @@ def get_employment_empty_schedules(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2604,7 +2591,7 @@ def create_employment_empty_schedule(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 
@@ -2626,7 +2613,7 @@ def get_employment_period_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2655,7 +2642,7 @@ def update_employment_period_by_id_put(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2684,7 +2671,7 @@ def update_employment_period_by_id_post(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2705,7 +2692,7 @@ def delete_employment_period_by_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2734,7 +2721,7 @@ def update_employment_period_by_employee_id(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2757,7 +2744,7 @@ def get_employment_periods(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2783,7 +2770,7 @@ def create_employment_period(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 
@@ -2802,7 +2789,7 @@ def get_salary_by_id(
         response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works
@@ -2827,7 +2814,7 @@ def update_salary_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.json()
 
@@ -2851,7 +2838,7 @@ def delete_salary(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.status_code
 
@@ -2878,7 +2865,7 @@ def get_salaries_by_company(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.json()
 
@@ -2906,7 +2893,7 @@ def get_salaries_by_company_and_employee(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}") 
+        return f"API request failed: {e}\n{response.text}" 
     return response.json()
 
 
@@ -2933,7 +2920,7 @@ def get_salaries_by_employee(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 #print(get_salaries_by_employee(GetSalariesByEmployee(employee_id="640ca4b1-bf59-4740-9fc6-b1c6008861a0")))
 
@@ -2962,7 +2949,7 @@ def update_salaries_by_employee(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -2984,7 +2971,7 @@ def get_all_salaries(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #@mcp.tool()
@@ -3009,7 +2996,7 @@ def create_salary(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #print(create_salary(UpdateOrCreateSalaries(company_id=UUID("b4253a61-f229-4ca9-9831-ad931d9a75a6"), employee_id=UUID("f83fe21a-a90a-4ce8-8a13-b1c60089eca5") ,salary_type=0, full_time_salary=1200, comment="Bombaclat", is_historical_salary=True, from_date=datetime(2026, 4, 3, 0, 0, 0, 0))))
@@ -3033,7 +3020,7 @@ def get_time_report_by_employee(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.json()
 
@@ -3104,7 +3091,7 @@ def get_employment_periods_by_employee(
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.json()
 
@@ -3128,7 +3115,7 @@ def get_time_groups(
         response = s.get(url, paramsrs=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.json()
 
@@ -3150,7 +3137,7 @@ def get_project(
         response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
 
     return response.json()
 
@@ -3305,7 +3292,7 @@ def stamping_by_Id  (
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #@mcp.tool()
@@ -3341,7 +3328,7 @@ def stamping_by_employeeId(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3368,7 +3355,7 @@ def get_stamping_by_userID(
         timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works
@@ -3392,7 +3379,7 @@ def get_unions(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3413,7 +3400,7 @@ def get_union_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 
@@ -3434,7 +3421,7 @@ def get_user_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works
@@ -3457,7 +3444,7 @@ def get_users(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3480,7 +3467,7 @@ def get_users_by_instance(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works
@@ -3505,7 +3492,7 @@ def get_vehicle_types(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 
@@ -3530,7 +3517,7 @@ def create_vehicle_type(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3554,7 +3541,7 @@ def get_vehicle_type_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3575,7 +3562,7 @@ def get_vehicle_type_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3600,7 +3587,7 @@ def update_vehicle_type(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3621,7 +3608,7 @@ def delete_vehicle_type(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3644,7 +3631,7 @@ def get_travel_claims(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3665,7 +3652,7 @@ def get_travel_claim_attachment_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     
     content_disposition = response.headers.get("Content-Disposition", "")
     filename = content_disposition.split("filename=")[-1].strip('"') if "filename=" in content_disposition else str(id)
@@ -3695,7 +3682,7 @@ def get_travel_claims_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3716,7 +3703,7 @@ def get_qualification_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works (not)
@@ -3751,7 +3738,7 @@ def get_qualifications_by_instance(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -3780,7 +3767,7 @@ def get_qualifications_by_company_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 
 #Works (not)
@@ -3803,7 +3790,7 @@ def get_all_qualifications(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"API request failed: {e}\n{response.text}"
     return response.json()
 #print(get_all_qualifications())
 

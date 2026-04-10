@@ -35,9 +35,11 @@ employee_id = "640ca4b1-bf59-4740-9fc6-b1c6008861a0"
 company_id="b4253a61-f229-4ca9-9831-ad931d9a75a6"
 absence_type_id = '88c85624-a2ae-4955-b67e-ad9500df8e6c'
 
-
 print("Testing get_salary_by_id")
 print_test(server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae"))
+
+print("Testing get_employee_by_id")
+print_test(server.get_employee_by_id("640ca4b1-bf59-4740-9fc6-b1c6008861a0"))
 
 prev_salary = server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae")['FullTimeSalary']
 print(prev_salary)
@@ -46,8 +48,8 @@ new_salary = prev_salary + 1
 print("Testing update_salary_by_id")
 print_test(server.update_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae", models.Salary(fullTimeSalary=new_salary)), True, "FullTimeSalary", new_salary)
 
-print("Testing list_all_companies")
-print_test(server.list_all_companies())
+print("Testing get_companies")
+print_test(server.get_companies())
 
 print("Testing get_users")
 print_test(server.get_users())
@@ -58,8 +60,8 @@ print_test(server.get_all_qualifications())
 print("Testing get_vehicle_types")
 print_test(server.get_vehicle_types())
 
-print("Testing get_company")
-print_test(server.get_company(company_id))
+print("Testing get_company_by_id")
+print_test(server.get_company_by_id(company_id))
 
 print("Testing get_travel_claims_by_company_id")
 print_test(server.get_travel_claims_by_company_id(company_id))
