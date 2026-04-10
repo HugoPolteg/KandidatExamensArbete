@@ -620,6 +620,17 @@ class EmploymentPublicScheduleModel(BaseModel):
     time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the public schedule.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the public schedule. Nullable.")
 
+class EmploymentRateModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    employment_rate_percent: Optional[float] = Field(None, alias="employmentRatePercent", description="Employment rate as a percentage of full time.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the employment rate period. Nullable.")
+    hours_per_full_time_work_week: Optional[float] = Field(None, alias="hoursPerFullTimeWorkWeek", description="Number of hours per week for a full time employee.")
+    hours_per_full_time_work_year: Optional[float] = Field(None, alias="hoursPerFullTimeWorkYear", description="Number of hours per year for a full time employee.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment rate record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment rate period. Nullable.")
+
 class TimeCode(BaseModel):
     code:str
 
