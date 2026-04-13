@@ -1232,7 +1232,7 @@ def update_balance_adjustment_by_id(
 @mcp.tool()
 def get_balance_adjustment_by_employee_id(
     id: UUID = Field(...,description="UUID of the employee"),
-    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(description="Optinal filter parameters")
+    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(GetBalanceAdjustmentByEmployeeOrCompany(),description="Optinal filter parameters")
     )->dict:
     """
     Get balande adjustment for an employee given by employee id
@@ -1260,7 +1260,7 @@ def get_balance_adjustment_by_employee_id(
 @mcp.tool()
 def get_balance_adjustment_by_company_id(
     id: UUID = Field(...,description="UUID of the company"),
-    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(description="Optinal filter parameters")
+    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(GetBalanceAdjustmentByEmployeeOrCompany(),description="Optinal filter parameters")
     )->dict:
     """
     Get balande adjustment for a company given by company id
@@ -1287,7 +1287,7 @@ def get_balance_adjustment_by_company_id(
 
 @mcp.tool()
 def get_balance_adjustments(
-    filters: Optional[GetBalanceAdjustments] = Field(description="Filer parameters all feilds are optinal")
+    filters: Optional[GetBalanceAdjustments] = Field(GetBalanceAdjustments(),description="Filer parameters all feilds are optinal")
     )->dict:
     """
     Get balance adjustments filtered by filter parameters
@@ -1549,7 +1549,7 @@ def delete_child_by_id(
 
 @mcp.tool()
 def get_children(   
-    filters: Optional[GenericGetModel] = Field(None, description="Parameters to search the children by, all feilds optinal")
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to search the children by, all feilds optinal")
     )->dict:
     url = f"{consts.API_ENDPOINT}/child"
     params = filters.model_dump(by_alias=True,exclude_none=True)
@@ -1623,7 +1623,7 @@ def get_company_by_id(
 @mcp.tool()
 def update_company_by_id_put(
     id: UUID = Field(..., description="UUID of the company."),
-    query: Optional[CompanyModel] = Field(None,description="Full query obejct, all fields optional")
+    query: Optional[CompanyModel] = Field(CompanyModel(),description="Full query obejct, all fields optional")
     )->dict:
     """
     Update company by id (put)
@@ -3663,11 +3663,11 @@ def get_employment_titles(
     return response.json()
 
 @mcp.tool()
-def create_employment_title_by_id_post(
+def create_employment_title(
     query: EmploymentTitleModel = Field(..., description="Query object, code, companyId, and name are required"),
     )->dict:
     """
-    Create employment title by id (post)
+    Create employment title
 
     Returns:
         API response as a JSON dict.
@@ -3708,7 +3708,7 @@ def get_employment_type_by_id(
 
 @mcp.tool()
 def get_employment_types(
-    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GetEmploymentTypes = Field(GetEmploymentTypes(),description="Fitler parameters to fitler the search by all feilds optional")
     )->dict:
     """"
     Get employment titles optionaly filtered by filter parameters
@@ -3728,6 +3728,101 @@ def get_employment_types(
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
     return response.json()
+
+@mcp.tool()
+def get_employment_vacation_by_id(
+    id: UUID = Field(..., description="UUID of the employment vacation"),
+    )->dict:
+    """
+    Get employment vaccations by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmenvacations{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_vaction_by_id_put(
+    id: UUID = Field(..., description="UUID of the employment vacation"),
+    query: Optional[EmploymentVacationModel] = Field(EmploymentVacationModel(), description="Query object all fields are optional"),
+    )->dict:
+    """
+    Update employment vacation by id (put)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvacation/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_vaction_by_id_post(
+    id: UUID = Field(..., description="UUID of the employment vacation"),
+    query: Optional[EmploymentVacationModel] = Field(EmploymentVacationModel(), description="Query object all fields are optional"),
+    )->dict:
+    """
+    Update employment vacation by id (post)
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvacation/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_vacations(   
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+
+    """
+    Get employment vaccations optionaly filtered by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvaccations"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 
 

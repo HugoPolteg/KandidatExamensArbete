@@ -659,6 +659,27 @@ class GetEmploymentTypes(BaseModel):
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
 
+class VacationBalanceModel(BaseModel):
+    ingoing: Optional[float] = Field(None, description="Ingoing vacation balance at the start of the vacation year.")
+    remaining: Optional[float] = Field(None, description="Remaining vacation balance.")
+    withdrawn: Optional[float] = Field(None, description="Withdrawn vacation balance.")
+
+class EmploymentVacationModel(BaseModel):
+    advance_vacation_balance: Optional[VacationBalanceModel] = Field(None, alias="advanceVacationBalance", description="Balance details for advance vacation days.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="UUID of the company.")
+    current_vacation_year: Optional[datetime] = Field(None, alias="currentVacationYear", description="Start date of the current vacation year.")
+    daily_vacation_addition: Optional[float] = Field(None, alias="dailyVacationAddition", description="Daily vacation addition amount. Nullable.")
+    daily_vacation_pay: Optional[float] = Field(None, alias="dailyVacationPay", description="Daily vacation pay amount. Nullable.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment vacation record.")
+    instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance.")
+    paid_vacation_balance: Optional[VacationBalanceModel] = Field(None, alias="paidVacationBalance", description="Balance details for paid vacation days.")
+    saved_vacation_balance: Optional[VacationBalanceModel] = Field(None, alias="savedVacationBalance", description="Balance details for saved vacation days.")
+    unpaid_vacation_balance: Optional[VacationBalanceModel] = Field(None, alias="unpaidVacationBalance", description="Balance details for unpaid vacation days.")
+    vacation_addition_variable: Optional[float] = Field(None, alias="vacationAdditionVariable", description="Variable vacation addition amount.")
+    vacation_employment_rate: Optional[float] = Field(None, alias="vacationEmploymentRate", description="Employment rate used for vacation calculations.")
+
+
 class TimeCode(BaseModel):
     code:str
 
