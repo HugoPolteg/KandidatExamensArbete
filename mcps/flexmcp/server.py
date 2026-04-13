@@ -3824,6 +3824,147 @@ def get_employment_vacations(
     else:
         return f"Status: {response.status_code}\n{response.text}"
 
+@mcp.tool()
+def get_employment_vacations_quotas(
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+    """
+    Get employment vacation quotas optionaly filtered by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvaccationquoatas"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_employment_vehicle_by_id(
+    id: UUID = Field(..., description="UUID of the employment vehicle"),
+    )->dict:
+    """
+    Get employment vehicle by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvehicle/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_employment_vehicle_by_id(
+    id: UUID = Field(..., description="UUID of the employment vehicle"),
+    query: Optional[EmploymentVehicleModel] = Field(EmploymentVehicleModel(), description="CompanyID and EmployeeID are required, all other feilds optional"),
+    )->dict:
+    """
+    Update employment vehicle by id 
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvehicle/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def delete_employment_vehicle_by_id(
+    id: UUID = Field(..., description="UUID of the employment vehicle"),
+    )->dict:
+    """
+    Delete employment vehicle by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvehicle/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_employment_vehciles(   
+    filters: Optional[GetEmploymentVehicles] = Field(GetEmploymentVehicles(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+
+    """
+    Get employment vechicles optionaly filtered by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvehicle"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def create_employment_vehicle(
+    query: EmploymentVehicleModel = Field(..., description="CompanyID and EmployeeID are required, all other feilds optional"),
+    )->dict:
+    """
+    Create employment vehicle
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employmentvechicle"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
 
 
 def get_salary_by_id(

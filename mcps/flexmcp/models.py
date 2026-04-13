@@ -12,6 +12,7 @@ DOMAIN = os.getenv("DOMAIN")
 class PageModel(BaseModel):
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0.")
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
+    model_config = {"populate_by_name": True}
 
 class AbsenceStatusModel(BaseModel):
     absence_application_id: UUID = Field(..., alias="absenceApplicationId", description="UUID of the absence application.")
@@ -21,6 +22,7 @@ class AbsenceStatusModel(BaseModel):
     time_stamp: datetime = Field(..., alias="timeStamp", description="Timestamp of the absence status.")
     user_id: UUID = Field(..., alias="userId", description="UUID of the user who made the status update.")
     user_signature: Optional[str] = Field(None, alias="userSignature", description="Signature of the user who made the status update.")
+    model_config = {"populate_by_name": True}
 
 class WorkplaceModel(BaseModel):
     adress: Optional[str] = Field(None, description="Adress of the workplace")
@@ -28,10 +30,12 @@ class WorkplaceModel(BaseModel):
     country: Optional[str] = Field(None,description="Country of the workspace")
     postal_code: Optional[str] = Field(None,alias="postalCode",description="Postal code of the workplace")
     type: Optional[int] = Field(None, description="Type of workspace: 0 = Physical, 1 = Remote, 2 = NotFixed")
+    model_config = {"populate_by_name": True}
 
 class CreateAbsenceApplicationQuery(BaseModel):
     apply_approval: Optional[bool] = Field(False, alias="applyApproval", description="Decides whether the absence application has automatic approval to the highest level. Default value false.")
     is_part_time_absence: Optional[bool] = Field(False, alias="isPartTimeAbsence", description="Decides whether the absence application is part time absence. Default false.")
+    model_config = {"populate_by_name": True}
 
 class ImportAbsenceApplicationModelAPIBase(BaseModel):
     absence_type_id: UUID = Field(..., alias="absenceTypeId", description="UUID of the absence type.")
@@ -59,11 +63,12 @@ class AccountLocationModel(BaseModel):
     location_name: Optional[str] = Field(None, alias="locationName", description="Display name of the location.")
     radius: Optional[int] = Field(None, description="Geofence radius in metres (int32).")
     model_config = {"populate_by_name": True}
-
+    
 
 class AccountBillingPriceRowAccountModel(BaseModel):
     account_id: Optional[UUID] = Field(None, alias="accountId", description="UUID of the account.")
     id: Optional[UUID] = Field(None, description="UUID of the price row account entry.")
+    model_config = {"populate_by_name": True}
 
 class AccountBillingPriceRowModel(BaseModel):
     accounts: Optional[list[AccountBillingPriceRowAccountModel]] = Field(None, description="List of accounts associated with this price row.")
@@ -75,12 +80,12 @@ class AccountBillingPriceRowModel(BaseModel):
     price_adjustment_percentage: Optional[float] = Field(None, alias="priceAdjustmentPercentage", description="Price adjustment percentage. Nullable.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the price row validity period. Nullable.")
     unit: Optional[int] = Field(None, description="Billing row unit. 0 = Hour, 1 = Row, 2 = HalfDay, 3 = Pos, 4 = Km, 5 = Mil, 6 = Blank.")
-
+    model_config = {"populate_by_name": True}
 
 class AccountBillingModel(BaseModel):
     price_rows: Optional[list[AccountBillingPriceRowModel]] = Field([], alias="priceRows", description="List of standard billing price rows. Nullable.")
     price_rows_travel: Optional[list[AccountBillingPriceRowModel]] = Field([], alias="priceRowsTravel", description="List of travel billing price rows. Nullable.")
-
+    model_config = {"populate_by_name": True}
 
 class GetAccountByAccountDistributionId(BaseModel):
     code: Optional[str] = Field(None, description="Account code")
@@ -115,11 +120,13 @@ class GetReportedHoursModel(BaseModel):
     max_hours_open_time_row: Optional[int] = Field(None, alias="maxHoursOpenTimeRow", description="The maximum amount of hours selected timerows should be have been open for")
     time_group_id: Optional[UUID] = Field(None, alias="timeGroupId",description="Id of the timegroup")
     to_date_time: Optional[datetime] = Field(None,alias="TomDateTime",description="Get hours reported uo to this time")
+    model_config = {"populate_by_name": True}
 
 class GetAccountBudgetByAccountId(BaseModel):
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="From date. Get account budget from date.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="From date. Get account budget from date.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class AccountBudgetModel(BaseModel):
     actual_sales: float = Field(...,alias="actualSales",description="The observed sales")
@@ -128,6 +135,7 @@ class AccountBudgetModel(BaseModel):
     budgeted_sales: float = Field(...,alias="budgetedSales",description="The budgeted sales")
     date_time: str = Field(...,min_length=1,alias="dateTime",description="Budget period identifier as a string.")
     id: UUID = Field(None, description="UUID of the Account budget")
+    model_config = {"populate_by_name": True}
 
 class AccountModel(BaseModel):
     account_locations: Optional[List[AccountLocationModel]] = Field([], alias="accountLocations", description="A list of account locations")
@@ -142,29 +150,35 @@ class AccountModel(BaseModel):
     name: str = Field(..., description="Account name. Minimum length: 1.")
     travel_billing_state_enum: Optional[int] = Field(None, alias="travelBillingStateEnum", description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
     work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace details associated with the account.")
+    model_config = {"populate_by_name": True}
 
 class GetAbsenceTypes(BaseModel):
     page_params: PageModel = PageModel()
     absence_type_name: Optional[str] = Field(None, alias="absenceTypeName", description="Name of the absence type.")
+    model_config = {"populate_by_name": True}
 
 class UpdateAbsenceApplicationQuery(BaseModel):
     apply_approval: Optional[bool] = Field(False, alias="applyApproval", description="Decides whether the absence application has automatic approval to the highest level. Default value false.")
     is_part_time_absence: Optional[bool] = Field(False, alias="isPartTimeAbsence", description="Decides whether the absence application is part time absence. Default false.")
     model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
 class AccountCombinationAccountModel(BaseModel):
     account_distribution: UUID = Field(...,alias="accountDistribution",description="UUID of the account distribution")
     account_selection: str = Field(...,min_length=1,alias="accountSelection",description="Code identifying the selected account within the distribution.")
+    model_config = {"populate_by_name": True}
 
 class AccountCombinationModel(BaseModel):
     account_combination_accounts: Optional[List[AccountCombinationAccountModel]] = Field(None,alias="accountCombinationAccounts",description="List of combination accounts")
     combination_rule: int = Field(...,alias="combinationRule",description="Whether or not to allow posting combination: 1 = Allow, -1 = Do not Allow")
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
+    model_config = {"populate_by_name": True}
 
 class GetAccountDistribution(BaseModel):
     company: str = Field(...,description="Company number")
     instance: str = Field(INSTANCE,description="Domain name")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class AccountDistributionPartApprovalPermissionModel(BaseModel):
     account_distribution_id: UUID = Field(...,alias="accountDistributionId",description="UUID of the account distribution")
@@ -172,21 +186,25 @@ class AccountDistributionPartApprovalPermissionModel(BaseModel):
     premission_to_account_without_row_or_account: bool = Field(...,alias="premissionToAccountWithoutRowOrAccount",description="Whether the user has permission to approve account distributions without a specified row or account.")
     premission_to_all_accounts: bool = Field(..., alias="premissionToAllAccounts", description="Whether the user has permission to approve all accounts.")
     user_id: UUID = Field(..., alias="userId", description="UUID of the user this permission applies to.")
+    model_config = {"populate_by_name": True}
 
 class GetCompanyAccountApprovalPermississons(BaseModel):
     instance: Optional[str] = Field(None,description="instance")
     companynumber: Optional[int] = Field(None,description="companynumber")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     user_id: Optional[UUID] = Field(None,alias="userId",description="UUID of the user")
+    model_config = {"populate_by_name": True}
 
 class GetAccumulators(BaseModel):
     company_id: Optional[UUID] = Field(None,alias="companyId",description="UUID of the company")
     accumulator_type: Optional[int] = Field(None,alias="accumulatorType",description="Type of the accumulator:0 = None, 1 = Gross, 2 = Benefit, 3 = Tax, 4 = Allowance, 5 = Deduction, 6 = DebtGross, 7 = DebtNet")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetAllowanceRuleSet(BaseModel):
     company_id: Optional[UUID] = Field(None,alias="companyId",description="UUID of the company")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetAuditedTimeReportsByCompany(BaseModel):
     salary_transfer_id: Optional[UUID] = Field(None,alias="salartTransferId",description="Get time reports that have been sent to salary using the salary tranfer id")
@@ -196,30 +214,37 @@ class GetAuditedTimeReportsByCompany(BaseModel):
     approved_to_date: Optional[datetime]  = Field(None,alias="approvedToDate",description="Get time reports that have been audited before this date")
     audit_level_id: Optional[str] = Field(None,alias="auditLevelId",description="Get time reports that have been audited with this audit level id. If empty all audit levels will be selected")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetTimeReportByEmployee(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="employee id")
     date: Optional[datetime] = Field(None, description="Time reports reported after this date")
     generated: Optional[bool] = Field(True, description="Include generated time rows")
     model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
 class GetBackGroundTasks(BaseModel):
     worker_state: Optional[int] = Field(None,alias="workerState", description="Worker state of the background task: 0 = Enqueued, 1 = Scheduled, 2 = Processing, 3 = Succeeded, 4 = Failed, 5 = Deleted, 6 = Awaiting")
     worker_function: Optional[int] = Field(None,alias="workerFunction", description="Function of the worker: 0 = None, 1 = Exempelfunktion, 2 = Dygnsrutin, 3 = Mailer, 4 = ValutakursImport, 5 = PaminnelseTidrapport, 6 = Paminnelse, 7 = RensaReserakningar, 8 = RensaTidrapporter, 9 = UtrikesTraktamenteImport, 10 = CreateForetag, 11 = ResaLoneoverforing, 12 = TidLoneoverforing, 13 = CreateForetagsinstallningarFil, 14 = Importmallsimport, 15 = DeleteForetag, 16 = DeleteKundinstans, 17 = DeleteForetagsinstallningarFil, 18 = OverwriteForetag, 19 = Lonekorning, 20 = FrislappTillFakturering, 21 = JeevesQueueSender, 22 = RollbackFrislappTillFakturering, 23 = FirstCardFileRetreivalAndKontokortImport, 24 = EurocardKontokortImport, 25 = Meddelanden, 26 = SkattetabellImport, 27 = Export, 28 = SchemalagdKorning, 29 = UppdateraAckumulator, 30 = ExportAnstalld, 31 = RefreshTidrapporter, 32 = Lonerevision, 33 = CalculateLonekorningAnstallning, 34 = UpdateDatabase, 35 = FortnoxKonteringsimport, 36 = DanskeBankKontokortImport, 37 = FortnoxBokforingsoverforing, 38 = TidDelbifall, 39 = RecalculateReserakningar, 40 = KopieraSchema, 41 = FlexOnlineSystemInformationSender, 42 = AutoBemanning, 43 = Felmeddelandeutskick, 44 = LonBokforingsunderlag, 45 = Kontrolluppgifter, 46 = UpdateNarvarotablaData, 47 = InitiatePayroll, 48 = Semesterarsskifte, 49 = SenAnkomstPaminnelse, 50 = UtbetalningAvLon, 51 = AnonymiseringPersonuppgifter, 52 = Semesterskuld, 53 = PassforfraganAnswer, 54 = Formel, 55 = TidregistreringAvvikelseinstallning, 56 = Tidregistreringsinstallning, 57 = TidregistreringStamplinginstallning, 58 = TidrapporteringColumnLayoutinstallning, 59 = TidregistreringAvvikelsetyperInstallning, 60 = Agi, 61 = Kontokortsfil, 62 = KvittoScanning, 63 = SprakFilerFromFlexOnline, 64 = StandardvardenForDynamiskOversattningFromFlexOnline, 65 = StandardvardenForDynamiskOversattningTillFlexOnline, 66 = FlexKontokort, 67 = PensionOchForsakring, 68 = LonerevisionClearInactiveRowLocks, 69 = LicensFromFlexOnline, 70 = XledgerIntegration, 71 = Onboarding, 72 = UteblivenStamplingPaminnelse, 73 = UteblivenStamplingPaminnelseScheduler, 74 = Arbetsgivarintyg, 75 = FragaOmSkatteavdrag, 76 = KonjunkturstatistikKLP, 77 = KopieraForetag, 79 = OfflineStamplingar, 80 = KonjunkturstatistikKSju, 81 = KonjunkturstatistikKSP, 82 = LonestrukturstatistikSLP, 83 = CalculateTidrapportdagDataWorkerService, 84 = ResetTidrapportdagDataWorkerService, 85 = Retrolon, 86 = KomprimeraBilagor, 87 = VerifiedSync, 88 = AnstallningSemesterinstallning, 89 = AnstallningSemesterarIngaendeVarde, 90 = AnstallningSemesterarSemestersaldo, 91 = LonekorningAnstallningSemesterarSemestersaldo, 92 = AnstallningBankkontouppgift, 93 = AnstallningKontrolluppgiftsinstallning, 94 = AnstallningPensionOchForsakring, 95 = Uppmarkningskod, 96 = UtbetalningAvLonInstallningLeverantorinformation, 97 = LonBokforingsfilinstallning, 98 = LonSIE4Mall, 99 = LonSIE4Konteringsdimension, 100 = Styrforetag, 101 = ExporteraSaldon, 102 = TripletexIntegration, 103 = EuStatistikLcs, 104 = LonespecifikationerKivra, 105 = LasTurordning, 106 = Semesterberakning, 107 = GranskningAvAnstallningsperiodPaminnelse, 108 = AltinnIntegration, 109 = ExportUrval, 110 = Exportintervall, 111 = ExporturvalHemkontering, 112 = ExporturvalKontering, 113 = ExporturvalUtlaggsurval, 114 = AtkAtfArsskifte, 115 = PowerOfficeGoIntegration, 116 = AtkAtfSkuld, 117 = BkyIntegration, 118 = Ackumulatorskuld, 119 = ScriveSync, 120 = LonekartlaggningCreate, 121 = LonekartlaggningCreateAnstallning, 122 = LonekartlaggningCalculate, 123 = Nyhetsflode, 124 = VerifiedSparaSigneradeDokument, 125 = LonekartlaggningDelete, 126 = VismaNetIntegration, 127 = AutomatiskGranskning, 128 = LonerevisionPaminnelse, 129 = SemesterdagUppdatering, 130 = ScriveSparaSigneradeDokument, 131 = LasTillsvidareCreate, 132 = LasTillsvidareCalculate, 133 = Winningtemp, 134 = RemoveUnmappedKontokort, 135 = LasForetradeCalculate, 140 = PaminnelseNarAllaTidrapporterBlivitGranskade, 141 = EgnaProcesser, 142 = BeraknaBevakningar, 143 = BorttagningAvraknadeReserakningar, 144 = BorttagningAvraknadePeriodavrakningar, 145 = RaderaPersonuppgifter, 146 = EnklaKonverteringar, 147 = VismaNetErp, 148 = VismaConnectRoller, 149 = WebhookSender, 150 = VismaConnectOnboarding, 151 = Bygglosen, 152 = TidBifallAll, 153 = ResBifallAll")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class BillingReleaseSelectionAccount(BaseModel):
     code: Optional[str] = Field(None, description="Account code of an account to include in the release")
+    model_config = {"populate_by_name": True}
 
 class BillingReleaseSelectionAccountdistribution(BaseModel):
     accounts: Optional[List[BillingReleaseSelectionAccount]] = Field(None, description="List of specific accounts to include in the release")
     id: Optional[UUID] = Field(None,description="UUID of the account distribution to release")
+    model_config = {"populate_by_name": True}
 
 class BillingReleaseSelectionEmployee(BaseModel):
     employee_number: Optional[str] = Field(None, alias="employeeNumber", description="Employee number to filter the release by.")
+    model_config = {"populate_by_name": True}
 
 class RollbackReleaseModel(BaseModel):
     release_id: Optional[UUID] = Field(None,alias="releaseId",description="UUID of the release")
+    model_config = {"populate_by_name": True}
 
 class BillingReleaseSelectionModel(BaseModel):
     accountdistributions: Optional[List[BillingReleaseSelectionAccountdistribution]] = Field(None, alias="accountdistributions", description="List of account distributions to include in the release.")
@@ -230,6 +255,7 @@ class BillingReleaseSelectionModel(BaseModel):
     signature: Optional[str] = Field(None, description="Signature or identifier of the user initiating the release.")
     time: Optional[bool] = Field(None,description="Whether to include time entries in the billing release.")
     travel: Optional[bool] = Field(None,description="Whether to include travel entries in the billing release.")
+    model_config = {"populate_by_name": True}
 
 class GetBalances(BaseModel):
     instance: Optional[str] = Field(INSTANCE,description="Domain name")
@@ -237,11 +263,13 @@ class GetBalances(BaseModel):
     balance_code: Optional[str] = Field(None,alias="balanceCode", description="Balance Code")
     balance_type: Optional[int] = Field(None,alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetBalancesByCompanyId(BaseModel):
     balance_code: Optional[str] = Field(None,alias="balanceCode", description="Balance Code")
     balance_type: Optional[int] = Field(None,alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class BalanceAdjustmentModel(BaseModel):
     adjustment_value: Optional[float] = Field(None, alias="adjustmentValue", description="Adjustment value as a double.")
@@ -253,10 +281,12 @@ class BalanceAdjustmentModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the balance adjustment.")
     is_generated: bool = Field(..., alias="isGenerated", description="Filter on is generated")
     period_determination_date: datetime = Field(..., alias="periodDeterminationDate", description="Date used to determine the period for this balance adjustment.")
+    model_config = {"populate_by_name": True}
 
 class GetBalanceAdjustmentByEmployeeOrCompany(BaseModel):
     employee_number: Optional[str] = Field(None,alias="employeeNumber",description="Employee number.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetAbsenceApplicationByParameters(BaseModel):
     employmentnumber: Optional[str] = Field(None,description="Employment number.")
@@ -266,6 +296,7 @@ class GetAbsenceApplicationByParameters(BaseModel):
     absence_type_name: Optional[str] = Field(None, alias="absenceTypeName", description="Name of the absence type.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
 
 class GetBalanceAdjustments(BaseModel):
@@ -277,18 +308,21 @@ class GetBalanceAdjustments(BaseModel):
     adjustment_type: Optional[int] = Field(None,alias="balanceAdjustmentType", description="Type of balance adjustment. 0 = JusteraUtgaende, 1 = JusteraIngaende, 2 = SattIngaende.")
     is_generated: Optional[bool] = Field(None,alias="isGenerated", description="Filter on is generated")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetBalanceReportByBalanceIdAndEmployeeId(BaseModel):
     employee_id: UUID = Field(None,alias="employeeId",description="UUID of the employee")
     balance_type_value_enum: int = Field(None,alias="balaneTypeValueEnum",description="Type of balance value: 0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Get billings from this date")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="Get billings upp to this date.")
+    model_config = {"populate_by_name": True}
 
 class GetBillingReleasesByCompany(BaseModel):
     company: str = Field(...,description="company")
     instance: str = Field(INSTANCE,description="The customer instance (domain)")
     hide_completed_releasees: Optional[bool] = Field(None,description="Hides the billing releases that is fully released")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class UserViewModel(BaseModel):
     card_badge_id: Optional[str] = Field(None, alias="cardBadgeId", description="Card bade ID")
@@ -301,6 +335,7 @@ class UserViewModel(BaseModel):
     show_week_number: Optional[bool] = Field(None, alias="showWeekNumber", description="Whether to show the week number for this employee.")
     username: Optional[str] = Field(None, alias="username", max_length=100, description="User name")
     username_alias: Optional[str] = Field(None, alias="usernameAlias", description="Alternative username or alias.")
+    model_config = {"populate_by_name": True}
 
 class ChildModel(BaseModel):
     child_country_code: Optional[str] = Field(None,alias="childCountryKod",description="Country code of the child.")
@@ -313,6 +348,7 @@ class ChildModel(BaseModel):
     is_chronically_ill: Optional[bool] = Field(None,alias="isChronicallyIll",description="If the child is chronically ill")
     name: Optional[str] = Field(None, description="Name of the child")
     user: Optional[UserViewModel] = Field(None, )
+    model_config = {"populate_by_name": True}
 
 class GenericGetModel(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
@@ -321,6 +357,7 @@ class GenericGetModel(BaseModel):
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
     employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class CompanyModel(BaseModel):
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
@@ -347,6 +384,7 @@ class CompanyModel(BaseModel):
     name: Optional[str] = Field(None, description="Company name. Nullable.")
     organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Company organization number. Nullable.")
     start_date: Optional[datetime] = Field(None, alias="startDate", description="Date from which the company is active. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class GetCompanies(BaseModel):
     instance: Optional[str] = Field(None, description="Domain Name")
@@ -354,6 +392,7 @@ class GetCompanies(BaseModel):
     organizationnumber: Optional[int] = Field(None,description="organizationnumber")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
 class CompanyPostRequestModel(BaseModel):
     company_number: int = Field(..., alias="companyNumber", description="Company number.")
@@ -377,6 +416,7 @@ class CompanyPostRequestModel(BaseModel):
     is_winningtemp_licensed: Optional[bool] = Field(None, alias="isWinningtempLicensed", description="Whether the company is licensed for Winningtemp.")
     name: str = Field(..., min_length=1, description="Company name. Minimum length: 1.")
     organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Company organization number. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class CustomerModel(BaseModel):
     account_locations: Optional[list[AccountLocationModel]] = Field(None, alias="accountLocations", description="List of geographic locations associated with the customer. Nullable.")
@@ -400,6 +440,7 @@ class CustomerModel(BaseModel):
     travel_billing_state_enum: Optional[int] = Field(None, alias="travelBillingStateEnum", description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always.")
     visiting_address: Optional[str] = Field(None, alias="visitingaddress", description="Visiting address of the customer. Nullable.")
     work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace details associated with the customer.")
+    model_config = {"populate_by_name": True}
 
 class GetCustomersByComopany(BaseModel):
     company: str = Field(..., description="Company number. Required.")
@@ -407,15 +448,18 @@ class GetCustomersByComopany(BaseModel):
     code: Optional[str] = Field(None, description="Customer code filter.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
+    model_config = {"populate_by_name": True}
 
 class GetCustomersByAccountDistribution (BaseModel):
     code: Optional[str] = Field(None, description="Customer code filter.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
+    model_config = {"populate_by_name": True}
 
 class GetTimeScheduleByEmployeeAndDate(BaseModel):
     employee_id: UUID = Field(...,alias="employeeId",description="Employee id as a GUID")
     date_string: str = Field(...,alias="dateString",description="Date to getdat schedule time from")
+    model_config = {"populate_by_name": True}
 
 class EmploymentModel(BaseModel):
     account_number: Optional[str] = Field(None, alias="accountNumber", description="Bank account number. Nullable.")
@@ -451,7 +495,7 @@ class EmploymentModel(BaseModel):
     weekly_rest_breaking_day: Optional[int] = Field(None, alias="weeklyRestBreakingDay", description="Day of the week when weekly rest period is broken. 1 = Monday, 2 = Tuesday, 3 = Wednesday, 4 = Thursday, 5 = Friday, 6 = Saturday, 7 = Sunday.")
     weekly_rest_breaking_time: Optional[datetime] = Field(None, alias="weeklyRestBreakingTime", description="Time at which the weekly rest period is broken. Nullable.")
     work_place_number_scb: Optional[int] = Field(None, alias="workPlaceNumberScb", description="Workplace number as registered with SCB (Statistics Sweden). Nullable.")
-
+    model_config = {"populate_by_name": True}
 
 class EmployeeModel(BaseModel):
     address_row1: Optional[str] = Field(None, alias="addressRow1", description="First row of the employee's address. Nullable.")
@@ -482,6 +526,7 @@ class EmployeeModel(BaseModel):
     postal_code: Optional[str] = Field(None, alias="postalCode", description="Postal code of the employee's address. Nullable.")
     salary_revision_year: Optional[int] = Field(None, alias="salaryRevisionYear", description="Year of the employee's last salary revision. Nullable.")
     union_id: Optional[UUID] = Field(None, alias="unionId", description="UUID of the union the employee belongs to. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class GetEmployees(BaseModel):
     instance: Optional[str] = Field(INSTANCE, description="Domain name.")
@@ -494,14 +539,17 @@ class GetEmployees(BaseModel):
     is_in_audit_process: Optional[bool] = Field(None, alias="isInAuditProcess", description="Filter employees by whether they are currently in an audit process.")
     employment_type: Optional[int] = Field(None, alias="employmentType", description="Filter employees by employment type of their current employment period.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class EmployeeCreateParams(BaseModel):
     employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employee with use of selected employment template. If left empty then company default template will be used.")
     employment_period_start: datetime = Field(None,alias="employmentPeriodStart",description="Set start date of the default employmentPeriod created. Must be specified for the employment templates assignment template to be applied.")
     employement_period_end: datetime = Field(None,alias="employmentPeriodEnd",description="Set end date of the default employmentPeriod created.")
+    model_config = {"populate_by_name": True}
 
 class EmployeeCreateModel(EmployeeModel):
     email_visma_connect: Optional[str] = Field(None, alias="emailVismaConnect", description="Employee's Visma Connect email address used for system authentication. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class EmployeeImageModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company the employee belongs to.")
@@ -509,11 +557,13 @@ class EmployeeImageModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     id: Optional[UUID] = Field(None, description="UUID of the employee image record.")
     image: str = Field(..., min_length=1, description="Employee image as a base64 encoded string. Minimum length: 1.")
+    model_config = {"populate_by_name": True}
 
 class GetEmployeeImgaes(BaseModel):
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee")
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class EmployeeQualificationModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -522,6 +572,7 @@ class EmployeeQualificationModel(BaseModel):
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     qualification_id: UUID = Field(..., alias="qualificationId", description="UUID of the qualification.")
     qualification_level: float = Field(..., alias="qualificationLevel", description="Level of the employee's qualification.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentDefaultAccountModel(BaseModel):
     account_code: Optional[str] = Field(None, alias="accountCode", description="Account code. Nullable.")
@@ -533,13 +584,14 @@ class EmploymentDefaultAccountModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the employment default account record.")
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="tomDate", description="End date of the default account validity period. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentDefaultAccountModelBase(BaseModel):
     account_code: Optional[str] = Field(None, alias="accountCode", description="Account code. Nullable.")
     account_distribution_id: Optional[UUID] = Field(None, alias="accountDistributionId", description="UUID of the account distribution.")
     account_id: Optional[UUID] = Field(None, alias="accountId", description="UUID of the account. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the employment default account record.")
-
+    model_config = {"populate_by_name": True}
 
 class EmploymentDefaultAccountIntervalModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -550,6 +602,7 @@ class EmploymentDefaultAccountIntervalModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the employment default account interval record.")
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment default account interval. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class GetEmploymentDocumentCollection(BaseModel):
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
@@ -557,10 +610,12 @@ class GetEmploymentDocumentCollection(BaseModel):
     document_category_id: Optional[UUID] = Field(None, alias="documentCatagoryId", description="UUID of the document catagory.")
     created_since: Optional[UUID] = Field(None,alias="createdSince",description="Documents created since this date")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class GetEmploymentDocumentCatagories(BaseModel):
     company_id: UUID = Field(None,alias="companyId",description="UUID of the company")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class EmptyScheduleModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -569,6 +624,7 @@ class EmptyScheduleModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the empty schedule record.")
     time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the empty schedule.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the empty schedule period. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class GetEmploymentEmptySchedules(BaseModel):
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
@@ -576,6 +632,7 @@ class GetEmploymentEmptySchedules(BaseModel):
     employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
     page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
     page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    model_config = {"populate_by_name": True}
 
 class TravelRuleSetModel(BaseModel):
     allowance_according_to: Optional[int] = Field(None, alias="allowanceAccordingTo", description="Determines allowance rules source. 0 = Company, 1 = Employment.")
@@ -584,6 +641,7 @@ class TravelRuleSetModel(BaseModel):
     travel_time_according_to: Optional[int] = Field(None, alias="travelTimeAccordingTo", description="Determines travel time rules source. 0 = Company, 1 = Employment.")
     travel_time_rule_set_id: Optional[UUID] = Field(None, alias="travelTimeRuleSetId", description="UUID of the travel time rule set. Nullable.")
     use_trip_on_invoice: Optional[bool] = Field(None, alias="useTripOnInvoice", description="Whether to use trip on invoice.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentPeriodModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -601,10 +659,12 @@ class EmploymentPeriodModel(BaseModel):
     title_id: Optional[UUID] = Field(None, alias="titleId", description="UUID of the employee's title. Nullable.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment period. Nullable.")
     travel_rule_set: Optional[TravelRuleSetModel] = Field(None, alias="travelRuleSet", description="Travel rule set settings for this employment period.")
+    model_config = {"populate_by_name": True}
 
 class CreateEmploymentPeriod(BaseModel):
     employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employment period with use of employment template. If left empty then no template will be used.")
     prioritize_employment_template: bool = Field(False,alias="prioritizeEmploymenttemplate",description="Default false. Determines whether values from template or model will be prioritized. False - will ensure all values from model overrite template values.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentPersonalScheduleModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -615,6 +675,7 @@ class EmploymentPersonalScheduleModel(BaseModel):
     personal_schedule_id: UUID = Field(..., alias="personalScheduleId", description="UUID of the personal schedule.")
     time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the personal schedule.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the personal schedule. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentPublicScheduleModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -625,6 +686,7 @@ class EmploymentPublicScheduleModel(BaseModel):
     public_schedule_id: UUID = Field(..., alias="publicScheduleId", description="UUID of the public schedule.")
     time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the public schedule.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the public schedule. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentRateModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -636,6 +698,7 @@ class EmploymentRateModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the employment rate record.")
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment rate period. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class GetEmplploymentTitles(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
@@ -643,6 +706,7 @@ class GetEmplploymentTitles(BaseModel):
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
     active: Optional[bool] = Field(None, description="Whether the employment title is active. Nullable.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class EmploymentTitleModel(BaseModel):
     active: Optional[bool] = Field(None, description="Whether the employment title is active. Nullable.")
@@ -652,17 +716,20 @@ class EmploymentTitleModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the employment title record.")
     instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance.")
     name: str = Field(..., min_length=1, description="Name of the employment title. Minimum length: 1.")
+    model_config = {"populate_by_name": True}
 
 class GetEmploymentTypes(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 class VacationBalanceModel(BaseModel):
     ingoing: Optional[float] = Field(None, description="Ingoing vacation balance at the start of the vacation year.")
     remaining: Optional[float] = Field(None, description="Remaining vacation balance.")
     withdrawn: Optional[float] = Field(None, description="Withdrawn vacation balance.")
+    model_config = {"populate_by_name": True}
 
 class EmploymentVacationModel(BaseModel):
     advance_vacation_balance: Optional[VacationBalanceModel] = Field(None, alias="advanceVacationBalance", description="Balance details for advance vacation days.")
@@ -678,6 +745,31 @@ class EmploymentVacationModel(BaseModel):
     unpaid_vacation_balance: Optional[VacationBalanceModel] = Field(None, alias="unpaidVacationBalance", description="Balance details for unpaid vacation days.")
     vacation_addition_variable: Optional[float] = Field(None, alias="vacationAdditionVariable", description="Variable vacation addition amount.")
     vacation_employment_rate: Optional[float] = Field(None, alias="vacationEmploymentRate", description="Employment rate used for vacation calculations.")
+    model_config = {"populate_by_name": True}
+
+class EmploymentVehicleModel(BaseModel):
+    avg_price_per_liter: Optional[float] = Field(None, alias="avgPricePerLiter", description="Average price per liter of fuel. Nullable.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    consumption: Optional[float] = Field(None, description="Fuel consumption of the vehicle. Nullable.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    fuel_benefit: Optional[bool] = Field(None, alias="fuelBenefit", description="Whether the employee has a fuel benefit for this vehicle.")
+    id: Optional[UUID] = Field(None, description="UUID of the employment vehicle record.")
+    odometer_reading: Optional[float] = Field(None, alias="odometerReading", description="Current odometer reading of the vehicle. Nullable.")
+    register_odometer_reading: Optional[bool] = Field(None, alias="registerOdometerReading", description="Whether to register odometer readings for this vehicle.")
+    reg_number: Optional[str] = Field(None, alias="regNumber", description="Vehicle registration number. Nullable.")
+    trip_log_from: Optional[datetime] = Field(None, alias="tripLogFrom", description="Start date for trip log recording. Nullable.")
+    trip_log_to: Optional[datetime] = Field(None, alias="tripLogTo", description="End date for trip log recording. Nullable.")
+    vehicle_type: UUID = Field(..., alias="vehicleType", description="UUID of the vehicle type.")
+    model_config = {"populate_by_name": True}
+
+class GetEmploymentVehicles(BaseModel):
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee.")
+    vechile_type: Optional[UUID] = Field(None, alias="vechileType", description="UUID of the vehicle type.")
+    trip_log_from: Optional[datetime] = Field(None, alias="tripLogFrom", description="Start date for filtering employment vehicles based on trip log recording.")
+    trip_log_to: Optional[datetime] = Field(None, alias="tripLogTo", description="End date for filtering employment vehicles based on trip log recording.")
+    reg_nummber: Optional[str] = Field(None, alias="regNumber", description="Vehicle registration number for filtering employment vehicles.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 
 class TimeCode(BaseModel):
