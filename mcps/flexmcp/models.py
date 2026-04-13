@@ -771,6 +771,61 @@ class GetEmploymentVehicles(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
+class HrFormDecimalSettingModel(BaseModel):
+    id: Optional[UUID] = Field(None, description="UUID of the decimal setting record.")
+    rounding_policy: Optional[int] = Field(None, alias="roundingPolicy", description="Rounding policy for decimal values. 0 = None, 1 = Up, 2 = Down, 3 = NearestInteger.")
+    type: Optional[int] = Field(None, description="Type of decimal setting. 0 = MonthlySalary, 1 = HourlySalary, 2 = AnnualSalary, 3 = ContractualWorkingHours, 4 = WorkingHoursHoursPerWeekActual, 5 = WorkingHoursHoursPerWeekFullTime, 6 = WorkingHoursPerYearActual, 7 = WorkingHoursPerYearFullTime.")
+    model_config = {"populate_by_name": True}
+
+
+class HttpFileModel(BaseModel):
+    content_length: Optional[int] = Field(None, alias="contentLength", description="Length of the file content in bytes.")
+    content_type: Optional[str] = Field(None, alias="contentType", description="MIME type of the file. Nullable.")
+    file_content: Optional[str] = Field(None, alias="fileContent", description="Base64 encoded file content. Nullable.")
+    file_name: Optional[str] = Field(None, alias="fileName", description="Name of the file. Nullable.")
+    model_config = {"populate_by_name": True}
+
+
+class HrFormModel(BaseModel):
+    allow_edit_when_e_signing: Optional[bool] = Field(None, alias="allowEditWhenESigning", description="Whether the form can be edited during e-signing.")
+    can_be_chosen_as_attachment: Optional[bool] = Field(None, alias="canBeChosenAsAttachment", description="Whether the form can be chosen as an attachment.")
+    can_be_saved_directly_to_employee_document: Optional[bool] = Field(None, alias="canBeSavedDirectlyToEmployeeDocument", description="Whether the form can be saved directly to employee documents.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    decimal_settings: Optional[list[HrFormDecimalSettingModel]] = Field(None, alias="decimalSettings", description="List of decimal settings for the HR form. Nullable.")
+    description: Optional[str] = Field(None, description="Description of the HR form. Nullable.")
+    disable_manual_editing: Optional[bool] = Field(None, alias="disableManualEditing", description="Whether manual editing of the form is disabled.")
+    document_format_download_options: Optional[int] = Field(None, alias="documentFormatDownloadOptions", description="Available download formats. 0 = DOCX, 1 = PDF, 2 = All.")
+    employment_document_category_id: Optional[UUID] = Field(None, alias="employmentDocumentCategoryId", description="UUID of the employment document category. Nullable.")
+    e_signing: Optional[bool] = Field(None, alias="eSigning", description="Whether e-signing is enabled for this form.")
+    file: Optional[HttpFileModel] = Field(None, description="File associated with the HR form.")
+    filter_step: Optional[bool] = Field(None, alias="filterStep", description="Whether the filter step is enabled for this form.")
+    hr_form_rule_for_date_controller_values: Optional[int] = Field(None, alias="hrFormRuleForDateControllerValues", description="Rule for date controller values. 0 = EmploymentPeriodStartDate, 1 = CurrentValue, 2 = EmploymentPeriodSelectedValue.")
+    id: Optional[UUID] = Field(None, description="UUID of the HR form record.")
+    is_active: Optional[bool] = Field(None, alias="isActive", description="Whether the HR form is active.")
+    name: Optional[str] = Field(None, description="Name of the HR form. Nullable.")
+    type: Optional[int] = Field(None, description="Type of HR form. 0 = HrForm, 1 = Resume, 2 = All, 3 = EmploymentContract, 4 = StartPage.")
+    model_config = {"populate_by_name": True}
+
+class GetHrForms(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    comany_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    hr_form_type: Optional[int] = Field(None, alias="hrFormType", description="Type of HR form to filter by. 0 = HrForm, 1 = Resume, 2 = All, 3 = EmploymentContract, 4 = StartPage.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class NewCompanyViewModel(BaseModel):
+    company_name: str = Field(..., alias="companyName", min_length=1, description="Name of the new company. Minimum length: 1.")
+    company_number: int = Field(..., alias="companyNumber", description="Company number for the new company.")
+    company_number_to_copy_from: Optional[int] = Field(None, alias="companyNumberToCopyFrom", description="Company number of the existing company to copy settings from.")
+    copy_settings_from_existing_company: bool = Field(..., alias="copySettingsFromExistingCompany", description="Whether to copy settings from an existing company.")
+    country_code: Optional[str] = Field(None, alias="countryCode", description="Country code for the new company. Nullable.")
+    culture: Optional[str] = Field(None, description="Culture/locale setting for the new company. Nullable.")
+    currency_code: Optional[str] = Field(None, alias="currencyCode", description="Currency code for the new company.")
+    customer_instance_domain: str = Field(DOMAIN, alias="customerInstanceDomain", min_length=1, description="Instance domain for the new company. Minimum length: 1.")
+    customer_instance_domain_to_copy_from: Optional[str] = Field(None, alias="customerInstanceDomainToCopyFrom", description="Instance domain of the existing company to copy settings from. Nullable.")
+    include_roles_when_copying_between_instances: Optional[bool] = Field(None, alias="includeRolesWhenCopyingBetweenInstances", description="Whether to include roles when copying settings between instances.")
+    organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Organization registration number for the new company. Nullable.")
+    model_config = {"populate_by_name": True}
 
 class TimeCode(BaseModel):
     code:str

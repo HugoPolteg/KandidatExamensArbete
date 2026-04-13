@@ -3966,6 +3966,271 @@ def create_employment_vehicle(
         return f"API request failed: {e}\n{response.text}"
     return response.json()
 
+@mcp.tool()
+def get_company_information(
+    instance: str = Field(INSTANCE, description="Domain name"),
+    start_range: int = Field(..., alias="startRange", description="Company Number. Start of the range, the start value is included in the result."),
+    end_range: int = Field(..., alias="endRange", description="Company Number. End of the range, the end value is included in the result.")
+    )->dict:
+    """
+    Get company information for companies with company number in the given range for a given instance. If no instance is provided, defaults to the default-domain instance.
+
+    Returns:
+        A API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/GetCompanyInformation/GetCompanyInformation"
+    params = {
+        "instance": instance,
+        "startRange": start_range,
+        "endRange": end_range
+    }
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+          return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_hr_form_document_template_by_id(
+    id: UUID = Field(..., description="UUID of the HR form document template"),
+    )->dict:
+    """
+    Get HR form document template by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/hrforms/{id}/documenttemplate"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def delete_hr_form__by_id(
+    id: UUID = Field(..., description="UUID of the HR form"),
+    )->dict:
+    """
+    Delete HR form by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/hrforms/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_hr_form_by_id(
+    id: UUID = Field(..., description="UUID of the HR form to update."),
+    file_path: str = Field(..., alias="filePath", description="Local path to the file to upload. Optional."),
+    body: HrFormModel = Field(..., description="JSON representation of the HR form to update.")
+    ) -> dict:
+    """
+    Updates an HR form by id. Sends file and form data using multipart/form-data.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/hrforms/{id}"
+
+    if isinstance(body, dict):
+        body = HrFormModel(**body)
+
+    multipart_data = {
+        "body": (None, body.model_dump_json(by_alias=True, exclude_none=True), "application/json")
+    }
+
+    try:
+        file = open(file_path, "rb")
+        multipart_data["file"] = (file_path, file, "application/octet-stream")
+    except FileNotFoundError:
+        raise RuntimeError(f"File not found: {file_path}")
+
+    try:
+        response = requests.put(
+            url,
+            files=multipart_data,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    try:
+        file.close()
+    except:
+        pass
+    return response.json()
+
+@mcp.tool()
+def get_hr_form_by_id(
+    id: UUID = Field(..., description="UUID of the HR form"),
+    )->dict:
+    """
+    Get HR form by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/hrforms/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def create_hr_form(
+    file_path: str = Field(..., alias="filePath", description="Local path to the file to upload. Optional."),
+    body: HrFormModel = Field(..., description="JSON representation of the HR form to create.")
+    ) -> dict:
+    """
+    Creates a new HR form. Sends file and form data using multipart/form-data.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/api/hrforms"
+
+    if isinstance(body, dict):
+        body = HrFormModel(**body)
+
+    multipart_data = {
+        "body": (None, body.model_dump_json(by_alias=True, exclude_none=True), "application/json")
+    }
+
+    try:
+        file = open(file_path, "rb")
+        multipart_data["file"] = (file_path, file, "application/octet-stream")
+    except FileNotFoundError:
+        raise RuntimeError(f"File not found: {file_path}")
+
+    try:
+        response = requests.post(
+            url,
+            files=multipart_data,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed: {e}")
+    try:
+        file.close()
+    except:
+        pass
+    return response.json()
+
+@mcp.tool()
+def get_hr_forms(   
+    filters: Optional[GetHrForms] = Field(GetHrForms(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+
+    """
+    Get HR forms optionaly filtered by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/hrforms"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+@mcp.tool()
+def import_company(
+    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided defaults to the default domain."),
+    query: NewCompanyViewModel = Field(..., description="Query object, companyName, companyNumber, copySettingsFromExistingCompany, and customerInstanceDomain are required, if customerInstanceDomain is not provided, defauls to the default domain"),
+    )->dict:
+    """
+    Creates and adds a company to the database.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ImportCompany/Post"
+    params = {
+        instance: instance
+    }
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            params=params,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+@mcp.tool()
+def import_company_get_example_data(
+    instance: Optional[str] = Field(INSTANCE, description="Domain name. If not provided defaults to the default domain."),
+    )->dict:
+    """
+    Creates and returns an example on how indata could look when using the POST-method.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ImportCompany/GetExampleData"
+    params = {
+        instance: instance
+    }
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+
 
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
