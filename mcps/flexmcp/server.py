@@ -5362,6 +5362,230 @@ def get_paycode_by_id(
 
 
 @mcp.tool()
+def get_payment_group_by_id(
+    id: UUID = Field(..., description="UUID of the payment group"),
+    )->dict:
+    """
+    Get payment group by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/paymentgroups/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payment_groups(
+    filters: Optional[GetPaymentGroups] = Field(GetPaymentGroups(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+    """
+    Get payment groups, optionally filtered by filter parameters.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/paymentgroups"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    
+@mcp.tool()
+def get_payroll_runs(
+    filters: Optional[GetPayrollRuns] = Field(GetPayrollRuns(), description="Parameters to filter the search by all feilds optional")
+)-> dict:
+    """
+    Get payroll runs.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollruns"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payroll_run_by_id(
+    id: UUID = Field(..., description="UUID of the payroll run"),
+    )->dict:
+    """
+    Get payroll run by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollruns/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payroll_run_employments(
+    filters: Optional[GetPayrollRunEmployments] = Field(GetPayrollRunEmployments(), description="Parameters to filter the search by all feilds optional")
+)-> dict:
+    """
+    Get payroll run employments.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollrunemployees"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payroll_run_employee_by_id(
+    id: UUID = Field(..., description="UUID of the paycode id"),
+    )->dict:
+    """
+    Get payroll run employee by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollemploymentss/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payroll_run_transactions(
+    filters: Optional[GetPayrollRunTransactions] = Field(GetPayrollRunTransactions(), description="Parameters to filter the search by all feilds optional")
+)-> dict:
+    """
+    Get payroll run transactions, optionally filtered by filter parameters.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollruntransactions"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    
+@mcp.tool()
+def get_payroll_run_transaction_by_id(
+    id: UUID = Field(..., description="UUID of the paycode id"),
+    )->dict:
+    """
+    Get payroll run transaction by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollruntransactions/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payroll_run_transaction_account_collections(
+    filters: Optional[GetPayrollRunTransactions] = Field(GetPayrollRunTransactions(), description="Parameters to filter the search by all feilds optional")
+)-> dict:
+    """
+    Get payroll run transactions, optionally filtered by filter parameters.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollruntransactionaccounts"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_payroll_run_transaction_account_collectioion_by_id(
+    id: UUID = Field(..., description="Payroll run transaction account collection id. (UUID)"),
+    )->dict:
+    """
+    Get payroll run transaction by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/payrollruntransactionaccounts/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+
+
+@mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
 ) -> dict:

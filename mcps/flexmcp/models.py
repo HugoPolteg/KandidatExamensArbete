@@ -919,7 +919,52 @@ class GetPaycodesWithStaffCategorySettings(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
+class GetPaymentGroups(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
+class GetPayrollRuns(BaseModel):
+    compamny_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    payroll_run_number: Optional[str] = Field(None, alias="payrollRunNumber", description="Payroll run number.")
+    payment_group_id: Optional[UUID] = Field(None, alias="paymentGroupId", description="Payment group ID (UUID).")
+    status: Optional[int] = Field(None, description="Payroll run status 0 = Preliminary, 1 = Settled")
+    payroll_run_type: Optional[int] = Field(None, alias="payrollRunType", description="Payroll run type. 0 = Ordinary, 1 = Extra")
+    payment_date: Optional[datetime] = Field(None, alias="paymentDate", description="Date of payment")
+    payroll_period_from: Optional[datetime] = Field(None, alias="payrollPeriodFrom", description="Start date of the payroll period.")
+    payroll_period_to: Optional[datetime] = Field(None, alias="payrollPeriodTo", description="End date of the payroll period.")
+    discrepency_period_from: Optional[datetime] = Field(None, alias="discrepencyPeriodFrom", description="Start date of the discrepancy period.")
+    discrepency_period_to: Optional[datetime] = Field(None, alias="discrepencyPeriodTo", description="End date of the discrepancy period.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetPayrollRunEmployments(BaseModel):
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    payroll_run_id: Optional[UUID] = Field(None, alias="payrollRunId", description="Payroll run ID (UUID).")
+    empployee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetPayrollRunTransactions(BaseModel):
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    payroll_run_id: Optional[UUID] = Field(None, alias="payrollRunId", description="Payroll run ID (UUID).")
+    payroll_run_employee_id: Optional[UUID] = Field(None, alias="payrollRunEmployeeId", description="Payroll run employee ID (UUID).")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    paycode_id: Optional[UUID] = Field(None, alias="paycodeId", description="Pay code ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetPayrollRunTransactionAccountCollections(BaseModel):
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    payroll_run_id: Optional[UUID] = Field(None, alias="payrollRunId", description="Payroll run ID (UUID).")
+    payroll_run_employee_id: Optional[UUID] = Field(None, alias="payrollRunEmployeeId", description="Payroll run employee ID (UUID).")
+    payroll_run_transaction_id: Optional[UUID] = Field(None, alias="payrollRunTransactionId", description="Payroll run transaction ID (UUID).")
+    paycode_id: Optional[UUID] = Field(None, alias="paycodeId", description="Pay code ID (UUID).")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
 
 
 class TimeCode(BaseModel):
