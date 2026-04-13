@@ -630,8 +630,7 @@ class GetEmploymentEmptySchedules(BaseModel):
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
     employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index. Default value: 0.")
-    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size. Default value: 20.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
 class TravelRuleSetModel(BaseModel):
@@ -850,6 +849,78 @@ class ImportedTripModel(BaseModel):
     to_mileage: Optional[float] = Field(None, alias="toMileage", description="Odometer reading at the end of the trip. Nullable.")
     to_street: Optional[str] = Field(None, alias="toStreet", description="Street address at the end of the trip. Nullable.")
     model_config = {"populate_by_name": True}
+
+class NextOfKinModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    contact_info: Optional[str] = Field(None, alias="contactInfo", description="Contact information for the next of kin. Nullable.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    id: Optional[UUID] = Field(None, description="UUID of the next of kin record.")
+    informed: Optional[bool] = Field(None, description="Whether the next of kin has been informed.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    name: Optional[str] = Field(None, description="Name of the next of kin. Nullable.")
+    relation: str = Field(..., min_length=1, description="Relation of the next of kin to the employee. Minimum length: 1.")
+    model_config = {"populate_by_name": True}
+
+class GetOwnFieldModel(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    side_element: Optional[int] = Field(None, alias="sideElement", description="Type of page element. 0 = FieldGroupWithDateHistory, 1 = FormTemplate, 2 = StaffAppraisal, 3 = HeadlineLevelOne, 4 = HeadlineLevelTwo, 5 = FieldGroupWithoutDateHistory, 6 = Table.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class OwnAssessmentFieldValueModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own assessment field value validity period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the own assessment field value record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    own_assessment_field_id: UUID = Field(..., alias="ownAssessmentFieldId", description="UUID of the own assessment field this value belongs to.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own assessment field value validity period. Nullable.")
+    value: Optional[float] = Field(None, description="The assessment field value.")
+    model_config = {"populate_by_name": True}
+
+class OwnDateFieldValueModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own date field value validity period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the own date field value record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    own_date_field_id: UUID = Field(..., alias="ownDateFieldId", description="UUID of the own date field this value belongs to.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own date field value validity period. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class OwnNumericalFieldValueModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own numerical field value validity period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the own numerical field value record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    own_numerical_field_id: UUID = Field(..., alias="ownNumericalFieldId", description="UUID of the own numerical field this value belongs to.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own numerical field value validity period. Nullable.")
+    value: Optional[float] = Field(None, description="The numerical field value.")
+    model_config = {"populate_by_name": True}
+
+class OwnTextFieldValueModel(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own text field value validity period. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the own text field value record.")
+    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    own_text_field_id: UUID = Field(..., alias="ownTextFieldId", description="UUID of the own text field this value belongs to.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own text field value validity period. Nullable.")
+    value: Optional[str] = Field(None, description="The text field value.")
+    model_config = {"populate_by_name": True}
+
+class GetPaycodesWithStaffCategorySettings(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    staff_category_id: UUID = Field(..., alias="staffCategoryId", description="UUID of the staff category.")
+    last_modified: Optional[datetime] = Field(None, alias="lastModified", description="Filter pay codes that have been modified since this date. Nullable.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+
+
 
 class TimeCode(BaseModel):
     code:str

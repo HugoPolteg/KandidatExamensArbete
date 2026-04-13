@@ -4337,8 +4337,1031 @@ def batch_create_imported_trip(
         return f"API request failed: {e}\n{response.text}"
     return response.json()
 
+@mcp.tool()
+def get_invocing_basis_by_billing_release_id(
+    billing_release_id: UUID = Field(..., description="UUID of the billing release"),
+    page_params: PageModel = Field(PageModel(), description="Page parameters"),
+    include_exported: Optional[bool] = Field(False, description="Whether to include exported invoicing basis in the result. Optional, defaults to false."),
+    include_all_accounts: Optional[bool] = Field(False, description="Whether to include invoicing basis for all accounts in the result. Optional, defaults to false.")
+    )->dict:
+    """
+    Get invoicing basis by billing release id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/invoicingbasis"
+    parapms = {
+        "billingReleaseId": billing_release_id,
+        "pageNumber": page_params.page_number,
+        "pageSize": page_params.page_size,
+        "includeExported": include_exported,
+        "includeAllAccounts": include_all_accounts
+    }
+    
+    try:
+        response = requests.post(
+            url,
+            params=parapms,
+            timeout=consts.API_TIMEOUT
+        )
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_next_of_kin_by_id(
+    id: UUID = Field(..., description="UUID of the next of kin"),
+    )->dict:
+    """
+    Get next of kin by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkin/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def update_next_of_kin_by_id_put(
+    id: UUID = Field(...,description="UUID of the next of kin"),
+    query: NextOfKinModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Update a next of kin by id (put)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkin/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def update_next_of_kin_by_id_post(
+    id: UUID = Field(...,description="UUID of the next of kin"),
+    query: NextOfKinModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Update a next of kin by id (post)
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkin/{id}"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def delete_next_of_kin_by_id(
+    id: UUID = Field(..., description="UUID of the next of kin"),
+    )->dict:
+    """
+    Delete next of kin by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkin/{id}"
+
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_next_of_kins(
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+    """
+    Get next of kins optionaly filtered by filter parameters
+
+    Retruns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkin"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def create_next_of_kin(
+    query: NextOfKinModel = Field(...,description="Full query object")
+    )->dict:
+    """
+    Create a next of kin
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkin"
+    payload = query.model_dump(by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_next_of_kin_relationship_by_id(
+    id: UUID = Field(..., description="UUID of the next of kin"),
+    )->dict:
+    """
+    Get next of kin relationship by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkinrelationship/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_next_of_kin_relationships(
+    page_params: PageModel = Field(PageModel(), description="Page parameters"),
+    )->dict:
+    """
+    Get next of kin relationship by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/nextofkinrelationship"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_overtime_by_user_id(
+    user_id: UUID = Field(..., description="UUID of the user"),
+    instance: Optional[str] = Field(INSTANCE, alias="instans", description="Domain name. If not provided defaults to the default domain."),
+    date: Optional[datetime] = Field(datetime.now(), description="Optional date to get overtime markers for. If not given, current date will be used.")
+    )->dict:
+    """
+    Get overtime by user id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/overtime/GetByUserID"
+
+    params = {
+        "userId": user_id,
+        "instans": instance,
+        "date": date
+    }
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_overtime_by_employee_id(
+    employee_id: UUID = Field(..., description="UUID of the employee"),
+    instance: Optional[str] = Field(INSTANCE, alias="instans", description="Domain name. If not provided defaults to the default domain."),
+    date: Optional[datetime] = Field(datetime.now(), description="Optional date to get overtime markers for. If not given, current date will be used.")
+    )->dict:
+    """
+    Get overtime by employee id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/overtime/GetByEmployeeID"
+
+    params = {
+        "employeeId": employee_id,
+        "instans": instance,
+        "date": date
+    }
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_own_assessment_fields(
+    filters: Optional[GetOwnFieldModel] = Field(GetOwnFieldModel(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+    """
+    Get own assessment fields optionaly filtered by filter parameters
+
+    Returns
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfields"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    
+@mcp.tool()
+def get_own_assessment_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own assessment field value"),
+    )->dict:
+    """
+    Get own assessment field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_assessment_field_value_by_id_put(
+    id: UUID = Field(..., description="UUID of the own assessment field value"),
+    query: OwnAssessmentFieldValueModel = Field(..., description="Full query object to update the own assessment field value with")
+    )->dict:
+    """
+    Update own assessment field value by id (put).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_assessment_field_value_by_id_post(
+    id: UUID = Field(..., description="UUID of the own assessment field value"),
+    query: OwnAssessmentFieldValueModel = Field(..., description="Full query object to update the own assessment field value with")
+    )->dict:
+    """
+    Update own assessment field value by id (post).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def delete_own_assessment_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own assessment field value"),
+    )->dict:
+    """
+    Delete own assessment field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues/{id}"
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def create_own_assessment_field_value(
+    query: OwnAssessmentFieldValueModel = Field(..., description="Full query object to update the own assessment field value with")
+    )->dict:
+    """
+    Create a new own assessment field value.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_own_assessment_field_values(   
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own assessment field values optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_own_date_fields(   
+    filters: Optional[GetOwnFieldModel] = Field(GetOwnFieldModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own date fields optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefields"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_own_date_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own date field value"),
+    )->dict:
+    """
+    Get own date field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_date_field_value_by_id_put(
+    id: UUID = Field(..., description="UUID of the own date field value"),
+    query: OwnDateFieldValueModel = Field(..., description="Full query object to update the own date field value with")
+    )->dict:
+    """
+    Update own date field value by id (put).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    
+@mcp.tool()
+def update_own_date_field_value_by_id_post(
+    id: UUID = Field(..., description="UUID of the own date field value"),
+    query: OwnDateFieldValueModel = Field(..., description="Full query object to update the own date field value with")
+    )->dict:
+    """
+    Update own date field value by id (post).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def delete_own_date_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own date field value"),
+    )->dict:
+    """
+    Delete own date field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues/{id}"
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_own_date_field_values(   
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own date field values optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+@mcp.tool()
+def create_own_date_field_value(
+    query: OwnDateFieldValueModel = Field(..., description="Full query object to update the own date field value with")
+    )->dict:
+    """
+    Create own date field value. Will update existing date field value if date field already has value.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
 
 
+@mcp.tool()
+def get_own_numerical_fields(   
+    filters: Optional[GetOwnFieldModel] = Field(GetOwnFieldModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own numerical fields optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfields"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_own_numerical_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own numerical field value"),
+    )->dict:
+    """
+    Get own numerical field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_numerical_field_value_by_id_put(
+    id: UUID = Field(..., description="UUID of the own numerical field value"),
+    query: OwnNumericalFieldValueModel = Field(..., description="Full query object to update the own numerical field value with")
+    )->dict:
+    """
+    Update own numerical field value by id (put).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_numerical_field_value_by_id_post(
+    id: UUID = Field(..., description="UUID of the own numerical field value"),
+    query: OwnNumericalFieldValueModel = Field(..., description="Full query object to update the own numerical field value with")
+    )->dict:
+    """
+    Update own numerical field value by id (post).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def delete_own_numerical_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own numerical field value"),
+    )->dict:
+    """
+    Delete own numerical field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues/{id}"
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_own_numerical_field_values(   
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own numerical field values optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+        
+@mcp.tool()
+def create_own_numerical_field_value(
+    query: OwnNumericalFieldValueModel = Field(..., description="Full query object to update the own numerical field value with")
+    )->dict:
+    """
+    Create new own numerical field value.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_own_text_fields(   
+    filters: Optional[GetOwnFieldModel] = Field(GetOwnFieldModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own text fields optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfields"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+@mcp.tool()
+def get_own_text_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own text field value"),
+    )->dict:
+    """
+    Get own text field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfieldvalues/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_text_field_value_by_id_put(
+    id: UUID = Field(..., description="UUID of the own text field value"),
+    query: OwnTextFieldValueModel = Field(..., description="Full query object to update the own text field value with")
+    )->dict:
+    """
+    Update own text field value by id (put).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.put(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def update_own_text_field_value_by_id_post(
+    id: UUID = Field(..., description="UUID of the own text field value"),
+    query: OwnTextFieldValueModel = Field(..., description="Full query object to update the own text field value with")
+    )->dict:
+    """
+    Update own text field value by id (post).
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfieldvalues/{id}"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def delete_own_text_field_value_by_id(
+    id: UUID = Field(..., description="UUID of the own text field value"),
+    )->dict:
+    """
+    Delete own text field value by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfieldvalues/{id}"
+    try:
+        response = s.delete(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_own_text_field_values(   
+    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to search the assessment field values by, all fields optional")
+    )->dict:
+    """
+    Get own text field values optionaly filtered by filter parameters
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfieldvalues"
+    params = filters.model_dump(by_alias=True,exclude_none=True)
+    
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+
+@mcp.tool()
+def create_own_text_field_value(
+    query: OwnTextFieldValueModel = Field(..., description="Full query object to update the own text field value with")
+    )->dict:
+    """
+    Create a new own text field value.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/owntextfieldvalues"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_paycodes_with_staff_category_settings(
+    filters: Optional[GetPaycodesWithStaffCategorySettings] = Field(GetPaycodesWithStaffCategorySettings(), description="Parameters to filter the search by all feilds optional")
+    )->dict:
+    """
+    Get pay codes with staff category settings, optionally filtered by filter parameters.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/paycodes"
+    params = filters.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+@mcp.tool()
+def get_paycode_by_id(
+    id: UUID = Field(..., description="UUID of the pay code"),
+    )->dict:
+    """
+    Get pay code by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/paycodes/{id}"
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+
+
+@mcp.tool()
 def get_salary_by_id(
     salary_id: UUID = Field(..., description="UUID of the salary."),
 ) -> dict:
