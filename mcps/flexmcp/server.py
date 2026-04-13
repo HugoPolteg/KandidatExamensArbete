@@ -1312,10 +1312,10 @@ def get_balance_adjustments(
     else:
         return f"Status: {response.status_code}\n{response.text}"
 
-mcp.tool()
+@mcp.tool()
 def create_balance_adjustment_batch_by_company(
     id: UUID = Field(...,description="UUID of the company"),
-    query: BalanceAdjustmentModel  = Field(...,description="Query object")
+    query: List[BalanceAdjustmentModel]  = Field(...,description="Query object")
     )->dict:
     """
     Post a batch of balance adjustmets by company
@@ -1324,8 +1324,13 @@ def create_balance_adjustment_batch_by_company(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/companies/{id}/balanceadjustments/batch"
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    
+    balance_adjustments = [
+        BalanceAdjustmentModel(**balance_adjustment) if isinstance(balance_adjustment, dict) else balance_adjustment
+        for balance_adjustment in query
+    ]
 
+    payload = [balance_adjustment.model_dump(mode="json", by_alias=True, exclude_none=True) for balance_adjustment in balance_adjustments]
     try:
         response = s.post(
             url,
@@ -3463,7 +3468,7 @@ def delete_employment_rate_by_id(
 @mcp.tool()
 def batch_update_employment_rate_by_employee_id(
     employee_id: UUID = Field(..., description="UUID of the employee"),
-    query: EmploymentRateModel = Field(..., description="Query object, companyId, empoyeeId and instanceId are required"),
+    query: List[EmploymentRateModel] = Field(..., description="Query object, companyId, empoyeeId and instanceId are required"),
     )->dict:
     """
     Batch update employment rate for an employee given by employee id
@@ -3472,7 +3477,14 @@ def batch_update_employment_rate_by_employee_id(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentrates"
-    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+
+    employment_rates = [
+        EmploymentRateModel(**employment_rate) if isinstance(employment_rate, dict) else employment_rate
+        for employment_rate in query
+    ]
+
+    payload = [employment_rate.model_dump(mode="json", by_alias=True, exclude_none=True) for employment_rate in employment_rates]
+
     try:
         response = s.post(
             url,
@@ -4229,6 +4241,101 @@ def import_company_get_example_data(
         return response.json()
     else:
         return f"Status: {response.status_code}\n{response.text}"
+
+
+@mcp.tool()
+def get_imported_trip_by_id(
+    id: UUID = Field(..., description="UUID of the imported trip"),
+    )->dict:
+    """
+    Get imported trip by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/importedtrips/{id}"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_imported_trips_by_employee_id(
+    employee_id: UUID = Field(..., description="UUID of the employee"),
+    filters: GetImportedTripsByEmployeeId = Field(GetImportedTripsByEmployeeId(), description="Filter parameters to filter the search, all fields are optional" )
+    )->dict:
+    """
+    Get imported trips by employee id, optionaly filtered by filter parameters.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/importedtrips"
+
+    try:
+        response = s.get(
+            url,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def create_imported_trip(
+    query: ImportedTripModel = Field(..., description="employeeId, fromDateTime, toDateTime are required, all other fields are optional"),
+    )->dict:
+    """
+    Create imported trip. Must be unique in that two trips cannot have the same employeeId, fromDateTime and toDateTime.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/importedtrips"
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    try:
+        response = s.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def batch_create_imported_trip(
+    query: List[ImportedTripModel] = Field(..., description="List of imported trips to create."),
+) -> dict:
+    """
+    Create imported trips in batch. Each trip must be unique in that two trips cannot have the same employeeId, fromDateTime and toDateTime.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/importedtrips"
+
+    trips = [
+        ImportedTripModel(**trip) if isinstance(trip, dict) else trip
+        for trip in query
+    ]
+
+    payload = [trip.model_dump(mode="json", by_alias=True, exclude_none=True) for trip in trips]
+
+    try:
+        response = requests.post(
+            url,
+            json=payload,
+            timeout=consts.API_TIMEOUT
+        )
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
 
 
 

@@ -827,6 +827,30 @@ class NewCompanyViewModel(BaseModel):
     organization_number: Optional[str] = Field(None, alias="organizationNumber", description="Organization registration number for the new company. Nullable.")
     model_config = {"populate_by_name": True}
 
+class GetImportedTripsByEmployeeId(BaseModel):
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    sort_order: Optional[int] = Field(0, alias="sortOrder", description="The order of the list sorted by the column FromDateTime. Defaults to ascending.0 = Ascending, 1 = Descending, -1 = Unspecified.")
+    from_start_date: Optional[datetime] = Field(None, alias="fromStartDate", description="Filter that the start date is from. Format YYYY-MM-DD. Defaults to null")
+    to_start_date: Optional[datetime] = Field(None, alias="toStartDate", description="Filter that the start date is to. Format YYYY-MM-DD. Defaults to null")
+    show_deleted: Optional[bool] = Field(True, alias="showDeleted", description="Whether to include deleted trips in the results. Defaults to True.")
+    show_reconciled: Optional[bool] = Field(True, alias="showReconciled", description="Whether to include reconciled trips in the results. Defaults to True.")
+    show_non_reconciled: Optional[bool] = Field(True, alias="showNonReconciled", description="Whether to include non-reconciled trips in the results. Defaults to True.")
+    model_config = {"populate_by_name": True}
+
+class ImportedTripModel(BaseModel):
+    comment: Optional[str] = Field(None, description="Comment for the trip. Nullable.")
+    distance: Optional[float] = Field(None, description="Distance of the trip. Nullable.")
+    employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
+    from_date_time: datetime = Field(..., alias="fromDateTime", description="Start date and time of the trip.")
+    from_mileage: Optional[float] = Field(None, alias="fromMileage", description="Odometer reading at the start of the trip. Nullable.")
+    from_street: Optional[str] = Field(None, alias="fromStreet", description="Street address at the start of the trip. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the imported trip record.")
+    license_plate: Optional[str] = Field(None, alias="licensePlate", description="License plate of the vehicle used for the trip. Nullable.")
+    to_date_time: datetime = Field(..., alias="toDateTime", description="End date and time of the trip.")
+    to_mileage: Optional[float] = Field(None, alias="toMileage", description="Odometer reading at the end of the trip. Nullable.")
+    to_street: Optional[str] = Field(None, alias="toStreet", description="Street address at the end of the trip. Nullable.")
+    model_config = {"populate_by_name": True}
+
 class TimeCode(BaseModel):
     code:str
 
