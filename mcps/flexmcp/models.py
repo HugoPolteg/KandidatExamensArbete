@@ -1148,6 +1148,142 @@ class GetTravelClaims(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
 
+class GetQualifications(BaseModel):
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of employees with this qualification. Nullable.")
+    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class ResignationCauseModel(BaseModel):
+    description: Optional[str] = Field(None, description="Description of the resignation cause.")
+    id: Optional[UUID] = Field(None, description="UUID of the resignation cause.")
+    name: Optional[str] = Field(None, description="Name of the resignation cause.")
+    type: Optional[int] = Field(None, description="0 = Ingen, 1 = UppsagdArbetsbrist, 2 = TidsbegransadAnstallning, 3 = EgenBegaran, 4 = SlutProvanstallningAnstalldBeslut, 5 = SlutProvanstallningArbetsgivareBeslut, 6 = Konkurs, 7 = AnnanOrsak")
+    model_config = {"populate_by_name": True}
+
+class GetResignationCauses(BaseModel):
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class UpdateRoleCollecitonOfUserForCompany(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class RoleModel(BaseModel):
+    id: UUID = Field(..., description="UUID of the role.")
+    name: str = Field(..., description="Name of the role.")
+    model_config = {"populate_by_name": True}
+
+class GetAllRolesOfUserForCompany(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    name: Optional[str] = Field(None, description="Name of the role to filter by.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class UpdateRoleCollecitonOfUserForEmployee(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetAllRolesOfUserForEmployee(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
+    name: Optional[str] = Field(None, description="Name of the role to filter by.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class UpdateRoleCollectionOnAccountForUser(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    account_id: UUID = Field(..., alias="accountId", description="Account ID (UUID).")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetAllRolesOfAccount(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
+    account_id: UUID = Field(..., alias="accountId", description="Account ID (UUID).")
+    name: Optional[str] = Field(None, description="Name of the role to filter by.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetRoles(BaseModel):
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    name: Optional[str] = Field(None, description="Name of the role to filter by.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetRolesByUser(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    name: Optional[str] = Field(None, description="Name of the role to filter by.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class SalaryModel(BaseModel):
+    comment: Optional[str] = Field(None, description="Comment. Nullable.")
+    company_id: UUID = Field(None, alias="companyId", description="Company ID (UUID).")
+    employee_id: UUID = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date. Nullable.")
+    full_time_salary: Optional[float] = Field(None, alias="fullTimeSalary", description="Full time salary per period defined in salary_type (Monthly, hourly or yearly)")
+    id: Optional[UUID] = Field(None, description="Salary ID (UUID).")
+    instance_id: UUID = Field(INSTANCE, alias="instanceId", description="Instance ID (UUID).")
+    is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
+    salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_serializer("from_date", "to_date")
+    def serialize_datetime(self, value: Optional[datetime]):
+        if value is None:
+            return value
+        return value.strftime("%Y-%m-%dT%H:%M:%S")
+
+class GetSalaries(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
+    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = ConfigDict(populate_by_name=True)
+
+class SalaryStatisticModel(BaseModel):
+    agreement_code: Optional[str] = Field(None, alias="agreementCode", description="Collective agreement code associated with the salary statistic. Nullable.")
+    employmentperiod_id: Optional[UUID] = Field(None, alias="employmentPeriodId", description="UUID of the employment period associated with the salary statistic.")
+    job_status: Optional[int] = Field(None, alias="jobStatus", description="0 = OvrigaAnstallda, 1 = Chef, 2 = Vd, 3 = Arbetsledare, 4 = Forman, 5 = Larling")
+    occupational_code: Optional[str] = Field(None, alias="occupationalCode", description="Occupational code associated with the salary statistic. Nullable.")
+    occupational_code_SN: Optional[str] = Field(None, alias="occupationalCodeSN", description="Swedish Standard for Occupational Classification (SSYK) code associated with the salary statistic. Nullable.")
+    occupational_code_sobona: Optional[str] = Field(None, alias="occupationalCodeSobona", description="Sobona occupational code associated with the salary statistic. Nullable.")
+    salary_statistic_working_hours_type: Optional[int] = Field(None, alias="salaryStatisticWorkingHoursType", description="Type of working hours used in the salary statistic.") #Hittar inte enum
+    staff_category_type: Optional[int] = Field(None, alias="staffCategoryType", description="Staff category type.") #Hittar inte enum
+    statistic_CFAR_number: Optional[str] = Field(None, alias="statisticCFARNumber", description="CFAR number used for salary statistic. Nullable.")
+    unionnumber: Optional[int] = Field(None, alias="unionnumber", description="Union number associated with the salary statistic. Nullable.")
+    vy_code: Optional[str] = Field(None, alias="vyCode", description="Vy code associated with the salary statistic. Nullable.")
+    work_place_number: Optional[str] = Field(None, alias="workplacenumber", description="Work place number associated with the salary statistic. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class GetScheduleDaysByEmployee(BaseModel):
+    employee_id: UUID = Field(..., description="UUID of the employee."),
+    from_date: Optional[date] = Field(None, description="Start of the date range (YYYY-MM-DD). Inclusive."),
+    to_date: Optional[date] = Field(None, description="End of the date range (YYYY-MM-DD). Inclusive."),
+    hide_workshifts: Optional[bool] = Field(False, description=("If True, the workshifts list on each schedule day will be empty. Use to minimize response size when shift details are not needed. Defaults to False.")),
+    model_config = {"populate_by_name": True}
+
+class GetScheduleDaysBySalaryTransfer(BaseModel):
+    salary_transfer_id: UUID = Field(..., description="UUID of the salary transfer."),
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters"),
+    model_config = {"populate_by_name": True}
+
 class TimeCode(BaseModel):
     code:str
 
@@ -1267,68 +1403,6 @@ class ProjectTimeReportControl(BaseModel):
  
     model_config = {"populate_by_name": True}
 
- 
-
-
-
-class GetSalaryQueryBase(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
-    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
-    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
-    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="Employee ID (UUID).")
-    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
-    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
-
-    model_config = ConfigDict(populate_by_name=True)
-
-# For Get/api/instance/{instance}/salaries: instance required
-class GetSalaries(GetSalaryQueryBase):
-    pass
-
-# For Get/api/instance/{instance}/companies/{companyId}/salaries — instance and companyId required
-class GetSalariesByCompany(GetSalaryQueryBase):
-    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
-
-#For Get/api/instance/{instance}/companies/{companyId}/employees/{employeeId}/salaries — instance, companyId and employeeId required
-class GetSalariesByCompanyAndEmployee(GetSalaryQueryBase):
-    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
-    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
-
-# For Get/api/employees/{employeeId}/salaries —  employeeId required
-class GetSalariesByEmployee(GetSalaryQueryBase):
-    instance: Optional[str] = Field(None, description="Domain name.")
-    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
-
-#For Get/api/salaries — no parameters required
-class GetAllSalaries(GetSalaryQueryBase):
-    instance: Optional[str] = Field(None, description="Domain name.")
-
-
-
-class Salary(BaseModel):
-    comment: Optional[str] = Field(None, description="Comment. Nullable.")
-    company_id: UUID = Field(None, alias="companyId", description="Company ID (UUID).")
-    employee_id: UUID = Field(None, alias="employeeId", description="Employee ID (UUID).")
-    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date. Nullable.")
-    full_time_salary: Optional[float] = Field(None, alias="fullTimeSalary", description="Full time salary per period defined in salary_type (Monthly, hourly or yearly)")
-    id: Optional[UUID] = Field(None, description="Salary ID (UUID).")
-    instance_id: UUID = Field(INSTANCE, alias="instanceId", description="Instance ID (UUID).")
-    is_historical_salary: Optional[bool] = Field(None, alias="isHistoricalSalary", description="Whether this is a historical salary.")
-    salary_type: Optional[int] = Field(None, alias="salaryType", description="0 = Monthly, 1 = Hourly, 2 = Yearly.")
-    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date. Nullable.")
-    model_config = ConfigDict(populate_by_name=True)
-
-    @field_serializer("from_date", "to_date")
-    def serialize_datetime(self, value: Optional[datetime]):
-        if value is None:
-            return value
-        return value.strftime("%Y-%m-%dT%H:%M:%S")
-
-#For PUT/api/employees/{employeeId}/salaries — employeeId required
-class UpdateOrCreateSalaries(Salary):
-    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
-    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
-
 
 class StampingAccountModel(BaseModel):
     accountCode: str = Field(..., min_length=1, description="Account code string.")
@@ -1363,13 +1437,7 @@ class GetVehicleTypes(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = ConfigDict(populate_by_name=True)
 
-class GetAllQualifications(BaseModel):
-    instance: Optional[str] = Field(None, description="Domain name.")
-    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
-    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
-    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of employees with this qualification. Nullable.")
-    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
-    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+
 
 class GetVehicleTypeByCompanyId(GetVehicleTypes):
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
