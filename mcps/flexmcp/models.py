@@ -687,6 +687,10 @@ class EmploymentPublicScheduleModel(BaseModel):
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the public schedule. Nullable.")
     model_config = {"populate_by_name": True}
 
+class GetPublicEmploymentSchedules(GenericGetModel):
+    include_empty_schedules: Optional[bool] = Field(True, alias="includeEmptySchedules", description="Whether to include empty schedules in the response. Nullable. Default: True")
+
+
 class EmploymentRateModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
@@ -966,6 +970,183 @@ class GetPayrollRunTransactionAccountCollections(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
+class AgreementAreaModel(BaseModel):
+    anstallningskategori: Optional[int] = Field(None, description="Employment category. 0 = Ovriga, 1 = A, 2 = B, 3 = C, 4 = D, 5 = E, 6 = F, 7 = G, 8 = H, 9 = J, 10 = K, 11 = L, 12 = M, 13 = N, 14 = O, 15 = P, 16 = R, 17 = S, 18 = T, 19 = V, 20 = Y, 21 = Z.")
+    employment_option_spv: Optional[int] = Field(None, alias="employmentOptionSpv", description="SPV employment type. 0 = H1, 1 = H3, 2 = T8.")
+    employment_pension_and_insurance_id: Optional[UUID] = Field(None, alias="employmentPensionAndInsuranceId", description="UUID of the employment pension and insurance record.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the agreement area validity period. Nullable.")
+    organizational_home: Optional[str] = Field(None, alias="organizationalHome", description="Organizational home for the agreement area. Nullable.")
+    pension_agreement: Optional[int] = Field(None, alias="pensionAgreement", description="Pension agreement affiliation. 0 = Inget, 1 = Avdelning1, 2 = Avdelning2.")
+    retirement_age: Optional[int] = Field(None, alias="retirementAge", description="Retirement age for this agreement area. Nullable.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the agreement area validity period. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class MarkupCodeModel(BaseModel):
+    code: Optional[int] = Field(None, description="Markup code. 0 = Teknikavtalet, 1 = TEKOavtalet, 2 = Livsmedelsavtalet, 3 = Tobaksavtalet, 4 = AvtaletForVinOchSpritindustrin, 5 = KafferosterierOchKryddfabriker, 6 = Byggnadsamnesindustrin, 7 = Buteljglasindustrin, 8 = Motorbranschavtalet, 9 = Industriavtalet, 10 = KemiskaFabriker, 11 = Glasindustrin, 12 = GemensammaMetall, 13 = Explosivamnesindustrin, 14 = IAvtalet, 15 = AllokemiskaIndustrin, 16 = InStenindustringen, 17 = LaderOchSportartiklar, 18 = Atervinningsforetag, 19 = Tvattindustrin, 20 = Oljeraffinaderier, 21 = Sockerindustrin, 22 = IMGavtalet, 23 = Sagverksavtalet, 24 = Skogsbruk, 25 = Virkesmatning, 26 = Stoppmobelindustrin, 27 = Traindustri, 28 = Infomediaavtalet, 29 = Forpackningsavtalet, 30 = AhlsellGeliaSvFoderTeknosam, 31 = HandelOchMetallAvtalet, 32 = Studsviksavtalet, 33 = FlygteknikerMedTypcertifikat, 34 = MassaOchPappersindustrin, 35 = StalOchMetallindustrinBlaAvtalet, 36 = Tidningsavtalet, 37 = Maleriyrket, 38 = Installationsavtalet, 39 = Kraftverksavtalet, 40 = Elektroskandiaavtalet, 41 = Bemanningsforetag, 42 = Byggavtalet, 43 = DalslandsKanal, 44 = Detaljhandeln, 45 = Entreprenadmaskinavtalet, 46 = Glasmasteriavtalet, 47 = GotaKanalbolagAB, 48 = Lageravtalet, 49 = LagerOchEhandelsavtalet, 50 = LagerpersonalVidGlassforetag, 51 = LarmOchSakerhetsteknikavtalet, 52 = Maskinforaravtalet, 53 = PlatOchVentilationsavtalet, 54 = Privatteateravtalet, 55 = Stadavtalet, 56 = TeknikinstallationVVSOchKyl, 57 = RestaurangOchCafeAnstallda, 58 = SkargardstrafikASL, 59 = Vardepapper, 60 = VagOchBanavtalet, 61 = TRIASkolaochVard, 62 = STANLEYSecurity, 63 = Danscentrumavtalet, 64 = Teatercentrumavtalet, 65 = KollektivavtaletRadioTVDataElektrotekniker, 66 = Spårtrafik, 67 = Gruventreprenadavtalet, 68 = Trävaruhandelsavtalet.")
+    employment_pension_and_insurance_id: Optional[UUID] = Field(None, alias="employmentPensionAndInsuranceId", description="UUID of the employment pension and insurance record.")
+    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the markup code validity period. Nullable.")
+    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the markup code validity period. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class PensionAndInsuranceModel(BaseModel):
+    agreement_areas: Optional[list[AgreementAreaModel]] = Field(None, alias="agreementAreas", description="List of agreement areas for this pension and insurance record. Nullable.")
+    category: Optional[int] = Field(None, description="Pension and insurance category. 0 = RedovisaEjTillFora, 1 = Arbetare, 2 = Tjansteman, 3 = TjanstemanAnstalldVD.")
+    contractual_pension_after_65: Optional[bool] = Field(None, alias="contractualPensionAfter65", description="Whether the employee has contractual pension after age 65.")
+    cost_center: Optional[int] = Field(None, alias="costCenter", description="Cost center number. Nullable.")
+    has_occupational_pension_account_at_spv: Optional[bool] = Field(None, alias="hasOccupationalPensionAccountAtSpv", description="Whether the employee has an occupational pension account at SPV.")
+    kpa_allocation_over_limit_percent: Optional[float] = Field(None, alias="kpaAllocationOverLimitPercent", description="KPA allocation percentage over the limit. Nullable.")
+    kpa_allocation_under_limit_percent: Optional[float] = Field(None, alias="kpaAllocationUnderLimitPercent", description="KPA allocation percentage under the limit. Nullable.")
+    kpa_management_number: Optional[str] = Field(None, alias="kpaManagementNumber", description="KPA management number. Nullable.")
+    kpa_pension_plan_type: Optional[int] = Field(None, alias="kpaPensionPlanType", description="KPA pension plan type. 0 = Inget, 6 = KapKl, 13 = AkapKr.")
+    markup_codes: Optional[list[MarkupCodeModel]] = Field(None, alias="markupCodes", description="List of markup codes for this pension and insurance record. Nullable.")
+    pension_plan_id: Optional[str] = Field(None, alias="pensionPlanId", description="Pension plan ID. Nullable.")
+    pension_plan_type: Optional[int] = Field(None, alias="pensionPlanType", description="Pension plan type. a number where 0 = nothing, 1 = ITP1, 2 = ITP2 WorkingIncapacity is a number in string format and represents the percent of working incapacity. The following strings can be registred: 0, 25, 50, 75.")
+    person_id: Optional[UUID] = Field(None, alias="personId", description="UUID of the person associated with this pension and insurance record.")
+    working_incapacity: Optional[str] = Field(None, alias="workingIncapacity", description="Working incapacity information for the employee. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class GetPensionAndInsuranceSettings(BaseModel):
+    companynumber: Optional[int] = Field(None, alias="companynumber", description="Company number.")
+    employmentnumber: Optional[str] = Field(None, alias="employeeNumber", description="Employment number.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetEmployeePresenceByCompany(BaseModel):
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class PresenceSelectionFilterModel(BaseModel):
+    employees: Optional[list[UUID]] = Field(None, description="List of employee UUIDs to filter by. Nullable.")
+    employment_default_accounts: Optional[list[UUID]] = Field(None, alias="employmentDefaultAccounts", description="List of employment default account UUIDs to filter by. Nullable.")
+    presence_sort_column_type: Optional[int] = Field(None, alias="presenceSortColumnType", description="Column to sort presence by. 0 = Status, 1 = InOut, 2 = Employee, 3 = Firstname, 4 = Lastname, 5 = Company.")
+    presence_status_type: Optional[int] = Field(None, alias="presenceStatusType", description="Filter by presence status. 0 = All, 1 = In, 2 = Out.")
+    registered_on_accounts: Optional[list[UUID]] = Field(None, alias="registeredOnAccounts", description="List of account UUIDs to filter presence registrations by. Nullable.")
+    show_only_scheduled: Optional[bool] = Field(None, alias="showOnlyScheduled", description="Whether to show only scheduled employees.")
+    sort_order: Optional[int] = Field(None, alias="sortOrder", description="Sort order. 0 = Ascending, 1 = Descending, -1 = Unspecified.")
+    time_groups: Optional[list[UUID]] = Field(None, alias="timeGroups", description="List of time group UUIDs to filter by. Nullable.")
+
+class ProjectModel(BaseModel):
+    code: str = Field(None,min_length=1, description="Project code. Required.")
+    name: str = Field(None,min_length=1, description="Project name. Required.")
+    id: Optional[UUID] = Field(None, description="UUID of the project. Include when updating an existing project.")
+    comment: Optional[str] = Field(None, description="Free-text comment.")
+    status_enum: Optional[int] = Field(
+        None,
+        alias="statusEnum",
+        description="Project status. 0 = Ongoing, 1 = Frozen, 2 = Ended."
+    )
+    billing_model_enum: Optional[int] = Field(
+        None,
+        alias="billingModelEnum",
+        description="Billing model. 0 = Ongoing, 1 = Fixed."
+    )
+    billing_state_enum: Optional[int] = Field(
+        None,
+        alias="billingStateEnum",
+        description="Billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always."
+    )
+    travel_billing_state_enum: Optional[int] = Field(
+        None,
+        alias="travelBillingStateEnum",
+        description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always."
+    )
+    budgeting_time_unit: Optional[int] = Field(
+        None,
+        alias="budgetingTimeUnit",
+        description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month."
+    )
+    budgeted_hours: Optional[float] = Field(None, alias="budgetedHours", description="Budgeted hours for the project.")
+    budgeted_amount: Optional[float] = Field(None, alias="budgetedAmount", description="Budgeted monetary amount for the project.")
+    starting_value_reported_time_hours: Optional[float] = Field(
+        None,
+        alias="startingValueReportedTimeHours",
+        description="Starting value for reported time in hours (carries over historical data)."
+    )
+    start_date: Optional[datetime] = Field(None, alias="startDate", description="Project start date.")
+    end_date: Optional[datetime] = Field(None, alias="endDate", description="Project end date.")
+    active_from_date: Optional[datetime] = Field(None, alias="activeFromDate", description="Date from which the project is active.")
+    active_to_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the project is active.")
+    tidkod: Optional[str] = Field(None, description="Time code associated with the project.")
+    all_employees_are_participants: Optional[bool] = Field(
+        None,
+        alias="allEmployeesAreParticipants",
+        description="If True, all employees are automatically participants."
+    )
+    inherit_participants: Optional[bool] = Field(None, alias="inheritParticipants", description="Whether participants are inherited from a parent project.")
+    inherit_color: Optional[bool] = Field(None, alias="inheritColor", description="Whether the project colour is inherited from a parent project.")
+    inherit_competence: Optional[bool] = Field(None, alias="inheritCompetence", description="Whether competence settings are inherited from a parent project.")
+    external_comment_must_be_stated_about_billable_time: Optional[bool] = Field(
+        None,
+        alias="externalCommentMustBeStatedAboutBillableTime",
+        description="If True, an external comment is required when reporting billable time."
+    )
+    participants: Optional[list[Participant]] = Field(None, description="Explicit participants on this project.")
+    inherited_participants: Optional[list[Participant]] = Field(
+        None,
+        alias="inheritedParticipants",
+        description="Read-only list of participants inherited from a parent project."
+    )
+    project_accounts: Optional[list[ProjectAccount]] = Field(
+        None,
+        alias="projectAccounts",
+        description="Account distributions associated with this project."
+    )
+    account_locations: Optional[list[AccountLocationModel]] = Field(
+        None,
+        alias="accountLocations",
+        description="Geofenced locations associated with this project."
+    )
+    billing: Optional[AccountBillingModel] = Field(None, description="Billing configuration for this project.")
+    project_time_report_controls: Optional[list[ProjectTimeReportControl]] = Field(
+        None,
+        alias="projectTimeReportControls",
+        description="Time report controls (warnings/errors) applied to this project."
+    )
+    work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace associated with this project.")
+ 
+    model_config = {"populate_by_name": True}
+
+class GetReportedHoursOnProjects(BaseModel):
+    account_distribution_id: UUID = Field(..., alias="accountDistributionId", description="Reported hours will be fetched for projects under selected AccountDistribution")
+    status: int = Field(..., description="Will report hours of projects with selected Projectstatus. 0 = Ongoing, 1 = Frozen, 2 = Ended")
+    from_date: datetime = Field(None, alias="fromDate", description="Filter for reported hours from this date (inclusive).")
+    to_date: datetime = Field(None, alias="toDate", description="Filter for reported hours to this date (inclusive).")
+    project_id: Optional[UUID] = Field(None, alias="projectId", description="Filter for reported hours on a specific project. Nullable. If not set, all projects will be calculated")
+    include_employments: Optional[bool] = Field(False, alias="includeEmployments", description="If set to true then summary will include ReportedProjectEmployments. Default value is false.")
+    include_allowances: Optional[bool] = Field(False, alias="includeAllowances", description="If set to true then summary will include allowances (of type timecode). Will increase response time considerably. Default value is false.")
+    include_undefines_time_codes: Optional[bool] = Field(False, alias="includeUndefinedTimeCodes", description="If set to true then summary will also include rows with timecodes that have code type undefined. Default value is false and will only include code type attendance.")
+    hide_projects_with_no_reported_hours: Optional[bool] = Field(False, alias="hideProjectsWithNoReportedHours", description="If set to true then projects with no reported hours will be filtered out from the response. Default value is false.")
+    model_config = {"populate_by_name": True}
+
+class GetProjects(BaseModel):
+    company: str = Field(..., description="Company number.")
+    instance: str = Field(INSTANCE, description="Domain name.")
+    code: Optional[str] = Field(None, description="Project code to filter by.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Get projects that have been created or modified from this date and time. YYYY-MM-DDTHH:MM:SS.")
+    model_config = {"populate_by_name": True}
+
+class GetPublicSchedule(BaseModel):
+    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    companynumber: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class GetTravelClaims(BaseModel):
+    instance: Optional[str] = Field(INSTANCE,description="Domain name.")
+    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
+    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
+    payment_from_date: Optional[datetime] = Field(None, alias="paymentFromDate", description="Payment from date.")
+    payment_to_date: Optional[datetime] = Field(None, alias="paymentToDate", description="Payment to date.")
+    audit_from_date: Optional[datetime] = Field(None, alias="auditFromDate", description="Audit from date. Will check all audit levels if publicTravelClaimAuditLevelId is not specified.")
+    audit_to_date: Optional[datetime] = Field(None, alias="auditToDate", description="Audit to date. Will check all audit levels if publicTravelClaimAuditLevelId is not specified.")
+    public_travel_claim_audit_level_id: Optional[UUID] = Field(None, alias="publicTravelClaimAuditLevelId", description="UUID of the public travel claim audit level.  Must be used in combination with atleast one of auditFromDate/auditToDate. If not specified, will check all audit levels.")
+    billing_release_from_date: Optional[datetime] = Field(None, alias="billingReleaseFromDate", description="Get travel claims by billing release from date-time.")
+    billing_release_to_date: Optional[datetime] = Field(None, alias="billingReleaseToDate", description="Get travel claims by billing release to date-time.")
+    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
+    model_config = ConfigDict(populate_by_name=True)
 
 class TimeCode(BaseModel):
     code:str
@@ -1079,122 +1260,15 @@ class BillingPriceRow(BaseModel):
     model_config = {"populate_by_name": True}
  
  
-class AccountBilling(BaseModel):
-    price_rows: Optional[list[BillingPriceRow]] = Field(
-        None,
-        alias="priceRows",
-        description="Standard billing price rows."
-    )
-    price_rows_travel: Optional[list[BillingPriceRow]] = Field(
-        None,
-        alias="priceRowsTravel",
-        description="Travel billing price rows."
-    )
- 
-    model_config = {"populate_by_name": True}
- 
- 
 class ProjectTimeReportControl(BaseModel):
     limit: float = Field(None,description="The threshold value for the control.")
     summary: int = Field(None,description="Control summary scope. 0 = Hierarchic, 1 = Individual.")
     type: int = Field(None,description="Control type. 0 = Warning, 1 = Error.")
  
     model_config = {"populate_by_name": True}
+
  
- 
-class Workplace(BaseModel):
-    adress: Optional[str] = Field(None, description="Street address. Note: spelled 'adress' in the API.")
-    city: Optional[str] = Field(None, description="City.")
-    country: Optional[str] = Field(None, description="Country.")
-    postal_code: Optional[str] = Field(None, alias="postalCode", description="Postal code.")
-    type: Optional[int] = Field(
-        None,
-        description="Workplace type. 0 = Physical, 1 = Remote, 2 = NotFixed."
-    )
- 
-    model_config = {"populate_by_name": True}
- 
- 
-class ProjectModel(BaseModel):
-    code: str = Field(None,min_length=1, description="Project code. Required.")
-    name: str = Field(None,min_length=1, description="Project name. Required.")
-    id: Optional[UUID] = Field(None, description="UUID of the project. Include when updating an existing project.")
-    comment: Optional[str] = Field(None, description="Free-text comment.")
-    status_enum: Optional[int] = Field(
-        None,
-        alias="statusEnum",
-        description="Project status. 0 = Ongoing, 1 = Frozen, 2 = Ended."
-    )
-    billing_model_enum: Optional[int] = Field(
-        None,
-        alias="billingModelEnum",
-        description="Billing model. 0 = Ongoing, 1 = Fixed."
-    )
-    billing_state_enum: Optional[int] = Field(
-        None,
-        alias="billingStateEnum",
-        description="Billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always."
-    )
-    travel_billing_state_enum: Optional[int] = Field(
-        None,
-        alias="travelBillingStateEnum",
-        description="Travel billing state. 0 = No, 1 = Never, 2 = Yes, 3 = Always."
-    )
-    budgeting_time_unit: Optional[int] = Field(
-        None,
-        alias="budgetingTimeUnit",
-        description="Budgeting time unit. 0 = QuarterHour, 1 = HalfHour, 2 = Hour, 3 = Day, 4 = Week, 5 = Month."
-    )
-    budgeted_hours: Optional[float] = Field(None, alias="budgetedHours", description="Budgeted hours for the project.")
-    budgeted_amount: Optional[float] = Field(None, alias="budgetedAmount", description="Budgeted monetary amount for the project.")
-    starting_value_reported_time_hours: Optional[float] = Field(
-        None,
-        alias="startingValueReportedTimeHours",
-        description="Starting value for reported time in hours (carries over historical data)."
-    )
-    start_date: Optional[datetime] = Field(None, alias="startDate", description="Project start date.")
-    end_date: Optional[datetime] = Field(None, alias="endDate", description="Project end date.")
-    active_from_date: Optional[datetime] = Field(None, alias="activeFromDate", description="Date from which the project is active.")
-    active_to_date: Optional[datetime] = Field(None, alias="activeTomDate", description="Date until which the project is active.")
-    tidkod: Optional[str] = Field(None, description="Time code associated with the project.")
-    all_employees_are_participants: Optional[bool] = Field(
-        None,
-        alias="allEmployeesAreParticipants",
-        description="If True, all employees are automatically participants."
-    )
-    inherit_participants: Optional[bool] = Field(None, alias="inheritParticipants", description="Whether participants are inherited from a parent project.")
-    inherit_color: Optional[bool] = Field(None, alias="inheritColor", description="Whether the project colour is inherited from a parent project.")
-    inherit_competence: Optional[bool] = Field(None, alias="inheritCompetence", description="Whether competence settings are inherited from a parent project.")
-    external_comment_must_be_stated_about_billable_time: Optional[bool] = Field(
-        None,
-        alias="externalCommentMustBeStatedAboutBillableTime",
-        description="If True, an external comment is required when reporting billable time."
-    )
-    participants: Optional[list[Participant]] = Field(None, description="Explicit participants on this project.")
-    inherited_participants: Optional[list[Participant]] = Field(
-        None,
-        alias="inheritedParticipants",
-        description="Read-only list of participants inherited from a parent project."
-    )
-    project_accounts: Optional[list[ProjectAccount]] = Field(
-        None,
-        alias="projectAccounts",
-        description="Account distributions associated with this project."
-    )
-    account_locations: Optional[list[AccountLocationModel]] = Field(
-        None,
-        alias="accountLocations",
-        description="Geofenced locations associated with this project."
-    )
-    billing: Optional[AccountBilling] = Field(None, description="Billing configuration for this project.")
-    project_time_report_controls: Optional[list[ProjectTimeReportControl]] = Field(
-        None,
-        alias="projectTimeReportControls",
-        description="Time report controls (warnings/errors) applied to this project."
-    )
-    work_place: Optional[Workplace] = Field(None, alias="workPlace", description="Workplace associated with this project.")
- 
-    model_config = {"populate_by_name": True}
+
 
 
 class GetSalaryQueryBase(BaseModel):
@@ -1324,19 +1398,7 @@ class VehicleTypeRequestModel(BaseModel):
     use_with_benefit: Optional[bool] = Field(None, alias="useWithBenefit", description="Whether this vehicle type can be used together with benefits.")
     model_config = ConfigDict(populate_by_name=True)
 
-class GetTravelClaims(BaseModel):
-    instance: Optional[str] = Field(description="Domain name.")
-    company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
-    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
-    payment_from_date: Optional[datetime] = Field(None, alias="paymentFromDate", description="Payment from date.")
-    payment_to_date: Optional[datetime] = Field(None, alias="paymentToDate", description="Payment to date.")
-    audit_from_date: Optional[datetime] = Field(None, alias="auditFromDate", description="Audit from date. Will check all audit levels if publicTravelClaimAuditLevelId is not specified.")
-    audit_to_date: Optional[datetime] = Field(None, alias="auditToDate", description="Audit to date. Will check all audit levels if publicTravelClaimAuditLevelId is not specified.")
-    public_travel_claim_audit_level_id: Optional[UUID] = Field(None, alias="publicTravelClaimAuditLevelId", description="UUID of the public travel claim audit level.  Must be used in combination with atleast one of auditFromDate/auditToDate. If not specified, will check all audit levels.")
-    billing_release_from_date: Optional[datetime] = Field(None, alias="billingReleaseFromDate", description="Get travel claims by billing release from date-time.")
-    billing_release_to_date: Optional[datetime] = Field(None, alias="billingReleaseToDate", description="Get travel claims by billing release to date-time.")
-    page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
-    model_config = ConfigDict(populate_by_name=True)
+
 
 
 
