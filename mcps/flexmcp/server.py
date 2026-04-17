@@ -342,7 +342,7 @@ def get_accounts_by_account_distribution_id(
 @mcp.tool()
 def update_account_by_id(
     id: UUID = Field(..., description="Account id"),
-    query: AccountModel = Field(description="query parameters, code and name are requiered")
+    query: AccountModel = Field(..., description="query parameters, code and name are requiered")
 )->dict:
     """
     Update account by id
@@ -466,8 +466,8 @@ def get_account_budget_by_account_id(
 
 @mcp.tool()
 def create_account_budget_for_account_id(
-    account_id: UUID = Field(alias="accountid",description="Account id. The account that the account budget is posted to."),
-    query: AccountBudgetModel = Field(description="Id is optional all other parameters requierd")
+    account_id: UUID = Field(..., alias="accountid",description="Account id. The account that the account budget is posted to."),
+    query: AccountBudgetModel = Field(..., description="Id is optional, all other parameters requiered")
     )->dict:
     """
     Creates new account budget instances for given account by the account id
@@ -516,7 +516,7 @@ def update_account_budget_by_id(
 
 @mcp.tool()
 def create_account_combination(
-    query: AccountCombinationModel = Field(description="Full query object, id is optional all other parameters required")
+    query: AccountCombinationModel = Field(..., description="Full query object, id is optional all other parameters required")
 )->dict:
     """
     Creates an account combination
@@ -544,7 +544,7 @@ def create_account_combination(
 @mcp.tool()
 def update_account_combination_by_id(
     id: UUID = Field(...,description="UUID of the account combination"),
-    query: AccountCombinationModel = Field(description="Full query object, id is optional all other parameters required")
+    query: AccountCombinationModel = Field(..., description="Full query object, id is optional all other parameters required")
     )->dict:
     """
     Updates an account combination
@@ -811,7 +811,7 @@ def delete_compamny_account_approval_permission_by_id(
 
 @mcp.tool()
 def get_company_account_approval_permissions(
-    filters: GetCompanyAccountApprovalPermississons = Field(description="Paramters to filter the results by, all parameters are optional")
+    filters: Optional[GetCompanyAccountApprovalPermississons] = GetCompanyAccountApprovalPermississons()
     )->dict:
     """
     Get company account approval permissions accordning to filer parameters.
@@ -866,7 +866,7 @@ def create_company_account_part_approval_permissios_by_user_id(
 
 @mcp.tool()
 def get_accumulators(
-    filters: GetAccumulators = Field(description="Parameters to filer the accumulator selection by, all parameters optional")
+    filters: Optional[GetAccumulators] = GetAccumulators
     )->dict:
     """
     Get accumulators based on fitler parameters
@@ -918,7 +918,7 @@ def get_accumulator_by_id(
 
 @mcp.tool()
 def get_allowance_rule_set(
-    filters: GetAllowanceRuleSet = Field(description="Fiter parameters, all fields optional")
+    filters: Optional[GetAllowanceRuleSet] = GetAllowanceRuleSet()
     )->dict:
     """
     Get a paged collection of allowance rule sets
@@ -1102,7 +1102,7 @@ def get_balances(
 @mcp.tool()
 def get_balances_by_company_id(
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company"),
-    filters: GetBalancesByCompanyId = Field(None, description="Filter object, all fields are optional.")
+    filters: Optional[GetBalancesByCompanyId] = GetBalancesByCompanyId()
 ) -> dict:
     """
     Get balances for a company by company id optionaly filterd by filter parameters
@@ -1847,7 +1847,7 @@ def get_customers_by_company(
 @mcp.tool()
 def get_customers_by_account_distribution_id(
     account_distirbution_id: UUID = Field(...,description="UUID of the account distribution."),
-    filters: GetCustomersByAccountDistribution = Field(None,description="Filter parameters to fitler the search by, all fields optional")
+    filters: Optional[GetCustomersByAccountDistribution] = GetCustomersByAccountDistribution()
     )->dict:
     """
     Get customers by account distribution id
@@ -2183,7 +2183,7 @@ def add_or_replace_employee_image(
 
 @mcp.tool()
 def get_employee_images(
-    filters: GetEmployeeImgaes = Field(None, description="Fitler parameters to optionaly filter the search by.")
+    filters: Optional[GetEmployeeImages] = GetEmployeeImages()
     )->dict:
     """
     Get employee images optionaly filtered by filter parameters
@@ -2314,7 +2314,7 @@ def delete_employee_qualification_by_id(
 
 @mcp.tool()
 def get_employee_qualifications(
-    filters: GenericGetModel = Field(None, description="Parameters to search the qualifications by, all feilds optinal")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
     Get employee qualificaitons optionaly filtered by filter parameters
@@ -2415,7 +2415,7 @@ def delete_employment_default_accunt_by_id_(
 
 @mcp.tool()
 def get_employment_default_accounts(
-    filters: GenericGetModel = Field(None, description="Parameters to search the employment default accounts by, all feilds optinal")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
     Get employment default accounts optinaly filted by filter parameters
@@ -2571,7 +2571,7 @@ def update_employment_default_account_interval_by_id_post(
 
 @mcp.tool()
 def get_employment_default_account_intervals(
-    filters: GenericGetModel = Field(None, description="Parameters to search the employment default account intervals by, all feilds optinal")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
     Get employment default account intervals optinaly filted by filter parameters
@@ -2673,7 +2673,7 @@ def delete_employment_documents_by_id(
 
 @mcp.tool()
 def get_employment_documents_collection_by_company(
-    filters: GetEmploymentDocumentCollection = Field(None,description="Filter parameters to filter the search by, companyId is requiered, all other fields optional")
+    filters: GetEmploymentDocumentCollection = Field(..., description="Filter parameters to filter the search by, companyId is requiered, all other fields optional")
     )->dict:
     """
     Get a collection of employment documents by company, optinaly filtered by filter parameters.
@@ -2739,7 +2739,7 @@ def create_employment_document(
 
 @mcp.tool()
 def get_employment_document_categories(
-    filters: GetEmploymentDocumentCatagories = Field(None,description="Filter parameters to filter the search by, all fields are optinal")
+    filters: Optional[GetEmploymentDocumentCatagories] = GetEmploymentDocumentCatagories()
     )->dict:
     """
     Get employment documet categories, optinaly filted by filter parameters
@@ -2790,7 +2790,9 @@ def get_employment_empty_schedule_by_id(
 @mcp.tool()
 def update_employment_empty_schedule_by_id(
     id: UUID = Field(..., description="UUID of the employment empty schedule"),
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedul is used on reviewed ort ransferred days. Defualt False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
+        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
+        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
     query: EmptyScheduleModel = Field(...,description="Query object: companyId, employeeId and timeGroupId are requiered") 
     )->dict:
     """
@@ -2845,7 +2847,7 @@ def delete_employment_empty_schedule_by_id(
 
 @mcp.tool()
 def get_employment_empty_schedules(
-    filters: GetEmploymentEmptySchedules = Field(None,description="Fitler parameters to fitler the search by all feilds optional")
+    filters: Optional[GetEmploymentEmptySchedules] = GetEmploymentEmptySchedules()
     )->dict:
     """"
     Get employment empty schedules optinaly filtered by filter parameters
@@ -2871,7 +2873,9 @@ def get_employment_empty_schedules(
 
 @mcp.tool()
 def create_employment_empty_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedul is used on reviewed ort ransferred days. Defualt False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
+        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
+        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
     query: EmptyScheduleModel = Field(...,description="Query object: companyId, employeeId and timeGroupId are requiered") 
     )->dict:
     """
@@ -2928,7 +2932,9 @@ def get_employment_period_by_id(
 @mcp.tool()
 def update_employment_period_by_id_put(
     id: UUID = Field(..., description="UUID of the employment period"),
-    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,alias="deleteTimereportsAfterEmployeeTerminationDate",description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
+    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,
+        alias="deleteTimereportsAfterEmployeeTerminationDate",
+        description="Remove time reports if the update sets the to date of the employment, and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
     query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
     )->dict:
     """"
@@ -2960,7 +2966,9 @@ def update_employment_period_by_id_put(
 @mcp.tool()
 def update_employment_period_by_id_post(
     id: UUID = Field(..., description="UUID of the employment period"),
-    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,alias="deleteTimereportsAfterEmployeeTerminationDate",description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
+    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,
+        alias="deleteTimereportsAfterEmployeeTerminationDate",
+        description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
     query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
     )->dict:
     """"
@@ -3016,7 +3024,9 @@ def delete_employment_period_by_id(
 @mcp.tool()
 def update_employment_period_by_employee_id(
     employee_id: UUID = Field(..., description="UUID of the employee"),
-    delete_timereports_after_employee_termination_date: bool = Field(False,alias="deleteTimereportsAfterEmployeeTerminationDate",description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed."),
+    delete_timereports_after_employee_termination_date: bool = Field(False,
+        alias="deleteTimereportsAfterEmployeeTerminationDate",
+        description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed."),
     query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
     )->dict:
     """"
@@ -3047,7 +3057,7 @@ def update_employment_period_by_employee_id(
 
 @mcp.tool()
 def get_employment_periods(
-    filters: GenericGetModel = Field(None,description="Fitler parameters to fitler the search by all feilds optional")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """"
     Get employmed periods optinaly filtered by filter parameters
@@ -3073,8 +3083,8 @@ def get_employment_periods(
 
 @mcp.tool()
 def create_employment_period(
-    template: CreateEmploymentPeriod = Field(None,description="Wheter or not to use template"),
-    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
+    template: CreateEmploymentPeriod = Field(None, description="Whether or not to use template"),
+    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are required") 
     )->dict:
     """"
     Create employment period
@@ -3214,7 +3224,9 @@ def get_employment_personal_schedules(
 
 @mcp.tool()
 def create_employment_personal_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedule is used on reviewed or transferred days. Defualt False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
+        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
+        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
     query: EmploymentPersonalScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId personalScheduleId and timeGroupId are requiered"),
     )->dict:
     """"
@@ -3351,7 +3363,9 @@ def get_employment_public_schedules(
 
 @mcp.tool()
 def create_employment_public_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays", description="Whether or not to allow change if schedule is used on reviewed or transferred days. Defualt False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
+        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
+        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
     query: EmploymentPublicScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId publicScheduleId and timeGroupId are requiered"),
     )->dict:
     """"
@@ -3887,7 +3901,7 @@ def get_employment_vehicle_by_id(
 @mcp.tool()
 def update_employment_vehicle_by_id(
     id: UUID = Field(..., description="UUID of the employment vehicle"),
-    query: Optional[EmploymentVehicleModel] = Field(EmploymentVehicleModel(), description="CompanyID and EmployeeID are required, all other feilds optional"),
+    query: Optional[EmploymentVehicleModel] = Field(..., description="CompanyID and EmployeeID are required, all other feilds optional"),
     )->dict:
     """
     Update employment vehicle by id 
@@ -4159,7 +4173,7 @@ def create_hr_form(
 
 @mcp.tool()
 def get_hr_forms(   
-    filters: Optional[GetHrForms] = Field(GetHrForms(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetHrForms] = GetHrForms()
     )->dict:
 
     """
@@ -5316,7 +5330,7 @@ def create_own_text_field_value(
 
 @mcp.tool()
 def get_paycodes_with_staff_category_settings(
-    filters: Optional[GetPaycodesWithStaffCategorySettings] = Field(GetPaycodesWithStaffCategorySettings(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPaycodesWithStaffCategorySettings] = GetPaycodesWithStaffCategorySettings()
     )->dict:
     """
     Get pay codes with staff category settings, optionally filtered by filter parameters.
@@ -5950,9 +5964,10 @@ def batch_post_project_by_account_distribution_id(
         raise RuntimeError(f"API request failed {e}\n{response.text}")
     return response.json() if response.content else {"status": "ok"}
 
-@mcp.too()
+@mcp.tool()
 def get_projects(
-    filters: GetProjects = Field(GetProjects(), description="Parameters to filter the search by all feilds optional")
+    company: str = Field(..., description="Company number."),
+    filters: GetProjects = GetProjects()
     )->dict:
     """
     Get projects, optionally filtered by filter parameters.
@@ -5962,6 +5977,7 @@ def get_projects(
     """
     url = f"{consts.API_ENDPOINT}/projects"
     params = filters.model_dump(by_alias=True, exclude_none=True)
+    params["company"] = company
     try:
         response = s.get(
             url,
@@ -6019,7 +6035,7 @@ def get_public_schedules(
 
 @mcp.tool()
 def get_public_travel_claims(
-    filters: GetTravelClaims = Field(description="Travel claim details for filtering the travel claims list. All fields are optional")
+    filters: GetTravelClaims = GetTravelClaims()
     )->dict:
     """
     Filter public travel claims by specified criteria..
@@ -6655,7 +6671,7 @@ def get_salary_by_id(
 @mcp.tool()
 def update_salary_by_id_put(
     salary_id: UUID = Field(..., description="UUID of the salary."),
-    salary_data: SalaryModel = Field(SalaryModel(), description="Updated salary data.")
+    salary_data: SalaryModel = Field(..., description="Updated salary data.")
 ) -> dict:
     """
     Updates a salary by id (put).
@@ -6680,7 +6696,7 @@ def update_salary_by_id_put(
 @mcp.tool()
 def update_salary_by_id_post(
     salary_id: UUID = Field(..., description="UUID of the salary."),
-    salary_data: SalaryModel = Field(SalaryModel(), description="Updated salary data.")
+    salary_data: SalaryModel = Field(..., description="Updated salary data.")
 ) -> dict:
     """
     Updates a salary by id (post).
@@ -6762,7 +6778,7 @@ def batch_update_salaries_by_employee_id(
 
 @mcp.tool()
 def get_salaries(
-    query: GetSalaries = Field(GetSalaries(), description="Parameters to filter the search by all feilds optional")
+    query: Optional[GetSalaries] = GetSalaries()
     ) -> dict:
     """
      Get salaries.

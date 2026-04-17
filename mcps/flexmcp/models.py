@@ -559,9 +559,9 @@ class EmployeeImageModel(BaseModel):
     image: str = Field(..., min_length=1, description="Employee image as a base64 encoded string. Minimum length: 1.")
     model_config = {"populate_by_name": True}
 
-class GetEmployeeImgaes(BaseModel):
+class GetEmployeeImages(BaseModel):
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee")
-    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    company_id: UUID = Field(None, alias="companyId", description="UUID of the company.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
@@ -810,7 +810,7 @@ class HrFormModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetHrForms(BaseModel):
-    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="UUID of the company.")
     comany_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
     hr_form_type: Optional[int] = Field(None, alias="hrFormType", description="Type of HR form to filter by. 0 = HrForm, 1 = Resume, 2 = All, 3 = EmploymentContract, 4 = StartPage.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
@@ -917,8 +917,8 @@ class OwnTextFieldValueModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetPaycodesWithStaffCategorySettings(BaseModel):
-    company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
-    staff_category_id: UUID = Field(..., alias="staffCategoryId", description="UUID of the staff category.")
+    company_id: Optional[UUID] = Field(None, alias="companyId", description="UUID of the company.")
+    staff_category_id: Optional[UUID] = Field(None, alias="staffCategoryId", description="UUID of the staff category.")
     last_modified: Optional[datetime] = Field(None, alias="lastModified", description="Filter pay codes that have been modified since this date. Nullable.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
@@ -1025,7 +1025,38 @@ class PresenceSelectionFilterModel(BaseModel):
     show_only_scheduled: Optional[bool] = Field(None, alias="showOnlyScheduled", description="Whether to show only scheduled employees.")
     sort_order: Optional[int] = Field(None, alias="sortOrder", description="Sort order. 0 = Ascending, 1 = Descending, -1 = Unspecified.")
     time_groups: Optional[list[UUID]] = Field(None, alias="timeGroups", description="List of time group UUIDs to filter by. Nullable.")
+class Participant(BaseModel):
+    employee_number: Optional[str] = Field(
+        None,
+        alias="employeeNumber",
+        description="Employee number of the participant."
+    )
+    role: Optional[int] = Field(
+        None,
+        description="Participant role. 0 = Member, 1 = ProjectManager."
+    )
+ 
+    model_config = {"populate_by_name": True}
 
+class ProjectAccount(BaseModel):
+    account_id: UUID = Field(None,alias="accountId", description="UUID of the account.")
+    account_distribution_id: UUID = Field(None,alias="accountDistributionId", description="UUID of the account distribution.")
+    account_code: Optional[str] = Field(None, alias="accountCode", description="Account code string.")
+    put_blank: Optional[bool] = Field(None, alias="putBlank", description="Whether to put a blank value for this account.")
+    rule_enum: Optional[int] = Field(
+        None,
+        alias="ruleEnum",
+        description="Distribution rule. 0 = CanBeSpecified, 1 = MustBeSpecified, 2 = Locked, -1 = Inheritance."
+    )
+ 
+    model_config = {"populate_by_name": True}
+ 
+class ProjectTimeReportControl(BaseModel):
+    limit: float = Field(None,description="The threshold value for the control.")
+    summary: int = Field(None,description="Control summary scope. 0 = Hierarchic, 1 = Individual.")
+    type: int = Field(None,description="Control type. 0 = Warning, 1 = Error.")
+ 
+    model_config = {"populate_by_name": True}
 class ProjectModel(BaseModel):
     code: str = Field(None,min_length=1, description="Project code. Required.")
     name: str = Field(None,min_length=1, description="Project name. Required.")
@@ -1120,7 +1151,6 @@ class GetReportedHoursOnProjects(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetProjects(BaseModel):
-    company: str = Field(..., description="Company number.")
     instance: str = Field(INSTANCE, description="Domain name.")
     code: Optional[str] = Field(None, description="Project code to filter by.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
@@ -1345,32 +1375,10 @@ class DayEntry(BaseModel):
 
  
  
-class Participant(BaseModel):
-    employee_number: Optional[str] = Field(
-        None,
-        alias="employeeNumber",
-        description="Employee number of the participant."
-    )
-    role: Optional[int] = Field(
-        None,
-        description="Participant role. 0 = Member, 1 = ProjectManager."
-    )
- 
-    model_config = {"populate_by_name": True}
+
  
  
-class ProjectAccount(BaseModel):
-    account_id: UUID = Field(None,alias="accountId", description="UUID of the account.")
-    account_distribution_id: UUID = Field(None,alias="accountDistributionId", description="UUID of the account distribution.")
-    account_code: Optional[str] = Field(None, alias="accountCode", description="Account code string.")
-    put_blank: Optional[bool] = Field(None, alias="putBlank", description="Whether to put a blank value for this account.")
-    rule_enum: Optional[int] = Field(
-        None,
-        alias="ruleEnum",
-        description="Distribution rule. 0 = CanBeSpecified, 1 = MustBeSpecified, 2 = Locked, -1 = Inheritance."
-    )
- 
-    model_config = {"populate_by_name": True}
+
  
 class BillingPriceRowAccount(BaseModel):
     account_id: UUID = Field(None,alias="accountId", description="UUID of the account.")
@@ -1395,13 +1403,7 @@ class BillingPriceRow(BaseModel):
  
     model_config = {"populate_by_name": True}
  
- 
-class ProjectTimeReportControl(BaseModel):
-    limit: float = Field(None,description="The threshold value for the control.")
-    summary: int = Field(None,description="Control summary scope. 0 = Hierarchic, 1 = Individual.")
-    type: int = Field(None,description="Control type. 0 = Warning, 1 = Error.")
- 
-    model_config = {"populate_by_name": True}
+
 
 
 class StampingAccountModel(BaseModel):

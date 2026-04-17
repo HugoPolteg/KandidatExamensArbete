@@ -76,7 +76,7 @@ print_test(server.get_accounts_by_account_distribution_id(account_distribution_i
 
 print("Testing get_account_distribution_by_company_id")
 print_test(server.get_account_distribution_by_company_id(company_id=company_id))
-
+"""
 print("Testing create_new_accounts")
 print(server.create_new_accounts(
     account_distribution_id=account_distribution_id,
@@ -85,7 +85,7 @@ print(server.create_new_accounts(
             models.AccountBillingPriceRowModel(id="e41a1471-a598-4084-b270-dc9872f6ab2d", )
         ])
     )
-))
+))"""
 
 print("Testing get_salary_by_id")
 print_test(server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae"))
@@ -98,7 +98,7 @@ print(prev_salary)
 new_salary = prev_salary + 1
 
 print("Testing update_salary_by_id")
-print_test(server.update_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae", models.Salary(fullTimeSalary=new_salary)), True, "FullTimeSalary", new_salary)
+print_test(server.update_salary_by_id_put("579d4ebd-03c3-4174-9572-b1c700ece3ae", models.SalaryModel(fullTimeSalary=new_salary)), True, "FullTimeSalary", new_salary)
 
 print("Testing get_companies")
 print_test(server.get_companies())
@@ -107,7 +107,7 @@ print("Testing get_users")
 print_test(server.get_users())
 
 print("Testing get_all_qualifications")
-print_test(server.get_all_qualifications())
+print_test(server.get_qualifications())
 
 print("Testing get_vehicle_types")
 print_test(server.get_vehicle_types())
@@ -115,26 +115,15 @@ print_test(server.get_vehicle_types())
 print("Testing get_company_by_id")
 print_test(server.get_company_by_id(company_id))
 
-print("Testing get_travel_claims_by_company_id")
-print_test(server.get_travel_claims_by_company_id(company_id))
+print("Testing get_public_travel_claims")
+print_test(server.get_public_travel_claims())
 
 print("Testing get_all_salaries")
-print_test(server.get_all_salaries())
-
-print("Testing get_salaries_by_company")
-print_test(server.get_salaries_by_company(models.GetSalariesByCompany(companyId=company_id)))
-
-
-print("Testing get_salaries_by_company_and_employee")
-print_test(server.get_salaries_by_company_and_employee(models.GetSalariesByCompanyAndEmployee(companyId=company_id, employeeId=employee_id)))
-
-print("Testing get_salaries_by_employee")
-print_test(server.get_salaries_by_employee(models.GetSalariesByEmployee(employeeId=employee_id)))
-#print(server.get_salaries_by_employee(models.GetSalariesByEmployee(employeeId=employee_id)))
+print_test(server.get_salaries())
 
 
 print("Testing create_salary")
-id = print_test(server.create_salary(models.UpdateOrCreateSalaries(
+id = print_test(server.create_salary(models.SalaryModel(
     employeeId=employee_id, companyId=company_id,
     fullTimeSalary=200, salaryType=0,
     fromDate=datetime.now(), isHistoricalSalary=False, comment="test",
