@@ -411,7 +411,7 @@ def delete_account_by_id(
 # The body should be a JSON/XML object of type GetReportedHoursModel.
 @mcp.tool()
 def get_reported_hours(
-    query: GetReportedHoursModel = Field(description="full query object all parameters are optional")
+    query: GetReportedHoursModel = Field(..., description="full query object, to_date_time, from_date_time and account_distribution_ids are required.")
 )->dict:
     """
     Gets reported hours
@@ -419,9 +419,9 @@ def get_reported_hours(
     Returns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/accounts/GetReportedHours"
+    url = f"{consts.API_ENDPOINT}/account/GetReportedHours"
     payload = query.model_dump(by_alias=True, exclude_none=True)
-
+    print(payload)
     try:
         response = s.get(
             url,
@@ -7126,12 +7126,7 @@ def put_time_report(
 @mcp.tool()
 def get_employment_periods_by_employee(
     employee_id: UUID = Field(..., description="Employee ID"),
-    domain_name: Optional[str] = Field(None, description="Domain name."),
-    company_id: Optional[UUID] = Field(None, description="Company id."),
-    company_number: Optional[int] = Field(None, description="Company number."),
-    employment_number: Optional[int] = Field(None, description="Employment number."),
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
-    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
+    filters: GetEmploymentPeriodsByEmployee = GetEmploymentPeriodsByEmployee()
 ) -> dict:
     """
     Gets a list of employment periods by employee id.
@@ -7140,18 +7135,9 @@ def get_employment_periods_by_employee(
         The employment periods from and to dates, id of resignation cause and type of employment.
     """
     url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentperiods"
-    params = {"pageIndex": page_index, "pageSize": page_size}
-    if domain_name is not None:
-        params["instance"] = domain_name
-    if company_id is not None:
-        params["companyId"] = company_id
-    if company_number is not None:
-        params["companynumber"] = company_number
-    if employment_number is not None:
-        params["employmentnumber"] = employment_number
-
+    payload = filters.model_dump(by_alias=True, exclude_none=True)
     try:
-        response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
+        response = s.get(url, params=payload, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"

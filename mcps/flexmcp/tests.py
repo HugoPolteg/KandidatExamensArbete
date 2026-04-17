@@ -32,7 +32,10 @@ def print_test(input, update = False, update_param = "", update_value = None, pu
 alt_employee = "f83fe21a-a90a-4ce8-8a13-b1c60089eca5"
 alt_employee_nr = "TEST2"
 employee_id = "640ca4b1-bf59-4740-9fc6-b1c6008861a0"
+third_employee_id = "dd094d48-67d1-448c-829f-b37f00de274d"
 company_id="b4253a61-f229-4ca9-9831-ad931d9a75a6"
+company_nr="1010"
+
 absence_type_id = '88c85624-a2ae-4955-b67e-ad9500df8e6c'
 account_distribution_id = "2e8dcac6-c987-462c-818d-b39500aa862f" #Län & kommuner
 salary_id = "579d4ebd-03c3-4174-9572-b1c700ece3ae"
@@ -167,9 +170,23 @@ print(server.put_time_report(employee_id=alt_employee, date=datetime(2026, 4, 9,
 )))
 """
 print("Testing get_schedule_days_by_employee_id")
-print_test(server.get_schedule_days_by_employee_id(models.GetScheduleDaysByEmployee(employee_id=alt_employee, from_date=datetime(2024, 11, 10, 0, 0, 0),
-    to_date=datetime(2025, 1, 1, 0, 0, 0))))
+print("Works!")
+#print(server.get_schedule_days_by_employee_id(models.GetScheduleDaysByEmployee(employee_id=alt_employee, from_date=datetime(2024, 11, 10, 0, 0, 0),
+ #   to_date=datetime(2025, 1, 1, 0, 0, 0))))
+print("Testing get_reported_hours")
+print("Works!")
+#print(server.get_reported_hours(models.GetReportedHoursModel(from_date_time=datetime(2024, 11, 10, 0, 0, 0),
+ #   to_date_time=datetime(2025, 1, 1, 0, 0, 0), accountDistributionIds=[account_distribution_id])))
 
+print("Testing get_account_distribution_by_company_number")
+print_test(server.get_account_distribution_by_company_number(models.GetAccountDistribution(company=company_nr)))
+
+"""
+print("Testing get_employment_periods")
+print_test(server.get_employment_periods())
+print("Testing get_employment_periods_by_employee")
+print_test(server.get_employment_periods_by_employee(employee_id=employee_id))
+"""
 
 
 

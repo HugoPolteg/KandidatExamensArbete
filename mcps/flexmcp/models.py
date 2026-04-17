@@ -111,16 +111,21 @@ class GetAccountByAccountDistributionId(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetReportedHoursModel(BaseModel):
-    account_distribution_ids: Optional[list[str]] = Field(None,alias="accountDistributionIds",description="A list of account distribution ids")
-    from_date_time: Optional[datetime] = Field(None,alias="fromDateTime",description="Get hours reported after this time")
+    account_distribution_ids: list[str] = Field(..., alias="accountDistributionIds",description="A list of account distribution ids")
+    from_date_time: datetime = Field(..., alias="fromDateTime",description="Get hours reported after this time")
     hide_projects_with_no_reported_hours: Optional[bool] = Field(None, alias="hideProjectsWithNoReportedHours",description="Whether to hide project with no repoted hours")
     include_allowances: Optional[bool] = Field(None, alias="includeAllowances",description="Whether to include Employements")
     include_open_timerows: Optional[bool] = Field(None,alias="includeOpenTimerows",description="Whether to include open timerows")
     include_undefined_timecodes: Optional[bool] = Field(None,alias="includeUndefinedTimeCodes",description="Whether to include undefined time codes")
     max_hours_open_time_row: Optional[int] = Field(None, alias="maxHoursOpenTimeRow", description="The maximum amount of hours selected timerows should be have been open for")
     time_group_id: Optional[UUID] = Field(None, alias="timeGroupId",description="Id of the timegroup")
-    to_date_time: Optional[datetime] = Field(None,alias="TomDateTime",description="Get hours reported uo to this time")
+    to_date_time: datetime = Field(..., alias="tomDateTime",description="Get hours reported uo to this time")
     model_config = {"populate_by_name": True}
+    @field_serializer("from_date_time", "to_date_time")
+    def serialize_datetime(self, value: Optional[datetime]):
+        if value is None:
+            return value
+        return value.strftime("%Y-%m-%dT%H:%M:%S")
 
 class GetAccountBudgetByAccountId(BaseModel):
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="From date. Get account budget from date.")
@@ -176,7 +181,7 @@ class AccountCombinationModel(BaseModel):
 
 class GetAccountDistribution(BaseModel):
     company: str = Field(...,description="Company number")
-    instance: str = Field(INSTANCE,description="Domain name")
+    instance: str = Field(DOMAIN,description="Domain name")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = {"populate_by_name": True}
 
@@ -1307,6 +1312,14 @@ class GetScheduleDaysByEmployee(BaseModel):
     from_date: date = Field(..., description="Start of the date range (YYYY-MM-DD). Inclusive. Must be at most 365 days before toDate", alias="fromDate")
     to_date: date = Field(..., description="End of the date range (YYYY-MM-DD). Inclusive. Must be at most 365 days after fromDate", alias="toDate")
     hide_workshifts: Optional[bool] = Field(False, description=("If True, the workshifts list on each schedule day will be empty. Use to minimize response size when shift details are not needed. Defaults to False."), alias="hideWorkshifts")
+    model_config = {"populate_by_name": True}
+
+class GetEmploymentPeriodsByEmployee(BaseModel):
+    domain_name: Optional[str] = Field(None, description="Domain name.", alias="instance")
+    company_id: Optional[UUID] = Field(None, description="Company id.", alias="companyId")
+    company_number: Optional[int] = Field(None, description="Company number.", alias="companynumber")
+    employment_number: Optional[int] = Field(None, description="Employment number.", alias="employmentnumber")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
 class GetScheduleDaysBySalaryTransfer(BaseModel):
