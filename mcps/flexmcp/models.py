@@ -1165,7 +1165,7 @@ class GetPublicSchedule(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetTravelClaims(BaseModel):
-    instance: Optional[str] = Field(INSTANCE,description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN,description="Domain name.")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number.")
     payment_from_date: Optional[datetime] = Field(None, alias="paymentFromDate", description="Payment from date.")
@@ -1303,15 +1303,15 @@ class SalaryStatisticModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetScheduleDaysByEmployee(BaseModel):
-    employee_id: UUID = Field(..., description="UUID of the employee."),
-    from_date: Optional[date] = Field(None, description="Start of the date range (YYYY-MM-DD). Inclusive."),
-    to_date: Optional[date] = Field(None, description="End of the date range (YYYY-MM-DD). Inclusive."),
-    hide_workshifts: Optional[bool] = Field(False, description=("If True, the workshifts list on each schedule day will be empty. Use to minimize response size when shift details are not needed. Defaults to False.")),
+    employee_id: UUID = Field(..., description="UUID of the employee.")
+    from_date: date = Field(..., description="Start of the date range (YYYY-MM-DD). Inclusive. Must be at most 365 days before toDate", alias="fromDate")
+    to_date: date = Field(..., description="End of the date range (YYYY-MM-DD). Inclusive. Must be at most 365 days after fromDate", alias="toDate")
+    hide_workshifts: Optional[bool] = Field(False, description=("If True, the workshifts list on each schedule day will be empty. Use to minimize response size when shift details are not needed. Defaults to False."), alias="hideWorkshifts")
     model_config = {"populate_by_name": True}
 
 class GetScheduleDaysBySalaryTransfer(BaseModel):
-    salary_transfer_id: UUID = Field(..., description="UUID of the salary transfer."),
-    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters"),
+    salary_transfer_id: UUID = Field(..., description="UUID of the salary transfer.")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
 class TimeCode(BaseModel):

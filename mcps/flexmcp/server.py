@@ -296,8 +296,8 @@ def create_new_accounts(
     Returns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distribution_id}/accounts"
-    payload = account_model.model_dump(by_alias=True, exclude_none=True)
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{str(account_distribution_id)}/accounts"
+    payload = account_model.model_dump(by_alias=True, exclude_none=True, mode="json")
     print(payload)
     try:
         response = s.post(
@@ -6045,6 +6045,7 @@ def get_public_travel_claims(
      """
     url = f"{consts.API_ENDPOINT}/travelclaim"
     params = filters.model_dump(by_alias=True, exclude_none=True, mode="json")
+    print(params)
     try:
         response = s.get(
             url,
@@ -6918,7 +6919,7 @@ def get_salary_statistic_by_employment_period_id(
 @mcp.tool()
 def update_salary_statistic_by_employment_period_id_put(
     employment_period_id: UUID = Field(..., description="UUID of the employment period."),
-    body: SalaryStatisticModel = Field(..., description="Salary statistic object to update. All fields are optional and only sent if explicitly provided.")
+    body: Optional[SalaryStatisticModel] = SalaryStatisticModel()
     )->dict:
     """
     Get a specific employmentperiods salary statistics (put).
@@ -6945,7 +6946,7 @@ def update_salary_statistic_by_employment_period_id_put(
 @mcp.tool()
 def update_salary_statistic_by_employment_period_id_post(
     employment_period_id: UUID = Field(..., description="UUID of the employment period."),
-    body: SalaryStatisticModel = Field(..., description="Salary statistic object to update. All fields are optional and only sent if explicitly provided.")
+    body: Optional[SalaryStatisticModel] = SalaryStatisticModel()
     )->dict:
     """
     Get a specific employmentperiods salary statistics (post).
@@ -7002,7 +7003,7 @@ def get_salary_transfer_by_id(
 #----------------------------------------------------------------------------------------------------------
 @mcp.tool()
 def get_schedule_days_by_employee_id(
-    query : GetScheduleDaysByEmployee = Field(..., description="Query object for getting schedule days by employee id. employee_id is required. All other fields are optional")
+    query : GetScheduleDaysByEmployee = Field(..., description="Query object for getting schedule days by employee id. employee_id, from_date and to_date are required. All other fields are optional")
     ) -> list:
     """
     Gets schedule days for an employee, optionally filtered by filter parameters.
@@ -7012,12 +7013,12 @@ def get_schedule_days_by_employee_id(
     """
     url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/scheduledays"
  
-    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
+    params = query.model_dump(mode="json", by_alias=True, exclude_none=True, exclude={"employee_id"})
     try:
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for employee {query.employee_id}: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
  
     return response.json()
 
@@ -7038,7 +7039,7 @@ def get_schedule_days_by_salary_transfer_id(
         response = s.get(url, params=params, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for employee {query.employee_id}: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
     return response.json()
 
 @mcp.tool()

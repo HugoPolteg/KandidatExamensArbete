@@ -1,7 +1,6 @@
 import models
 import server
 from datetime import date, time, datetime, timedelta
-
 def print_test(input, update = False, update_param = "", update_value = None, put = False):
     if update:
         if input[update_param] == update_value:
@@ -14,6 +13,7 @@ def print_test(input, update = False, update_param = "", update_value = None, pu
             return input["Id"]
         else:
             print("Does not work!")
+            print(input)
     else:
         if "TotalItemCount" in input:
             if input['TotalItemCount'] > 0:
@@ -35,6 +35,9 @@ employee_id = "640ca4b1-bf59-4740-9fc6-b1c6008861a0"
 company_id="b4253a61-f229-4ca9-9831-ad931d9a75a6"
 absence_type_id = '88c85624-a2ae-4955-b67e-ad9500df8e6c'
 account_distribution_id = "2e8dcac6-c987-462c-818d-b39500aa862f" #Län & kommuner
+salary_id = "579d4ebd-03c3-4174-9572-b1c700ece3ae"
+
+"""
 print("Testing get_all_employees")
 print_test(server.get_all_employees())
 
@@ -85,39 +88,49 @@ print(server.create_new_accounts(
             models.AccountBillingPriceRowModel(id="e41a1471-a598-4084-b270-dc9872f6ab2d", )
         ])
     )
-))"""
-
+))
+"""
 print("Testing get_salary_by_id")
-print_test(server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae"))
+print_test(server.get_salary_by_id(salary_id))
 
 print("Testing get_employee_by_id")
 print_test(server.get_employee_by_id("640ca4b1-bf59-4740-9fc6-b1c6008861a0"))
 
-prev_salary = server.get_salary_by_id("579d4ebd-03c3-4174-9572-b1c700ece3ae")['FullTimeSalary']
+prev_salary = server.get_salary_by_id(salary_id)['FullTimeSalary']
 print(prev_salary)
 new_salary = prev_salary + 1
 
 print("Testing update_salary_by_id")
-print_test(server.update_salary_by_id_put("579d4ebd-03c3-4174-9572-b1c700ece3ae", models.SalaryModel(fullTimeSalary=new_salary)), True, "FullTimeSalary", new_salary)
+print_test(server.update_salary_by_id_put(salary_id, models.SalaryModel(fullTimeSalary=new_salary,
+    from_date=datetime(2060, 4, 9, 8, 0, 0),
+    to_date=datetime(2060, 4, 9, 16, 0, 0))),
+    True, "FullTimeSalary", new_salary)
+print_test(server.update_salary_by_id_post(salary_id, models.SalaryModel(fullTimeSalary=new_salary,
+    from_date=datetime(2060, 4, 9, 8, 0, 0),
+    to_date=datetime(2060, 4, 9, 16, 0, 0))), True, "FullTimeSalary", new_salary)
+print("Testing batch_update_salaries_by_employee_id")
+print_test(server.batch_update_salaries_by_employee_id(employee_id, [models.SalaryModel(id=salary_id, fullTimeSalary=new_salary,
+    from_date=datetime(2060, 4, 9, 8, 0, 0),
+    to_date=datetime(2060, 4, 9, 16, 0, 0))]))
 
 print("Testing get_companies")
 print_test(server.get_companies())
 
 print("Testing get_users")
 print_test(server.get_users())
-
+"""
 print("Testing get_all_qualifications")
 print_test(server.get_qualifications())
-
+"""
 print("Testing get_vehicle_types")
 print_test(server.get_vehicle_types())
 
 print("Testing get_company_by_id")
 print_test(server.get_company_by_id(company_id))
-
+"""
 print("Testing get_public_travel_claims")
 print_test(server.get_public_travel_claims())
-
+"""
 print("Testing get_all_salaries")
 print_test(server.get_salaries())
 
@@ -126,8 +139,8 @@ print("Testing create_salary")
 id = print_test(server.create_salary(models.SalaryModel(
     employeeId=employee_id, companyId=company_id,
     fullTimeSalary=200, salaryType=0,
-    fromDate=datetime.now(), isHistoricalSalary=False, comment="test",
-    toDate=datetime(2028, 10, 11))), put=True)
+    fromDate=datetime(2029, 10, 11), isHistoricalSalary=False, comment="test",
+    toDate=datetime(2030, 10, 11))), put=True)
 
 print("Testing delete_salary")
 print(server.delete_salary(id))
@@ -152,6 +165,10 @@ print(server.put_time_report(employee_id=alt_employee, date=datetime(2026, 4, 9,
         )
     ]
 )))
+"""
+print("Testing get_schedule_days_by_employee_id")
+print_test(server.get_schedule_days_by_employee_id(models.GetScheduleDaysByEmployee(employee_id=alt_employee, from_date=datetime(2024, 11, 10, 0, 0, 0),
+    to_date=datetime(2025, 1, 1, 0, 0, 0))))
 
 
 
