@@ -263,7 +263,7 @@ class BillingReleaseSelectionModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetBalances(BaseModel):
-    instance: Optional[str] = Field(INSTANCE,description="Domain name")
+    instance: Optional[str] = Field(DOMAIN,description="Domain name")
     company_number: Optional[int] = Field(None,alias="companyNumber",description="Company Number")
     balance_code: Optional[str] = Field(None,alias="balanceCode", description="Balance Code")
     balance_type: Optional[int] = Field(None,alias="balanceType", description="Balance Type:0 = PeriodValue, 1 = OutgoingValue, 2 = IngoingValue")

@@ -438,8 +438,8 @@ def get_reported_hours(
 
 @mcp.tool()
 def get_account_budget_by_account_id(
-    account_id: UUID = Field(...,description="Account id. Get account budget from the given account."),
-    filters: GetAccountBudgetByAccountId = Field(description="Filers to filter the budgets within the upon")
+    account_id: UUID = Field(..., description="Account id. Get account budget from the given account."),
+    filters: GetAccountBudgetByAccountId = GetAccountBudgetByAccountId()
 )->dict:
     """
     Get budgets within a given account.
@@ -621,7 +621,7 @@ def delete_account_combination_by_id(
 
 @mcp.tool()
 def get_account_combination_by_account_id(
-    account_id: UUID = Field(...,description="UUID of the acccount"),
+    account_id: UUID = Field(..., description="UUID of the acccount"),
     page_params: PageModel = PageModel()
     )->dict:
     """
@@ -650,7 +650,7 @@ def get_account_combination_by_account_id(
 @mcp.tool()
 def get_account_combination_by_account_distribution_id_and_account_code(
     account_distribution_id: UUID = Field(...,alias="accountDistributionId",description="UUID of the account distribution"),
-    account_code: str = Field(...,alias="accountCode",description="Accound code"),
+    account_code: str = Field(...,alias="accountCode", description="Account code"),
     page_params: PageModel = PageModel()
 )->dict:
     """
@@ -837,7 +837,7 @@ def get_company_account_approval_permissions(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def create_company_account_part_approval_permissios_by_user_id(
+def create_company_account_part_approval_permissions_by_user_id(
     user_id: UUID = Field(..., alias="userId", description="UUID of the user"),
     query: AccountDistributionPartApprovalPermissionModel = Field(..., description="Query object, all parameters requiered")
     )->dict:
@@ -847,13 +847,13 @@ def create_company_account_part_approval_permissios_by_user_id(
     Returns:
         API response as JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/accountdistributionpartapprovalpermissions"
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    url = f"{consts.API_ENDPOINT}/users/{user_id}/accountdistributionpartapprovalpermissions"
+    payload = query.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     try:
         response = s.post(
             url,
-            josn=payload,
+            json=payload,
             timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()
@@ -866,7 +866,7 @@ def create_company_account_part_approval_permissios_by_user_id(
 
 @mcp.tool()
 def get_accumulators(
-    filters: Optional[GetAccumulators] = GetAccumulators
+    filters: Optional[GetAccumulators] = GetAccumulators()
     )->dict:
     """
     Get accumulators based on fitler parameters
@@ -893,7 +893,7 @@ def get_accumulators(
 
 @mcp.tool()
 def get_accumulator_by_id(
-    id: UUID = Field(...,description="UUID of the accumulator")
+    id: UUID = Field(..., description="UUID of the accumulator")
     )->dict:
     """
     Get accumulator by id
@@ -945,7 +945,7 @@ def get_allowance_rule_set(
 @mcp.tool()
 def get_audited_time_reports_by_company(
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company"),
-    filters: GetAuditedTimeReportsByCompany = Field(...,description="Fiter parameters all fields are optional")
+    filters: GetAuditedTimeReportsByCompany = GetAuditedTimeReportsByCompany()
     )->dict:
     """
     Get audited time reports by comapny id
@@ -990,8 +990,8 @@ def get_background_tasks_by_id(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def get_background_task(
-    filters: GetBackGroundTasks = Field(description="Filter parameters all fields are optional")
+def get_background_tasks(
+    filters: GetBackGroundTasks = GetBackGroundTasks()
     )->dict:
     """
     Get background tasks
@@ -999,7 +999,7 @@ def get_background_task(
     Retruns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/backroundtasks"
+    url = f"{consts.API_ENDPOINT}/backgroundtasks"
     params = filters.model_dump(by_alias=True, exclude_none=True)
     
     try:
@@ -1074,7 +1074,7 @@ def begin_background_task_rollback_release(
 
 @mcp.tool()
 def get_balances(
-    filters: GetBalances = Field(description="Filter object all fields are optional")
+    filters: GetBalances = GetBalances()
     )->dict:
     """
     Get balances by filter parameters
@@ -1232,7 +1232,7 @@ def update_balance_adjustment_by_id(
 @mcp.tool()
 def get_balance_adjustment_by_employee_id(
     id: UUID = Field(...,description="UUID of the employee"),
-    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(GetBalanceAdjustmentByEmployeeOrCompany(),description="Optinal filter parameters")
+    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = GetBalanceAdjustmentByEmployeeOrCompany()
     )->dict:
     """
     Get balande adjustment for an employee given by employee id
