@@ -127,19 +127,19 @@ print("Testing get_time_report_by_employee")
 print("Works")
 #print(server.get_time_report_by_employee(models.GetTimeReportByEmployee(employee_id=alt_employee)))
 
-print("Testing put_time_report")
-print(server.put_time_report(employee_id=alt_employee, date=datetime(2026, 4, 9, 0, 0, 0),
-    entry=models.DayEntry(
-    timeRows=[
-        models.TimeRow(
+print("Testing create_time_report")
+print(server.create_time_report(alt_employee, datetime(2026, 4, 9, 0, 0, 0),
+    models.PutTimereportModel(
+    time_rows=[
+        models.PutTimereportTimeRowModel(
             fromTimeDateTime=datetime(2026, 4, 9, 8, 0, 0),
             toTimeDateTime=datetime(2026, 4, 9, 16, 0, 0),
-            timeCode=models.TimeCode(code="ARB")
+            timeCode=models.PutTimereportTimeCodeModel(code="ARB")
         ),
-        models.TimeRow(
+        models.PutTimereportTimeRowModel(
             fromTimeDateTime=datetime(2026, 4, 9, 7, 0, 0),
             toTimeDateTime=datetime(2026, 4, 9, 8, 0, 0),
-            timeCode=models.TimeCode(code="RAST")
+            timeCode=models.PutTimereportTimeCodeModel(code="RAST")
         )
     ]
 )))
@@ -174,8 +174,8 @@ print("Testing get_company_account_approval_permissions")
 print_test(server.get_company_account_approval_permissions())
 
 
-print("Testing get_account_part_approval_permissions_by_id")
-print_test(server.get_account_part_approval_permissions_by_id(id=account_approval_permission_id))
+print("Testing get_account_distribution_part_approval_permissions_by_id")
+print_test(server.get_account_distribution_part_approval_permissions_by_id(id=account_approval_permission_id))
 
 
 print("Testing get_accumulators")

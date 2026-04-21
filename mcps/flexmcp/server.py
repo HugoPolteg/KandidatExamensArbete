@@ -2929,6 +2929,27 @@ def get_employment_period_by_id(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
+def get_employment_periods_by_employee(
+    employee_id: UUID = Field(..., description="Employee ID"),
+    filters: GetEmploymentPeriodsByEmployee = GetEmploymentPeriodsByEmployee()
+) -> dict:
+    """
+    Gets a list of employment periods by employee id.
+
+    Returns:
+        The employment periods from and to dates, id of resignation cause and type of employment.
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentperiods"
+    payload = filters.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.get(url, params=payload, timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+
+    return response.json()
+
+@mcp.tool()
 def update_employment_period_by_id_put(
     id: UUID = Field(..., description="UUID of the employment period"),
     delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,
@@ -4650,7 +4671,6 @@ def get_organizational_chart_employee_data_by_company_id(
         return f"API request failed: {e}\n{response.text}"
     return response.json()
 
-@mcp.tool()
 @mcp.tool()
 def get_employeee_data_by_organizational_chart_node_id(
     id: UUID = Field(..., description="UUID organizational chart node"),
@@ -7462,8 +7482,9 @@ def update_overtime_marking_on_time_report_day_by_employee_id(
 
 @mcp.tool()
 def create_time_report(
-    query: CreateTimeReport = Field(..., description="Query object all fields requiered"),
-    body: PutTimereportModel = Field(..., description="Time report payload for the given day"),
+    employee_id: UUID = Field(..., description="Employee ID"),
+    date: datetime = Field(..., description="Date of the report"),
+    entry: PutTimereportModel = Field(..., description="Time report payload for the given day"),
 ) -> dict:
     """
     Create or replace a full time report day for a specific employee and date.
@@ -7474,24 +7495,21 @@ def create_time_report(
         API response as dict.
     """
 
-    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/timereports/{date.isoformat()}",
-    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
-    payload = body.model_dump(by_alias=True, exclude_none=True)
-
+    # Convert model to API payload using aliases
+    payload = entry.model_dump(by_alias=True, exclude_none=True)
+    print(payload)
     try:
         response = s.put(
-            url,
-            params=params,
+            url=f"{consts.API_ENDPOINT}/employees/{employee_id}/timereports/{date.isoformat()}",
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=consts.API_TIMEOUT,
         )
         response.raise_for_status()
+
+        return response.json() if response.content else {"status": "ok"}
+
     except requests.RequestException as e:
-        return f"API request failed: {e}\n{response.text}"
-    if response.headers.get("Content-Type", "").startswith("application/json"):
-        return response.json()
-    else:
         return f"Status: {response.status_code}\n{response.text}"
 
 

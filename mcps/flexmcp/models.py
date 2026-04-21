@@ -1374,21 +1374,24 @@ class GetTimeReportByEmployee(BaseModel):
     date: Optional[datetime] = Field(None, description="Time reports reported after this date")
     generated: Optional[bool] = Field(True, description="Include generated time rows")
     model_config = {"populate_by_name": True}
-    model_config = {"populate_by_name": True}
 
 class GetTimeReportsByEmployee(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="employee id")
-    date: Optional[datetime] = Field(None, description="Time reports reported after this date")
+    date_: Optional[datetime] = Field(None, description="Time reports reported after this date", alias="date")
     from_date: date = Field(..., description="Start of the date range (YYYY-MM-DD). Inclusive.", alias="from")
     tom_date: date = Field(..., description="End of the date range (YYYY-MM-DD). Inclusive.", alias="tom")
     generated: Optional[bool] = Field(True, description="Include generated time rows")
-    model_config = {"populate_by_name": True}
     model_config = {"populate_by_name": True}
 
 class CreateTimeReport(BaseModel):
     employee_id: UUID = Field(..., description="Employee ID")
     date: datetime = Field(..., description="Date of the report")
     model_config = {"populate_by_name": True}
+    @field_serializer("date")
+    def serialize_datetime(self, value: Optional[datetime]):
+        if value is None:
+            return value
+        return value.strftime("%Y-%m-%d")
 
 class TimereportOvertimeMarkingModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the overtime marking.")
@@ -1397,7 +1400,7 @@ class TimereportOvertimeMarkingModel(BaseModel):
 
 
 class PutTimereportTimeCodeModel(BaseModel):
-    code: Optional[str] = Field(None, description="Time code string identifier. Nullable.")
+    code:str
     model_config = {"populate_by_name": True}
 
 
@@ -1421,7 +1424,23 @@ class PutTimereportTimeRowModel(BaseModel):
     to_time_date_time: Optional[datetime] = Field(None, alias="toTimeDateTime", description="End datetime for the time row. Date should be entry date +1/-1 if ends on previous/next day. Either this or tomTime can be submitted. Nullable.")
     unsocial_working_hours_time_code: Optional[PutTimereportTimeCodeModel] = Field(None, alias="unsocialWorkingHoursTimeCode", description="Time code for unsocial working hours.")
     model_config = {"populate_by_name": True}
+    @field_serializer("from_time_date_time", "to_time_date_time")
+    def serialize_datetime(self, value: datetime):
+        return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
+class DayEntry(BaseModel):
+    overtime_marking_after: Optional[UUID] = Field(
+        None,
+        alias="overtimeMarkingAfter"
+    )
 
+    overtime_marking_before: Optional[UUID] = Field(
+        None,
+        alias="overtimeMarkingBefore"
+    )
+
+    
+
+    model_config = {"populate_by_name": True}
 class PutTimereportModel(BaseModel):
     overtime_marking_after: Optional[TimereportOvertimeMarkingModel] = Field(None, alias="overtimeMarkingAfterPublicTimereport", description="Overtime marking applied after the public time report.")
     overtime_marking_before: Optional[TimereportOvertimeMarkingModel] = Field(None, alias="overtimeMarkingBeforePublicTimereport", description="Overtime marking applied before the public time report.")
