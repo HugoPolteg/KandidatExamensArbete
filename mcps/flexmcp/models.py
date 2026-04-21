@@ -447,9 +447,9 @@ class CustomerModel(BaseModel):
     work_place: Optional[WorkplaceModel] = Field(None, alias="workPlace", description="Workplace details associated with the customer.")
     model_config = {"populate_by_name": True}
 
-class GetCustomersByComopany(BaseModel):
+class GetCustomersByCompany(BaseModel):
     company: str = Field(..., description="Company number. Required.")
-    instance: str = Field(INSTANCE, description="Domain name. Required.")
+    instance: str = Field(DOMAIN, description="Domain name. Required.")
     code: Optional[str] = Field(None, description="Customer code filter.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Filter customers created or modified from this date and time. Format: YYYY-MM-DDTHH:MM:SS.")
@@ -576,7 +576,8 @@ class EmployeeQualificationModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the employee qualification record.")
     instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
     qualification_id: UUID = Field(..., alias="qualificationId", description="UUID of the qualification.")
-    qualification_level: float = Field(..., alias="qualificationLevel", description="Level of the employee's qualification.")
+    qualification_level: float = Field(..., alias="qualificationLevel", description="Level of the employee's qualification." \
+    "Binary (1 or 0) for certificates (ex drivers licence) or 1-5 for competences, ex language.")
     model_config = {"populate_by_name": True}
 
 class EmploymentDefaultAccountModel(BaseModel):
@@ -1184,7 +1185,7 @@ class GetTravelClaims(BaseModel):
     model_config = ConfigDict(populate_by_name=True)
 
 class GetQualifications(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companyNumber", description="Company number.")
     employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of employees with this qualification. Nullable.")

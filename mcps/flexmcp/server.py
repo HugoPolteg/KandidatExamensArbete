@@ -288,7 +288,7 @@ def get_absence_type_by_id(
 @mcp.tool()
 def create_new_accounts(
     account_distribution_id: UUID = Field(..., description="The id of the account distribution that the accounts is created in."),
-    account_model: AccountModel = Field(description="All relevant information surrounding the account. Account name and code are requiered")    
+    account_model: AccountModel = Field(description="All relevant information surrounding the account. Account name and code are required")    
 )->dict:
     """
     Creates new accounts
@@ -869,7 +869,7 @@ def get_accumulators(
     filters: Optional[GetAccumulators] = GetAccumulators()
     )->dict:
     """
-    Get accumulators based on fitler parameters
+    Get accumulators based on filter parameters
 
     Returns:
         API response as a JSON dict
@@ -1260,8 +1260,7 @@ def get_balance_adjustment_by_employee_id(
 @mcp.tool()
 def get_balance_adjustment_by_company_id(
     id: UUID = Field(...,description="UUID of the company"),
-    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = Field(GetBalanceAdjustmentByEmployeeOrCompany(),description="Optinal filter parameters")
-    )->dict:
+    filter: Optional[GetBalanceAdjustmentByEmployeeOrCompany] = GetBalanceAdjustmentByEmployeeOrCompany()):
     """
     Get balande adjustment for a company given by company id
 
@@ -1287,7 +1286,7 @@ def get_balance_adjustment_by_company_id(
 
 @mcp.tool()
 def get_balance_adjustments(
-    filters: Optional[GetBalanceAdjustments] = Field(GetBalanceAdjustments(),description="Filer parameters all feilds are optinal")
+    filters: Optional[GetBalanceAdjustments] = GetBalanceAdjustments()
     )->dict:
     """
     Get balance adjustments filtered by filter parameters
@@ -1296,7 +1295,7 @@ def get_balance_adjustments(
         API response as JSON dict
     """
     url = f"{consts.API_ENDPOINT}/balanceadjustments"
-    params = filter.model_dump(by_alias=True, exclude_none=True)
+    params = filters.model_dump(by_alias=True, exclude_none=True)
 
     try:
         response = s.get(
@@ -1315,7 +1314,7 @@ def get_balance_adjustments(
 @mcp.tool()
 def create_balance_adjustment_batch_by_company(
     id: UUID = Field(...,description="UUID of the company"),
-    query: List[BalanceAdjustmentModel]  = Field(...,description="Query object")
+    query: List[BalanceAdjustmentModel]  = Field(..., description="Query object")
     )->dict:
     """
     Post a batch of balance adjustmets by company
@@ -1375,10 +1374,10 @@ def get_balance_report_by_balance_id_and_employee_id(
 
 @mcp.tool()
 def get_billing_releases_by_company(
-    filters: GetBillingReleasesByCompany = Field(...,description="Parameters to filter the search by: company and instance are required, if no isntance is provied will use default instance.")
+    filters: GetBillingReleasesByCompany = Field(...,description="Parameters to filter the search by: company and instance are required, if no instance is provied will use default instance.")
     )->dict:
     """"
-    Gets billing releases for a company in a given isntance,if no isntance is provied will use default instance."
+    Gets billing releases for a company in a given instance,if no instance is provied will use default instance."
 
     Returns:
         API response as a JSON dict
@@ -1727,7 +1726,7 @@ def create_company(
         params["copySettings"] = copy_settings
 
     try:
-        response = requests.post(
+        response = s.post(
             url,
             params=params,
             json=payload,
@@ -1753,7 +1752,7 @@ def get_customer_by_id(
     """
     url = f"{consts.API_ENDPOINT}/customers/{id}"
     try:
-        response = requests.get(
+        response = s.get(
             url,
             timeout=consts.API_TIMEOUT
         )
@@ -1768,7 +1767,7 @@ def get_customer_by_id(
 mcp.tool()
 def update_customer_by_id(
     id: UUID = Field(..., description="UUID of the customer."),
-    query: CustomerModel = Field(...,description="Full query object")
+    query: CustomerModel = Field(...,description="Full customer object")
     )->dict:
     """
     Updates a customer by customer id
@@ -1777,10 +1776,10 @@ def update_customer_by_id(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/customers/{id}"
-    payload = query.model_dump(by_alias=True, exclude_none=True),
-
+    payload = query.model_dump(by_alias=True, exclude_none=True)
+    print(payload)
     try:
-        response = requests.put(
+        response = s.put(
             url,
             json=payload,
             timeout=consts.API_TIMEOUT
@@ -1794,7 +1793,7 @@ def update_customer_by_id(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def detlete_customer_by_id(
+def delete_customer_by_id(
     id: UUID = Field(..., description="UUID of the customer."),
     )->dict:
     """
@@ -1805,7 +1804,7 @@ def detlete_customer_by_id(
     """
     url = f"{consts.API_ENDPOINT}/customers/{id}"
     try:
-        response = requests.delete(
+        response = s.delete(
             url,
             timeout=consts.API_TIMEOUT
         )
@@ -1819,10 +1818,10 @@ def detlete_customer_by_id(
 
 mcp.tool()
 def get_customers_by_company(
-    filters: GetCustomersByComopany = Field(...,description="Filter parameters to fitler the search by, company and isntance are requiered, if no isntance is provided will default to default instance")
+    filters: GetCustomersByCompany = Field(...,description="Filter parameters to filter the search by, company and instance are requiered, if no instance is provided will default to default instance")
     )->dict:
     """
-    Get customers by company optinaly filtered by filter parameters
+    Get customers by company optionally filtered by filter parameters
 
     Returns:
         API response as JSON dict
@@ -1831,7 +1830,7 @@ def get_customers_by_company(
     params = filters.model_dump(by_alias=True,exclude_none=True)
 
     try:
-        response = requests.get(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT
@@ -1846,7 +1845,7 @@ def get_customers_by_company(
 
 @mcp.tool()
 def get_customers_by_account_distribution_id(
-    account_distirbution_id: UUID = Field(...,description="UUID of the account distribution."),
+    account_distribution_id: UUID = Field(...,description="UUID of the account distribution."),
     filters: Optional[GetCustomersByAccountDistribution] = GetCustomersByAccountDistribution()
     )->dict:
     """
@@ -1855,11 +1854,11 @@ def get_customers_by_account_distribution_id(
     Response:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distirbution_id}/customers"
+    url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distribution_id}/customers"
     params = filters.model_dump(by_alias=True,exclude_none=True)
 
     try:
-        response = requests.get(
+        response = s.get(
             url,
             params=params,
             timeout=consts.API_TIMEOUT
@@ -1887,7 +1886,7 @@ def post_customers_by_account_distribution_id(
     payload = query.model_dump(by_alias=True,exclude_none=True)
 
     try:
-        response = requests.post(
+        response = s.post(
             url,
             json=payload,
             timeout=consts.API_TIMEOUT
@@ -1902,7 +1901,7 @@ def post_customers_by_account_distribution_id(
 
 @mcp.tool()
 def get_from_time_schedule_by_employee_and_date(
-    filters: GetTimeScheduleByEmployeeAndDate = Field(..., description="Filter parameters to fitler the search by, all fields requiered")
+    filters: GetTimeScheduleByEmployeeAndDate = Field(..., description="Filter parameters to filter the search by, all fields requiered")
     )->dict:
     """
     Gets the from time  of a given employees day schedule for a given date
@@ -1913,7 +1912,7 @@ def get_from_time_schedule_by_employee_and_date(
     url = f"{consts.API_ENDPOINT}/DaySchedule/GetScheduleFromTime"
     params = filters.model_dump(by_alias=True,exclude_none=True)
     try:
-        response = requests.post(
+        response = s.post(
             url,
             params=params,
             timeout=consts.API_TIMEOUT
@@ -1928,7 +1927,7 @@ def get_from_time_schedule_by_employee_and_date(
 
 @mcp.tool()
 def get_to_time_schedule_by_employee_and_date(
-    filters: GetTimeScheduleByEmployeeAndDate = Field(..., description="Filter parameters to fitler the search by, all fields requiered")
+    filters: GetTimeScheduleByEmployeeAndDate = Field(..., description="Filter parameters to filter the search by, all fields requiered")
     )->dict:
     """
     Gets the from time  of a given employees day schedule for a given date
@@ -1939,7 +1938,7 @@ def get_to_time_schedule_by_employee_and_date(
     url = f"{consts.API_ENDPOINT}/DaySchedule/GetScheduleToTime"
     params = filters.model_dump(by_alias=True,exclude_none=True)
     try:
-        response = requests.post(
+        response = s.post(
             url,
             params=params,
             timeout=consts.API_TIMEOUT
@@ -2029,7 +2028,7 @@ def update_employee_by_id_post(
 
 @mcp.tool()
 def get_employees(
-    filters: GetEmployees = Field(...,description="Fitler parameters to optionaly filter the search by")
+    filters: GetEmployees = Field(...,description="filter parameters to optionaly filter the search by")
     ) -> dict:
     """
     Gets employees optionaly filterd fy filter parameters
@@ -2239,13 +2238,13 @@ def update_employmee_qualification_by_id_put(
     query: EmployeeQualificationModel = Field(..., description="Query object, all fields other than id are requiered")
     )->dict:
     """
-    Update employee qulatification by employee id (put)
+    Update employee qualification by employee id (put)
 
     Returns:
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employeequalifications/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.put(
@@ -2272,7 +2271,7 @@ def update_employee_qualification_by_id_post(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employeequalifications/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.post(
@@ -2418,7 +2417,7 @@ def get_employment_default_accounts(
     filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
-    Get employment default accounts optinaly filted by filter parameters
+    Get employment default accounts optionally filted by filter parameters
 
     Retruns:
         API response as a JSON dict
@@ -2574,7 +2573,7 @@ def get_employment_default_account_intervals(
     filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
-    Get employment default account intervals optinaly filted by filter parameters
+    Get employment default account intervals optionally filted by filter parameters
 
     Retruns:
         API response as a JSON dict
@@ -2676,7 +2675,7 @@ def get_employment_documents_collection_by_company(
     filters: GetEmploymentDocumentCollection = Field(..., description="Filter parameters to filter the search by, companyId is requiered, all other fields optional")
     )->dict:
     """
-    Get a collection of employment documents by company, optinaly filtered by filter parameters.
+    Get a collection of employment documents by company, optionally filtered by filter parameters.
 
     Returns:
         API response as a JSON dict. Note: The returned property "title" is the filename
@@ -2721,7 +2720,7 @@ def create_employment_document(
     try:
         with open(file_path, "rb") as f:
             files = {"file": f}
-            response = requests.post(
+            response = s.post(
                 url,
                 params=params,
                 files=files,
@@ -2742,7 +2741,7 @@ def get_employment_document_categories(
     filters: Optional[GetEmploymentDocumentCatagories] = GetEmploymentDocumentCatagories()
     )->dict:
     """
-    Get employment documet categories, optinaly filted by filter parameters
+    Get employment documet categories, optionally filted by filter parameters
 
     Returns:
         API response as a JSON dict
@@ -2850,7 +2849,7 @@ def get_employment_empty_schedules(
     filters: Optional[GetEmploymentEmptySchedules] = GetEmploymentEmptySchedules()
     )->dict:
     """"
-    Get employment empty schedules optinaly filtered by filter parameters
+    Get employment empty schedules optionally filtered by filter parameters
 
     Returns:
         API response as a JSON dict
@@ -3060,7 +3059,7 @@ def get_employment_periods(
     filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """"
-    Get employmed periods optinaly filtered by filter parameters
+    Get employmed periods optionally filtered by filter parameters
 
     Returns:
         API response as a JSON dict
@@ -3201,10 +3200,10 @@ def delete_employment_personal_schedule_by_id(
 
 @mcp.tool()
 def get_employment_personal_schedules(
-    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
     )->dict:
     """"
-    Get employment personal schedules optinaly filtered by filter parameters
+    Get employment personal schedules optionally filtered by filter parameters
 
     Returns:
         API response as a JSON dict
@@ -3511,7 +3510,7 @@ def batch_update_employment_rate_by_employee_id(
 
 @mcp.tool()
 def get_employment_rates(
-    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
     )->dict:
     """"
     Get employment rates optionaly filtered by filter parameters
@@ -3667,7 +3666,7 @@ def delete_employment_title_by_id(
 
 @mcp.tool()
 def get_employment_titles(
-    filters: GetEmplploymentTitles = Field(GetEmplploymentTitles(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GetEmplploymentTitles = Field(GetEmplploymentTitles(),description="filter parameters to filter the search by all feilds optional")
     )->dict:
     """"
     Get employment titles optionaly filtered by filter parameters
@@ -3734,7 +3733,7 @@ def get_employment_type_by_id(
 
 @mcp.tool()
 def get_employment_types(
-    filters: GetEmploymentTypes = Field(GetEmploymentTypes(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GetEmploymentTypes = Field(GetEmploymentTypes(),description="filter parameters to filter the search by all feilds optional")
     )->dict:
     """"
     Get employment titles optionaly filtered by filter parameters
@@ -4095,7 +4094,7 @@ def update_hr_form_by_id(
         raise RuntimeError(f"File not found: {file_path}")
 
     try:
-        response = requests.put(
+        response = s.put(
             url,
             files=multipart_data,
             timeout=consts.API_TIMEOUT
@@ -4157,7 +4156,7 @@ def create_hr_form(
         raise RuntimeError(f"File not found: {file_path}")
 
     try:
-        response = requests.post(
+        response = s.post(
             url,
             files=multipart_data,
             timeout=consts.API_TIMEOUT
@@ -4342,7 +4341,7 @@ def batch_create_imported_trip(
     payload = [trip.model_dump(mode="json", by_alias=True, exclude_none=True) for trip in trips]
 
     try:
-        response = requests.post(
+        response = s.post(
             url,
             json=payload,
             timeout=consts.API_TIMEOUT
@@ -4374,7 +4373,7 @@ def get_invocing_basis_by_billing_release_id(
     }
     
     try:
-        response = requests.post(
+        response = s.post(
             url,
             params=parapms,
             timeout=consts.API_TIMEOUT
@@ -5763,10 +5762,10 @@ def get_personal_schedule_by_id(
 
 @mcp.tool()
 def get_personal_schedules(
-    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
     )->dict:
     """"
-    Get  personal schedules optinaly filtered by filter parameters
+    Get  personal schedules optionally filtered by filter parameters
 
     Returns:
         API response as a JSON dict
@@ -5886,7 +5885,7 @@ def get_reported_hours_on_projects(
     query: GetReportedHoursOnProjects = Field(..., description="Full query object. accountdistributionid, status, fromDate and toDate are required. All other fields are optional")
     )->dict:
     """
-    Get reported hours on projects for a given account distribution id, status and date range. Optinaly fitltered by additional fitler parameters.
+    Get reported hours on projects for a given account distribution id, status and date range. optionally fitltered by additional filter parameters.
 
     Returns:
         API response as a JSON dict.
@@ -6012,10 +6011,10 @@ def get_public_schedule_by_id(
 
 @mcp.tool()
 def get_public_schedules(
-    filters: GenericGetModel = Field(GenericGetModel(),description="Fitler parameters to fitler the search by all feilds optional")
+    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
     )->dict:
     """"
-    Get  public schedules optinaly filtered by filter parameters
+    Get  public schedules optionally filtered by filter parameters
 
     Returns:
         API response as a JSON dict
@@ -6144,7 +6143,7 @@ def get_qualifications(
     filters: GetQualifications = GetQualifications()
     )->dict:
     """
-    Gets qualifications optinaly filtered by filter parameters.
+    Gets qualifications optionally filtered by filter parameters.
 
     Returns:
         A JSON dict containing the list of qualifications.
@@ -6267,7 +6266,7 @@ def get_resignation_causes(
     filters: GetResignationCauses = GetResignationCauses()
     )->dict:
     """
-    Gets resignation causes optinaly filtered by filter parameters.
+    Gets resignation causes optionally filtered by filter parameters.
 
     Returns:
         A JSON dict containing the list of resignation causes.
@@ -6601,7 +6600,7 @@ def get_roles(
     query: GetRoles = Field(GetRoles(), description="Parameters to filter the search by all feilds optional")
     )->dict:
     """
-    Get roles optinaly filtered by filter parameters.
+    Get roles optionally filtered by filter parameters.
 
     Returns:
         API response as a JSON dict.
