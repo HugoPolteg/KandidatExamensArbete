@@ -864,6 +864,15 @@ class NextOfKinModel(BaseModel):
     relation: str = Field(..., min_length=1, description="Relation of the next of kin to the employee. Minimum length: 1.")
     model_config = {"populate_by_name": True}
 
+class GetOrganizationalChartNodeById(BaseModel):
+    include_hierarchy: Optional[bool] = Field(False, description="Whether or not to include hierearchy, default value false", alias="includeHierarchy"),
+    hierarchy_depth: Optional[int] = Field(0, description="Hierarchy levels. Default Value 0", alias="hierarchyDepth"),
+
+class GetOrganizationalChartAccountingsByCompany(BaseModel):
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    include_hierarchy: Optional[bool] = Field(False, description="Whether or not to include hierearchy, default value false", alias="includeHierarchy"),
+    hierarchy_depth: Optional[int] = Field(0, description="Hierarchy levels. Default Value 0", alias="hierarchyDepth"),
+
 class GetOwnFieldModel(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
