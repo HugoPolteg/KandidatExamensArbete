@@ -732,7 +732,7 @@ def get_account_distribution_by_company_id(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def get_account_part_approval_permissions_by_id(
+def get_account_distribution_part_approval_permissions_by_id(
     id: UUID = Field(...,description="Account part approval permission id.")
     )->dict:
     """
@@ -4579,6 +4579,103 @@ def get_next_of_kin_relationships(
     return response.json()
 
 @mcp.tool()
+def get_organizational_chart_node_by_id(
+    id: UUID = Field(..., description="UUID organizational chart node"),
+    query: Optional[GetOrganizationalChartNodeById] = Field(GetOrganizationalChartNodeById(), description="Query object, all fields optional")
+    )->dict:
+    """
+    Get organizational chart node by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/organizationalchart/{id}"
+    params = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_organizational_chart_accountings_by_company_id(
+    company_id: UUID = Field(..., description="UUID of the company"),
+    query: Optional[GetOrganizationalChartAccountingsByCompany] = Field(GetOrganizationalChartAccountingsByCompany(), description="Query object, all fields optional")
+    )->dict:
+    """
+    Get all organizational chart accountings for a company.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/organizationalchart"
+    params = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+def get_organizational_chart_employee_data_by_company_id(
+    company_id: UUID = Field(..., description="UUID of the company"),
+    page_params: PageModel = Field(PageModel(), description="Pagination parameters"),
+    )->dict:
+    """
+    Get all organizational chart employee data for a company.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/organizationalchart/employeedata"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+
+@mcp.tool()
+@mcp.tool()
+def get_employeee_data_by_organizational_chart_node_id(
+    id: UUID = Field(..., description="UUID organizational chart node"),
+    page_params: PageModel = Field(PageModel(), description="Pagination parameters"),
+    )->dict:
+    """
+    Get employee data for a specific organizational chart node.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/organizationalchart/{id}/employeedata"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+            url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    return response.json()
+    
+@mcp.tool()
 def get_overtime_by_user_id(
     user_id: UUID = Field(..., description="UUID of the user"),
     instance: Optional[str] = Field(INSTANCE, alias="instans", description="Domain name. If not provided defaults to the default domain."),
@@ -7026,7 +7123,7 @@ def get_schedule_days_by_salary_transfer_id(
     query : GetScheduleDaysBySalaryTransfer = Field(..., description="Query object for getting schedule days by salary transfer id. salary_transfer_id is required. All other fields are optional")
     ) -> list:
     """
-    Gets schedule days for an employee, optionally filtered by filter parameters.
+    Gets schedule days for a salary transfer.
  
     Returns:
         API response as a JSON dict
@@ -7046,7 +7143,7 @@ def get_staff_category_by_id(
     id: UUID = Field(..., description="UUID of the staff category.")
 ) -> dict:
     """
-    Gets schedule days for an employee, optionally filtered by filter parameters.
+    Gets staff category by id
  
     Returns:
         API response as a JSON dict
@@ -7060,11 +7157,230 @@ def get_staff_category_by_id(
         raise RuntimeError(f"API request failed for staff category {id}: {e}")
     return response.json()
 
+@mcp.tool()
+def get_staff_categories(
+    query: Optional[GetStaffCategories] = Field(GetStaffCategories(),description="Query object all parameters optional")
+    ) -> dict:
+    """
+    Gets staff categories optionally filtered by filter parameters.
+ 
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/staffcategories"
+    params = query.model_dump(by_alias=True, exclude_none = True, mode="json")
+
+    try:
+        response = s.get(
+            url, 
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        raise RuntimeError(f"API request failed for staff category {id}: {e}")
+    return response.json()
+
+@mcp.tool()
+def update_stamping_by_user_id  (
+    query: UpdateStampingByUserId = Field(..., description="Query object user_id required all other fields optional"),
+    body: StampingAccountModel = Field(..., description="Request body object all fields requiered"),
+    ) -> dict:
+    """
+    Stamps in or out for a user
+
+    Returns:
+        API response as a JSON dict.
+    """
+
+    url = f"{consts.API_ENDPOINT}/stamping/{query.user_id}/inOut"
+
+    params = query.model_dump(by_alias=True, exclude_none = True, mode="json", exclude={"user_id"})
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.post(
+            url, 
+            params = params,
+            json=payload, 
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def update_stamping_by_employee_id(
+    query: UpdateStampingByUserId = Field(..., description="Query object user_id required all other fields optional"),
+    body: StampingAccountModel = Field(..., description="Request body object all fields requiered"),
+    )-> dict:
+    """
+    Stamps in or out for an employee by their ID
+
+    Returns:
+        API response as a JSON dict.
+
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/inOut"
+    params = query.model_dump(by_alias=True, exclude_none = True, mode="json", exclude={"employee_id"})
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+    try:
+        response = s.post(
+            url, 
+            params=params,
+            json=payload, 
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 
 
 @mcp.tool()
-def get_time_report_by_employee(
+def get_stamping_by_userID(
+   query: GetStampingByUserId = Field(...,description="Query object user_id requiered all other fields optional")
+    )-> dict:
+    """
+    Gets stamping information for a user
+
+    Response:
+        A JSON dict containing stamping details for the specified user.
+     """
+    
+    url = f"{consts.API_ENDPOINT}/users/{query.user_id}/timeRows"
+
+    params = query.model_dump(by_alias=True, exclude_none = True, mode="json", exclude={"user_id"})
+
+    
+    try:
+        response = s.get(
+        url, 
+        params=params, 
+        timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_time(
+    ) -> dict:
+    """
+    Get server date and time.
+    Returns:
+        API response as a JSON dict.
+    """
+
+    url = f"{consts.API_ENDPOINT}/time"
+
+    try:
+        response = s.get(
+            url,  
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+mcp.tool()
+def get_time_group_by_id  (
+    id: UUID = Field(..., description="UUID of the time group")
+    ) -> dict:
+    """
+    Get time group by id
+
+    Returns:
+        API response as a JSON dict.
+    """
+
+    url = f"{consts.API_ENDPOINT}/timegroups/{id}"
+    try:
+        response = s.get(
+            url,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+mcp.tool()
+def get_time_groups(
+    ) -> dict:
+    """
+    Get time groups
+
+    Returns:
+        API response as a JSON dict.
+    """
+
+    url = f"{consts.API_ENDPOINT}/timegroups"
+    try:
+        response = s.get(
+            url,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+
+mcp.tool()
+def get_time_registration_settings_by_company_id  (
+    query: GetTimeRgistrationSettingsByCompanyId = Field(..., description="Query object company_id required all other fields optional"),
+    ) -> dict:
+    """
+    Get time registration settings by company
+
+    Returns:
+        API response as a JSON dict.
+    """
+
+    url = f"{consts.API_ENDPOINT}/timeregistrationsettings/{query.company_id}"
+    params = query.model_dump(by_alias=True, exclude_none = True, mode="json", exclude={"company_id"})
+
+    try:
+        response = s.get(
+            url,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_time_report_by_employee_id(
     query: GetTimeReportByEmployee = Field(..., description="Full query object. employee_id is required. All other fields are optional")
 ) -> dict:
     """
@@ -7083,16 +7399,71 @@ def get_time_report_by_employee(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-
-    return response.json()
-
-
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def put_time_report(
-    employee_id: UUID = Field(..., description="Employee ID"),
-    date: datetime = Field(..., description="Date of the report"),
-    entry: DayEntry = Field(..., description="Time report payload for the given day"),
+def get_time_reports_by_employee_id(
+    query: GetTimeReportsByEmployee = Field(..., description="Full query object. employee_id is required. All other fields are optional")
+) -> dict:
+    """
+    Gets a time reports for an employee.
+
+    Returns:
+        Time report data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/timereports"
+
+    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
+    try:
+        response = s.get(url,
+            params=params,
+            timeout=consts.API_TIMEOUT)
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def update_overtime_marking_on_time_report_day_by_employee_id(
+    query: UpdateOvertimeMarketingOnTimeReportDayByEmployeeId = Field(..., description="Query object all filed requiered"),
+    body: PublicTimereportModel= Field(...,description="Request body object")
+    )->dict:
+    """
+    Set overtime marketing on the report day of an employee.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/SetOvertimeMarketing"
+    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+            url,
+            params=params,
+            json=payload,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT,
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def create_time_report(
+    query: CreateTimeReport = Field(..., description="Query object all fields requiered"),
+    body: PutTimereportModel = Field(..., description="Time report payload for the given day"),
 ) -> dict:
     """
     Create or replace a full time report day for a specific employee and date.
@@ -7103,75 +7474,56 @@ def put_time_report(
         API response as dict.
     """
 
-    # Convert model to API payload using aliases
-    payload = entry.model_dump(by_alias=True, exclude_none=True)
-    print(payload)
+    url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/timereports/{date.isoformat()}",
+    params = query.model_dump(by_alias=True, exclude_none=True, exclude={"employee_id"})
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+
     try:
         response = s.put(
-            url=f"{consts.API_ENDPOINT}/employees/{employee_id}/timereports/{date.isoformat()}",
+            url,
+            params=params,
             json=payload,
             headers={"Content-Type": "application/json"},
             timeout=consts.API_TIMEOUT,
         )
         response.raise_for_status()
-
-        return response.json() if response.content else {"status": "ok"}
-
     except requests.RequestException as e:
-        raise RuntimeError(
-            f"API request failed for employee {employee_id} on {date}: {e}"
-        )
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
 
 @mcp.tool()
-def get_employment_periods_by_employee(
-    employee_id: UUID = Field(..., description="Employee ID"),
-    filters: GetEmploymentPeriodsByEmployee = GetEmploymentPeriodsByEmployee()
-) -> dict:
+def get_time_report_audit_levels_by_comppany_id(
+    company_id: UUID = Field(...,description="UUID of the company")
+    )->dict:
     """
-    Gets a list of employment periods by employee id.
+    Get time report audit levels for a given company
 
     Returns:
-        The employment periods from and to dates, id of resignation cause and type of employment.
+        API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentperiods"
-    payload = filters.model_dump(by_alias=True, exclude_none=True)
+
+    url = f"{consts.API_ENDPOINT}/company/{company_id}/timereportAuditLevel"
+
     try:
-        response = s.get(url, params=payload, timeout=consts.API_TIMEOUT)
+        response = s.put(
+            url,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT,
+        )
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 
 @mcp.tool()
-def get_time_groups(
-    company_number: Optional[int] = Field(None, description="Company number."),
-    time_group_code: Optional[str] = Field(None, description="Time group code."),
-    page_index: Optional[int] = Field(0, alias="pageIndex", description="Page index dafault value 0."),
-    page_size: Optional[int] = Field(20, alias="pageSize", description="Page size dafault value 20.")
-) -> dict:
-    """Gets a list of time groups. Optional to specify search parameters."""
-    url = f"{consts.API_ENDPOINT}/timegroups"
-    params = {"pageIndex": page_index, "pageSize": page_size}
-    if company_number is not None:
-        params["companynumber"] = company_number
-    if time_group_code is not None:
-        params["code"] = time_group_code
-
-    try:
-        response = s.get(url, paramsrs=params, timeout=consts.API_TIMEOUT)
-        response.raise_for_status()
-    except requests.RequestException as e:
-        return f"API request failed: {e}\n{response.text}"
-
-    return response.json()
-
-
-
-
-
-#@mcp.tool()
 def insert_time_row(
     employee_id: UUID = Field(..., description="UUID of the employee."),
     row_date: date = Field(..., description="Date of the time row (YYYY-MM-DD)."),
@@ -7208,109 +7560,23 @@ def insert_time_row(
  
     return response.json() if response.content else {"status": "ok"}
 
-
-
-#@mcp.tool()
-def stamping_by_Id  (
-    userId: UUID = Field(..., description="UUID of the employee."),
-    internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable."),
-    date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format."),
-    account: StampingAccountModel = Field(..., description="Stamping account details including account code and distribution ID, both required."),
-    ) -> dict:
-    """
-    Stamps in or out for a user
-
-    Returns:
-        API response as a JSON dict.
-    """
-
-    url = f"{consts.API_ENDPOINT}/stamping/{userId}/inOut"
-
-    params = {}
-    if internal_comment is not None:
-        params["internalComment"] = internal_comment
-    if date_time is not None:
-        params["dateTime"] = date_time.isoformat()
-
-    payload = account.model_dump(by_alias=True, exclude_none=True)
-
-    try:
-        response = s.post(
-            url, 
-            
-            json=payload, 
-            headers={"Content-Type": "application/json"},
-            timeout=consts.API_TIMEOUT
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        return f"API request failed: {e}\n{response.text}"
-    if response.headers.get("Content-Type", "").startswith("application/json"):
-        return response.json()
-    else:
-        return f"Status: {response.status_code}\n{response.text}"
-
-#@mcp.tool()
-def stamping_by_employeeId(
-    employeeId: UUID = Field(..., description="UUID of the employee."),
-    internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable."),
-    date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format."),
-    account: StampingAccountModel = Field(..., description="Stamping account details including account code and distribution ID, both required."),
-    )-> dict:
-    """
-    Stamps in or out for an employee by their ID
-
-    Returns:
-        API response as a JSON dict.
-
-    """
-    url = f"{consts.API_ENDPOINT}/employees/{employeeId}/inOut"
-
-    params = {}
-    if internal_comment is not None:
-        params["internalComment"] = internal_comment
-    if date_time is not None:
-        params["dateTime"] = date_time.isoformat()
-
-    payload = account.model_dump(by_alias=True, exclude_none=True)
-
-    try:
-        response = s.post(
-            url, 
-            json=payload, 
-            headers={"Content-Type": "application/json"},
-            timeout=consts.API_TIMEOUT
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        return f"API request failed: {e}\n{response.text}"
-    if response.headers.get("Content-Type", "").startswith("application/json"):
-        return response.json()
-    else:
-        return f"Status: {response.status_code}\n{response.text}"
-
 @mcp.tool()
-def get_stamping_by_userID(
-    user_id: UUID = Field(..., description="UUID of the employee."),
-    date_time: Optional[datetime] = Field(None, description="Date and time for which to retrieve stamping information, in ISO format.")
-    )-> dict:
+def get_collection_of_travel_time_rule_sets(
+    query: Optional[GetCollectionOfTravelTimeRuleSets] = Field(GetCollectionOfTravelTimeRuleSets(), description="Query object all fields optional")
+    )->dict:
     """
-    Gets stamping information for a user
+    Get a paged colletion of travel time rule sets.
 
-    Response:
-        A JSON dict containing stamping details for the specified user.
-     """
-    
-    url = f"{consts.API_ENDPOINT}/stamping/{user_id}/timeRows"
-
-    params = {}
-    if date_time is not None:
-        params["dateTime"] = date_time.isoformat()
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/timerulesets"
     try:
-        response = s.get(
-        url, 
-        params=params, 
-        timeout=consts.API_TIMEOUT)
+        response = s.post(
+            url,
+            headers={"Content-Type": "application/json"},
+            timeout=consts.API_TIMEOUT,
+        )
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
@@ -7394,6 +7660,62 @@ def get_user_by_id(
     else:
         return f"Status: {response.status_code}\n{response.text}"
 
+@mcp.tool()
+def update_user_by_id_put(
+    user_id: UUID = Field(..., description="UUID of the user."),
+    body: UserModel = Field(..., description="Request body object, kundinstansId, terminatedEmploymentNumberOfDaysToInactivateUser, and username are requiered all other parameters optional."),
+    )-> dict:
+    """
+    Gets user information by ID (put)
+
+    Returns:
+        User data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/users/{user_id}"
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.put(
+        url,
+        json=payload,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def update_user_by_id_post(
+    user_id: UUID = Field(..., description="UUID of the user."),
+    body: UserModel = Field(..., description="Request body object, kundinstansId, terminatedEmploymentNumberOfDaysToInactivateUser, and username are requiered all other parameters optional."),
+    )-> dict:
+    """
+    Gets user information by ID (post)
+
+    Returns:
+        User data as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/users/{user_id}"
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+        url,
+        json=payload,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
 #Works
 @mcp.tool()
 def get_users(
@@ -7421,22 +7743,203 @@ def get_users(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def get_users_by_instance(
-    filters: GetUsersByInstance = Field(description="User details for filtering the users list. All fields are optional")
-    )->dict:
+def create_user(
+    enable_card_badge_id: Optional[bool] = Field(False, description="Enables setting CardBadgeId. Default: false", alias="enableCardBadgeId"),
+    body: UserModel = Field(..., description="Request body object, kundinstansId, terminatedEmploymentNumberOfDaysToInactivateUser, and username are requiered all other parameters optional."),
+    )-> dict:
     """
-    Filter users of a given instance by specified criteria. If no instance is provided, defaults to the default-domain instance.
+    Create user
 
     Returns:
-        A JSON dict containing the list of users.
+        API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/instance/{filters.instance}/users"
-    params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"instance"})
+    url = f"{consts.API_ENDPOINT}/users"
+    payload = body.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.post(
+        url,
+        json=payload,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_users_by_company(
+    company_id: UUID = Field(..., description="UUID of the company"),
+    page_params: Optional[PageModel] = Field(PageModel(), description="Pagination parameters"),
+    )->dict:
+    """
+    Get users that have any rights in given company
+
+    Returns:
+        API response as a JSON dict
+    """
+    url = f"{consts.API_ENDPOINT}/companies/{company_id}/users"
+    params = page_params.model_dump(by_alias=True, exclude_none=True)
+
     try:
         response = s.get(
-            url,
-            params=params,
-            timeout=consts.API_TIMEOUT
+        url,
+        params=params,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def recover_password_on_user_by_user_id(
+    user_id: UUID = Field(..., description="UUID of the user.")
+    )-> dict:
+    """
+    Recovers password for user by user id
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/users/{user_id}"
+    try:
+        response = s.get(url,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+    
+@mcp.tool()
+def get_user_account_part_approval_permission_by_id(
+    id: UUID = Field(..., description="User account part approval permission id.")
+    )-> dict:
+    """
+    Get user account part approval permission by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/useraccountpartapprovalpermissions/{id}"
+
+    try:
+        response = s.get(url,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def update_user_account_part_approval_permission_by_id(
+    id: UUID = Field(..., description="User account part approval permission id."),
+    body:   UserAccountPartApprovalPermissonModel = Field(..., description="Reques body object, accountDistributionPartApprovalPermissionId, and accountId are requied.")
+    )-> dict:
+    """
+    Update user account part approval permission by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/useraccountpartapprovalpermissions/{id}"
+    payload = body.model_dump(by_alias=True, exclude_none=True, mode="json")
+    try:
+        response = s.put(url,
+        json = payload,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def delete_user_account_part_approval_permission_by_id(
+    id: UUID = Field(..., description="User account part approval permission id.")
+    )-> dict:
+    """
+    Delete user account part approval permission by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/useraccountpartapprovalpermissions/{id}"
+
+    try:
+        response = s.delete(url,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def get_user_account_part_approval_permissions(
+    query: Optional[GetUserAccountPartApprovalPermissions] = Field(GetUserAccountPartApprovalPermissions(), description="Query object, all fields optional.")
+    )-> dict:
+    """
+    Get user account part approval permissions
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/useraccountpartapprovalpermissions"
+
+    params = query.model_dump(by_alias=True, exclude_none=True)
+
+    try:
+        response = s.get(
+        url,
+        params=params,
+        timeout=consts.API_TIMEOUT
+        )
+        response.raise_for_status()
+    except requests.RequestException as e:
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
+
+@mcp.tool()
+def create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id(
+    account_distribution_part_approval_permissions_id : UUID = Field(..., description="User account part approval permission distribution id.", alias="accountdistributionpartapprovalpermissionsid "),
+    body:   UserAccountPartApprovalPermissonModel = Field(..., description="Reques body object, accountDistributionPartApprovalPermissionId, and accountId are requied."),
+    )-> dict:
+    """
+    Update user account part approval permission by id.
+
+    Returns:
+        API response as a JSON dict.
+    """
+    url = f"{consts.API_ENDPOINT}/useraccountpartapprovalpermissions/{account_distribution_part_approval_permissions_id}"
+    payload = body.model_dump(by_alias=True, exclude_none=True, mode="json")
+    try:
+        response = s.post(url,
+        json = payload,
+        timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()
     except requests.RequestException as e:
@@ -7492,33 +7995,6 @@ def create_vehicle_type(
             url,
             json=payload,
             headers={"Content-Type": "application/json"},
-            timeout=consts.API_TIMEOUT
-        )
-        response.raise_for_status()
-    except requests.RequestException as e:
-        return f"API request failed: {e}\n{response.text}"
-    if response.headers.get("Content-Type", "").startswith("application/json"):
-        return response.json()
-    else:
-        return f"Status: {response.status_code}\n{response.text}"
-
-@mcp.tool()
-def get_vehicle_type_by_company_id(
-    filters: GetVehicleTypeByCompanyId = Field(..., description="Vehicle type details for filtering the vehicle types list. CompanyId is required. All fields are optional")
-    )->dict:
-    """
-    Filter vehicle types by specified criteria for a given company. CompanyId is required.
-
-    Returns:
-        A paginated JSON response containing a list of matching vehicle type objects.
-    """
-    url = f"{consts.API_ENDPOINT}/company/{filters.company_id}/vehicletypes"
-    params = filters.model_dump(by_alias=True, exclude_none=True, exclude={"company_id"})
-
-    try:
-        response = s.get(
-            url,
-            params=params,
             timeout=consts.API_TIMEOUT
         )
         response.raise_for_status()
@@ -7604,7 +8080,6 @@ def delete_vehicle_type(
         return response.json()
     else:
         return f"Status: {response.status_code}\n{response.text}"
-    
 
 if __name__ == "__main__":
     mcp.run()

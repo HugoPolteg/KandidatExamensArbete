@@ -221,13 +221,6 @@ class GetAuditedTimeReportsByCompany(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = {"populate_by_name": True}
 
-class GetTimeReportByEmployee(BaseModel):
-    employee_id: UUID = Field(..., alias="employeeId", description="employee id")
-    date: Optional[datetime] = Field(None, description="Time reports reported after this date")
-    generated: Optional[bool] = Field(True, description="Include generated time rows")
-    model_config = ConfigDict(populate_by_name=True)
-    model_config = {"populate_by_name": True}
-
 class GetBackGroundTasks(BaseModel):
     worker_state: Optional[int] = Field(None,alias="workerState", description="Worker state of the background task: 0 = Enqueued, 1 = Scheduled, 2 = Processing, 3 = Succeeded, 4 = Failed, 5 = Deleted, 6 = Awaiting")
     worker_function: Optional[int] = Field(None,alias="workerFunction", description="Function of the worker: 0 = None, 1 = Exempelfunktion, 2 = Dygnsrutin, 3 = Mailer, 4 = ValutakursImport, 5 = PaminnelseTidrapport, 6 = Paminnelse, 7 = RensaReserakningar, 8 = RensaTidrapporter, 9 = UtrikesTraktamenteImport, 10 = CreateForetag, 11 = ResaLoneoverforing, 12 = TidLoneoverforing, 13 = CreateForetagsinstallningarFil, 14 = Importmallsimport, 15 = DeleteForetag, 16 = DeleteKundinstans, 17 = DeleteForetagsinstallningarFil, 18 = OverwriteForetag, 19 = Lonekorning, 20 = FrislappTillFakturering, 21 = JeevesQueueSender, 22 = RollbackFrislappTillFakturering, 23 = FirstCardFileRetreivalAndKontokortImport, 24 = EurocardKontokortImport, 25 = Meddelanden, 26 = SkattetabellImport, 27 = Export, 28 = SchemalagdKorning, 29 = UppdateraAckumulator, 30 = ExportAnstalld, 31 = RefreshTidrapporter, 32 = Lonerevision, 33 = CalculateLonekorningAnstallning, 34 = UpdateDatabase, 35 = FortnoxKonteringsimport, 36 = DanskeBankKontokortImport, 37 = FortnoxBokforingsoverforing, 38 = TidDelbifall, 39 = RecalculateReserakningar, 40 = KopieraSchema, 41 = FlexOnlineSystemInformationSender, 42 = AutoBemanning, 43 = Felmeddelandeutskick, 44 = LonBokforingsunderlag, 45 = Kontrolluppgifter, 46 = UpdateNarvarotablaData, 47 = InitiatePayroll, 48 = Semesterarsskifte, 49 = SenAnkomstPaminnelse, 50 = UtbetalningAvLon, 51 = AnonymiseringPersonuppgifter, 52 = Semesterskuld, 53 = PassforfraganAnswer, 54 = Formel, 55 = TidregistreringAvvikelseinstallning, 56 = Tidregistreringsinstallning, 57 = TidregistreringStamplinginstallning, 58 = TidrapporteringColumnLayoutinstallning, 59 = TidregistreringAvvikelsetyperInstallning, 60 = Agi, 61 = Kontokortsfil, 62 = KvittoScanning, 63 = SprakFilerFromFlexOnline, 64 = StandardvardenForDynamiskOversattningFromFlexOnline, 65 = StandardvardenForDynamiskOversattningTillFlexOnline, 66 = FlexKontokort, 67 = PensionOchForsakring, 68 = LonerevisionClearInactiveRowLocks, 69 = LicensFromFlexOnline, 70 = XledgerIntegration, 71 = Onboarding, 72 = UteblivenStamplingPaminnelse, 73 = UteblivenStamplingPaminnelseScheduler, 74 = Arbetsgivarintyg, 75 = FragaOmSkatteavdrag, 76 = KonjunkturstatistikKLP, 77 = KopieraForetag, 79 = OfflineStamplingar, 80 = KonjunkturstatistikKSju, 81 = KonjunkturstatistikKSP, 82 = LonestrukturstatistikSLP, 83 = CalculateTidrapportdagDataWorkerService, 84 = ResetTidrapportdagDataWorkerService, 85 = Retrolon, 86 = KomprimeraBilagor, 87 = VerifiedSync, 88 = AnstallningSemesterinstallning, 89 = AnstallningSemesterarIngaendeVarde, 90 = AnstallningSemesterarSemestersaldo, 91 = LonekorningAnstallningSemesterarSemestersaldo, 92 = AnstallningBankkontouppgift, 93 = AnstallningKontrolluppgiftsinstallning, 94 = AnstallningPensionOchForsakring, 95 = Uppmarkningskod, 96 = UtbetalningAvLonInstallningLeverantorinformation, 97 = LonBokforingsfilinstallning, 98 = LonSIE4Mall, 99 = LonSIE4Konteringsdimension, 100 = Styrforetag, 101 = ExporteraSaldon, 102 = TripletexIntegration, 103 = EuStatistikLcs, 104 = LonespecifikationerKivra, 105 = LasTurordning, 106 = Semesterberakning, 107 = GranskningAvAnstallningsperiodPaminnelse, 108 = AltinnIntegration, 109 = ExportUrval, 110 = Exportintervall, 111 = ExporturvalHemkontering, 112 = ExporturvalKontering, 113 = ExporturvalUtlaggsurval, 114 = AtkAtfArsskifte, 115 = PowerOfficeGoIntegration, 116 = AtkAtfSkuld, 117 = BkyIntegration, 118 = Ackumulatorskuld, 119 = ScriveSync, 120 = LonekartlaggningCreate, 121 = LonekartlaggningCreateAnstallning, 122 = LonekartlaggningCalculate, 123 = Nyhetsflode, 124 = VerifiedSparaSigneradeDokument, 125 = LonekartlaggningDelete, 126 = VismaNetIntegration, 127 = AutomatiskGranskning, 128 = LonerevisionPaminnelse, 129 = SemesterdagUppdatering, 130 = ScriveSparaSigneradeDokument, 131 = LasTillsvidareCreate, 132 = LasTillsvidareCalculate, 133 = Winningtemp, 134 = RemoveUnmappedKontokort, 135 = LasForetradeCalculate, 140 = PaminnelseNarAllaTidrapporterBlivitGranskade, 141 = EgnaProcesser, 142 = BeraknaBevakningar, 143 = BorttagningAvraknadeReserakningar, 144 = BorttagningAvraknadePeriodavrakningar, 145 = RaderaPersonuppgifter, 146 = EnklaKonverteringar, 147 = VismaNetErp, 148 = VismaConnectRoller, 149 = WebhookSender, 150 = VismaConnectOnboarding, 151 = Bygglosen, 152 = TidBifallAll, 153 = ResBifallAll")
@@ -1328,6 +1321,166 @@ class GetScheduleDaysBySalaryTransfer(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
+class GetStaffCategories(BaseModel):
+    instance: Optional[str] = Field(None, description="Domain name.")
+    company_id: Optional[UUID] = Field(None, description="Company id.", alias="companyId")
+    company_number: Optional[int] = Field(None, description="Company number.", alias="companynumber")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    model_config = {"populate_by_name": True}
+
+class UpdateStampingByUserId(BaseModel):
+    user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
+    internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable.")
+    date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format.")
+    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True}
+
+class StampingAccountModel(BaseModel):
+    accountCode: str = Field(..., min_length=1, description="Account code string.")
+    accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
+    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True}
+
+class UpdateStampingByUserId(BaseModel):
+    employee_id: UUID = Field(..., alias="userId", description="Employee ID (UUID).")
+    internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable.")
+    date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format.")
+    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True}
+
+class GetStampingByUserId(BaseModel):
+    user_id: UUID = Field(..., description="UUID of the employee."),
+    date_time: Optional[datetime] = Field(None, description="Date and time for which to retrieve stamping information, in ISO format.")
+    model_config = {"populate_by_name": True}
+
+class GetTimeRgistrationSettingsByCompanyId(BaseModel):
+    company_id: Optional[UUID] = Field(None, description="Company id.", alias="companyId")
+    employment_number: Optional[int] = Field(None, description="Employment number.", alias="employmentnumber")
+    date: Optional[datetime] = Field(None, description="The date we want the time registration setting for as datetime.")
+    model_config = {"populate_by_name": True}
+
+
+class GetTimeReportByEmployee(BaseModel):
+    employee_id: UUID = Field(..., alias="employeeId", description="employee id")
+    date: Optional[datetime] = Field(None, description="Time reports reported after this date")
+    generated: Optional[bool] = Field(True, description="Include generated time rows")
+    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True}
+
+class GetTimeReportsByEmployee(BaseModel):
+    employee_id: UUID = Field(..., alias="employeeId", description="employee id")
+    date: Optional[datetime] = Field(None, description="Time reports reported after this date")
+    from_date: date = Field(..., description="Start of the date range (YYYY-MM-DD). Inclusive.", alias="from")
+    tom_date: date = Field(..., description="End of the date range (YYYY-MM-DD). Inclusive.", alias="tom")
+    generated: Optional[bool] = Field(True, description="Include generated time rows")
+    model_config = {"populate_by_name": True}
+    model_config = {"populate_by_name": True}
+
+class CreateTimeReport(BaseModel):
+    employee_id: UUID = Field(..., description="Employee ID")
+    date: datetime = Field(..., description="Date of the report")
+    model_config = {"populate_by_name": True}
+
+class TimereportOvertimeMarkingModel(BaseModel):
+    id: Optional[UUID] = Field(None, description="UUID of the overtime marking.")
+    name: Optional[str] = Field(None, description="Name of the overtime marking. Nullable.")
+    model_config = {"populate_by_name": True}
+
+
+class PutTimereportTimeCodeModel(BaseModel):
+    code: Optional[str] = Field(None, description="Time code string identifier. Nullable.")
+    model_config = {"populate_by_name": True}
+
+
+class PutTimereportTimeRowAccountingModel(BaseModel):
+    account_code: Optional[str] = Field(None, alias="accountCode", description="Account code. You can either send by id, or by accountDistributionId + accountCode. Nullable.")
+    account_distribution_id: Optional[UUID] = Field(None, alias="accountDistributionId", description="UUID of the account distribution. You can either send by id, or by accountDistributionId + accountCode. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the account entry. You can either send by id, or by accountDistributionId + accountCode. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class PutTimereportTimeRowModel(BaseModel):
+    accounts: Optional[list[PutTimereportTimeRowAccountingModel]] = Field(None, description="List of accounting entries for this time row. Nullable.")
+    billable_time: Optional[int] = Field(None, alias="billabledTime", description="Billable time in minutes. If not specified, calculated based on clock hours assuming time is billable. Nullable.")
+    billed: Optional[bool] = Field(None, description="Whether the time row is billed. If not specified, inherited from current accounting entries. Nullable.")
+    external_comment: Optional[str] = Field(None, alias="externalComment", description="External comment for the time row. Nullable.")
+    from_time: Optional[str] = Field(None, alias="fromTime", description="Start time in format (+/-)HH:MM. Use +/- to indicate if time relates to previous/next day. Either this or fromTimeDateTime must be submitted. Nullable.")
+    from_time_date_time: Optional[datetime] = Field(None, alias="fromTimeDateTime", description="Start datetime for the time row. Date should be entry date +1/-1 if starts on previous/next day. Either this or fromTime must be submitted. Nullable.")
+    has_padlock: Optional[bool] = Field(None, alias="hasPadlock", description="Whether the time row has a padlock.")
+    internal_comment: Optional[str] = Field(None, alias="internalComment", description="Internal comment for the time row. Nullable.")
+    time_code: Optional[PutTimereportTimeCodeModel] = Field(None, alias="timeCode", description="Time code associated with this time row.")
+    tom_time: Optional[str] = Field(None, alias="tomTime", description="End time in format (+/-)HH:MM. Use +/- to indicate if time relates to previous/next day. Either this or toTimeDateTime can be submitted. Nullable.")
+    to_time_date_time: Optional[datetime] = Field(None, alias="toTimeDateTime", description="End datetime for the time row. Date should be entry date +1/-1 if ends on previous/next day. Either this or tomTime can be submitted. Nullable.")
+    unsocial_working_hours_time_code: Optional[PutTimereportTimeCodeModel] = Field(None, alias="unsocialWorkingHoursTimeCode", description="Time code for unsocial working hours.")
+    model_config = {"populate_by_name": True}
+
+class PutTimereportModel(BaseModel):
+    overtime_marking_after: Optional[TimereportOvertimeMarkingModel] = Field(None, alias="overtimeMarkingAfterPublicTimereport", description="Overtime marking applied after the public time report.")
+    overtime_marking_before: Optional[TimereportOvertimeMarkingModel] = Field(None, alias="overtimeMarkingBeforePublicTimereport", description="Overtime marking applied before the public time report.")
+    time_rows: Optional[list[PutTimereportTimeRowModel]] = Field(None, alias="timeRows", description="List of time rows for the time report. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class UpdateOvertimeMarketingOnTimeReportDayByEmployeeId(BaseModel):
+    employee_id: UUID = Field(..., alias="employeeId", description="employee id")
+    date: datetime = Field(..., description="Date of the report")
+    overtime_marketing_id: str = Field(..., alias="overtimemarkingId",description="Overtime marking id. If null or guid empty it will remove marking")
+    overtime_marketing_enumerate: int = Field(..., alias="overtimeMarkingEnum", description="Where to set the overtime marking. If your not using more overtime markings than one, you can set whatever here.")
+    model_config = {"populate_by_name": True}
+  
+class PublicBaseAccountDistributionModel(BaseModel):
+    id: Optional[UUID] = Field(None, description="UUID of the account distribution.")
+    singular: Optional[str] = Field(None, description="Singular name of the account distribution. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class PublicTimereportAccountModel(BaseModel):
+    account_distribution: Optional[PublicBaseAccountDistributionModel] = Field(None, alias="accountDistributionPublicBaseAccountDistributionModel", description="Account distribution details.")
+    code: str = Field(..., min_length=1, description="Account code. Minimum length: 1.")
+    id: Optional[UUID] = Field(None, description="UUID of the account. Nullable.")
+    is_from_timeclock: Optional[bool] = Field(None, alias="isFromTimeclock", description="Whether the account entry originates from a timeclock.")
+    name: str = Field(..., min_length=1, description="Account name. Minimum length: 1.")
+    model_config = {"populate_by_name": True}
+
+class PublicTimereportOriginalModel(BaseModel):
+    origin: Optional[int] = Field(None, description="Origin of the time row. 0 = Undefined, 1 = Manuell, 2 = Stamplad, 4 = UtlagdDelAvDagFranvaro, 8 = RastGenerering, 16 = Franvaro, 32 = Overtid, 64 = UtlagdEnligtSchema, 128 = AvvikelseRapporterat, 256 = AutomatGenererad, 512 = StamplingsAvrundad, 1024 = UtlagdDeltidsfranvaro.")
+    system_origin: Optional[int] = Field(None, alias="systemOrigin", description="System origin of the time row. 0 = Undefined, 1 = FlexHrmTime, 2 = Klocka, 3 = KlockaOffline, 4 = Mobile, 5 = TimeR, 6 = TimeROffline, 7 = Api, 8 = SmartWatch, 9 = FlexHrmTravel, 10 = FlexHrm, 11 = HrmEmMa.")
+    model_config = {"populate_by_name": True}
+
+class PublicTimereportTimecodeModel(BaseModel):
+    code: Optional[str] = Field(None, description="Time code string identifier. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the time code.")
+    name: Optional[str] = Field(None, description="Name of the time code. Nullable.")
+    model_config = {"populate_by_name": True}
+
+class PublicTimereportTimeRowModel(BaseModel):
+    accounts: Optional[list[PublicTimereportAccountModel]] = Field(None, description="List of accounting entries for this time row. Nullable.")
+    billable_time: Optional[int] = Field(None, alias="billabledTime", description="Billable time in minutes. Nullable.")
+    billed: Optional[bool] = Field(None, description="Whether the time row is billed. Nullable.")
+    billing: Optional[str] = Field(None, description="Billing information for the time row. Nullable.")
+    external_comment: Optional[str] = Field(None, alias="externalComment", description="External comment for the time row. Nullable.")
+    from_time: Optional[str] = Field(None, alias="fromTime", description="Start time of the time row. Nullable.")
+    has_manually_changed_account: Optional[bool] = Field(None, alias="hasManuallyChangedAccount", description="Whether the account has been manually changed.")
+    has_padlock: Optional[bool] = Field(None, alias="hasPadlock", description="Whether the time row has a padlock.")
+    internal_comment: Optional[str] = Field(None, alias="internalComment", description="Internal comment for the time row. Nullable.")
+    is_complete: Optional[bool] = Field(None, alias="isComplete", description="Whether the time row is complete.")
+    is_generated: Optional[bool] = Field(None, alias="isGenerated", description="Whether the time row was automatically generated.")
+    original_from_time: Optional[str] = Field(None, alias="originalFromTime", description="Original start time before any modifications. Nullable.")
+    original_tom_time: Optional[str] = Field(None, alias="originalTomTIme", description="Original end time before any modifications. Nullable.")
+    origin_from: Optional[PublicTimereportOriginalModel] = Field(None, alias="originFrom", description="Origin details for the start time of this time row.")
+    origin_tom: Optional[PublicTimereportOriginalModel] = Field(None, alias="originTom", description="Origin details for the end time of this time row.")
+    time_code: Optional[PublicTimereportTimecodeModel] = Field(None, alias="timeCode", description="Time code associated with this time row.")
+    time_in_minutes: Optional[int] = Field(None, alias="timeInMinutes", description="Total time in minutes for this time row.")
+    tom_time: Optional[str] = Field(None, alias="tomTime", description="End time of the time row. Nullable.")
+    unsocial_working_hours_time_code: Optional[PublicTimereportTimecodeModel] = Field(None, alias="unsocialWorkingHoursTimeCode", description="Time code for unsocial working hours.")
+    model_config = {"populate_by_name": True}
+
+class PublicTimereportModel(BaseModel):
+    date: Optional[datetime] = Field(None, description="Date of the time report.")
+    is_audited: Optional[bool] = Field(None, alias="isAudited", description="Whether the time report has been audited.")
+    is_transferred_to_salary: Optional[bool] = Field(None, alias="isTransferredToSalary", description="Whether the time report has been transferred to salary.")
+    overtime_marking_after: Optional[TimereportOvertimeMarkingModel] = Field(None, alias="overtimeMarkingAfterPublicTimereport", description="Overtime marking applied after the public time report.")
+    overtime_marking_before: Optional[TimereportOvertimeMarkingModel] = Field(None, alias="overtimeMarkingBeforePublicTimereport", description="Overtime marking applied before the public time report.")
+    time_rows: Optional[list[PublicTimereportTimeRowModel]] = Field(None, alias="timeRows", description="List of time rows for the time report. Nullable.")
+    model_config = {"populate_by_name": True}
+
 class TimeCode(BaseModel):
     code:str
 
@@ -1368,69 +1521,19 @@ class TimeRow(BaseModel):
     def serialize_datetime(self, value: datetime):
         return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
     
-class DayEntry(BaseModel):
-    overtime_marking_after: Optional[UUID] = Field(
-        None,
-        alias="overtimeMarkingAfter"
-    )
+ 
 
-    overtime_marking_before: Optional[UUID] = Field(
-        None,
-        alias="overtimeMarkingBefore"
-    )
-
-    time_rows: Optional[List[TimeRow]] = Field(
-        None,
-        alias="timeRows",
-        description="List of manual time rows for the day"
-    )
-
+class GetCollectionOfTravelTimeRuleSets(BaseModel):
+    company_id: Optional[UUID] = Field(None, description="Company id.", alias="companyId")
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
-
- 
- 
-
- 
- 
-
- 
-class BillingPriceRowAccount(BaseModel):
-    account_id: UUID = Field(None,alias="accountId", description="UUID of the account.")
-    id: UUID = Field(None,description="UUID of the price row account entry.")
- 
-    model_config = {"populate_by_name": True}
- 
- 
-class BillingPriceRow(BaseModel):
-    id: UUID = Field(description="UUID of the price row.")
-    employee_id: Optional[UUID] = Field(None, alias="employeeId", description="UUID of the employee this price row applies to.")
-    from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the price row's validity.")
-    to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the price row's validity.")
-    price: Optional[float] = Field(None, description="Base price.")
-    price_adjustment: Optional[float] = Field(None, alias="priceAdjustment", description="Fixed price adjustment amount.")
-    price_adjustment_percentage: Optional[float] = Field(None, alias="priceAdjustmentPercentage", description="Percentage price adjustment.")
-    unit: Optional[int] = Field(
-        None,
-        description="Billing unit. 0 = Hour, 1 = Day, 2 = HalfDay, 3 = Pcs, 4 = Km, 5 = Mil, 6 = Blank."
-    )
-    accounts: Optional[list[BillingPriceRowAccount]] = Field(None, description="Accounts associated with this price row.")
- 
-    model_config = {"populate_by_name": True}
- 
-
-
-
-class StampingAccountModel(BaseModel):
-    accountCode: str = Field(..., min_length=1, description="Account code string.")
-    accountDistributionId: UUID = Field(..., description="UUID of the account distribution.")
-    model_config = ConfigDict(populate_by_name=True)
 
 class Union(BaseModel):
     instance: Optional[str] = Field(None,description="Domain name.")
     company_id: Optional[UUID] = Field(None,description="Company id.")
     company_number: Optional[int] = Field(None,description="Company number.")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
 class GetUsers(BaseModel):
     instance: Optional[str] = Field(INSTANCE, description="Domain name.")
@@ -1441,22 +1544,47 @@ class GetUsers(BaseModel):
     logon_since: Optional[datetime] = Field(None, description="Did the user log in since.")
     no_logon_since: Optional[datetime] = Field(None, description="Did the user not log in since.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
-class GetUsersByInstance(GetUsers):
-    instance: str = Field(INSTANCE, description="Domain name.")
+class UserModel(BaseModel):
+    account_inactive: Optional[bool] = Field(None, alias="accountInactive", description="Whether the user account is inactive.")
+    alias: Optional[str] = Field(None, description="Alias for the user. Nullable.")
+    card_badge_id: Optional[str] = Field(None, alias="cardBadgeId", description="Card or badge ID used for physical access or time stamping. Nullable.")
+    company: Optional[CompanyModel] = Field(None, description="Company associated with the user.")
+    email: Optional[str] = Field(None, description="Email address of the user. Nullable.")
+    employee: Optional[EmployeeModel] = Field(None, description="Employee record associated with the user.")
+    extern_ref: Optional[str] = Field(None, alias="externRef", description="External reference for the user. Nullable.")
+    id: Optional[UUID] = Field(None, description="UUID of the user record.")
+    is_dagredovisare: Optional[bool] = Field(None, alias="isDagredovisare", description="Whether the user is a day reporter.")
+    kundinstans_id: UUID = Field(..., alias="kundinstansId", description="UUID of the customer instance this user belongs to.")
+    language: Optional[str] = Field(None, description="Language preference of the user. Nullable.")
+    last_logon: Optional[datetime] = Field(None, alias="lastLogon", description="Date and time of the user's last login. Nullable.")
+    require_enforced_two_step_verification: Optional[bool] = Field(None, alias="requireEnforcedTwoStepVerification", description="Whether two-step verification is enforced for this user. Nullable.")
+    signature: Optional[str] = Field(None, description="Signature of the user. Nullable.")
+    terminated_employment_inactivate_user: Optional[bool] = Field(None, alias="terminatedEmploymentInactivateUser", description="Whether to inactivate the user when employment is terminated. Nullable.")
+    terminated_employment_number_of_days_to_inactivate_user: int = Field(..., alias="terminatedEmploymentNumberOfDaysToInactivateUser", description="Number of days after employment termination before the user is inactivated.")
+    username: str = Field(..., min_length=1, description="Username of the user. Minimum length: 1.")
+    user_type: Optional[int] = Field(None, alias="userType", description="User type. 1 = System, 2 = Instance.")
+    model_config = {"populate_by_name": True}
+
+class UserAccountPartApprovalPermissonModel(BaseModel):
+    account_distribution_part_approval_permission_id: UUID = Field(..., alias="accountDistributionPartApprovalPermissionId", description="The id of the user account  part approval permission distribution" )
+    account_id: UUID = Field(..., alias="accountId", description="UUID of the account")
+    id: Optional[UUID] = Field(None, description="UUID of the user accountpart approval permisson")
+    model_config = {"populate_by_name": True}
+
+class GetUserAccountPartApprovalPermissions(BaseModel):
+    page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
+    account_id: Optional[UUID] = Field(None, alias="accountId", description="UUID of the account")
+
 
 class GetVehicleTypes(BaseModel):
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     vechile_type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type string to search for: 0 = Private, 1 = Business")
     comsumption_unit: Optional[int] = Field(None, alias="consumptionUnit", description="Consumption unit: 0 = LPer100Km, 1 = KWhPer100Km")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
-
-
-class GetVehicleTypeByCompanyId(GetVehicleTypes):
-    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
 
 class VehicleTypeRequestModel(BaseModel):
     average_fuel_price_from_month: Optional[int] = Field(None, alias="fromMonth", description="Average fuel price from month (1-12).")
@@ -1480,7 +1608,7 @@ class VehicleTypeRequestModel(BaseModel):
     type: Optional[int] = Field(None, alias="vehicleType", description="Vehicle type: 0 = Private, 1 = Business")
     use_with_allowances: Optional[bool] = Field(None, alias="useWithAllowances", description="Whether this vehicle type can be used together with allowances.")
     use_with_benefit: Optional[bool] = Field(None, alias="useWithBenefit", description="Whether this vehicle type can be used together with benefits.")
-    model_config = ConfigDict(populate_by_name=True)
+    model_config = {"populate_by_name": True}
 
 
 
