@@ -233,3 +233,26 @@ print_test(server.get_customer_by_id(customer_id))
 
 print("Testing update_customer_by_id")
 print(server.update_customer_by_id(customer_id, models.CustomerModel(code="1001", name="Inte test")))
+
+
+print("Testing get_balance_adjustment_by_employee_id")
+print_test(server.get_balance_adjustment_by_employee_id(employee_id))
+
+
+print("Testing get_balance_adjustment_by_company_id")
+print_test(server.get_balance_adjustment_by_company_id(company_id))
+
+
+print("Testing get_balance_adjustments")
+print_test(server.get_balance_adjustments())
+
+print("Testing get_public_travel_claims")
+print_test(server.get_public_travel_claims())
+
+print("Testing get_account_budget_by_account_id")
+print_test(server.get_account_budget_by_account_id(proj_id))
+
+
+print("Testing get_account_combination_by_account_id")
+print_test(server.get_account_combination_by_account_id(account_id=account_id))
+
