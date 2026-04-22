@@ -21,18 +21,23 @@ def print_test(input, update = False, update_param = "", update_value = None, pu
                 print("Works")
             else:
                 print("Does not work!")
-                print(str(input)[:120])
+                print(str(input)[:500])
         elif "Id" in input:
             print("Works")
         else:
             print("Does not work!")
-            print(str(input)[:120])
+            print(str(input)[:500])
 
 #print("Testing list_instances")
 #print_test(server.list_instances())
-
-
 """
+print("Testing get_background_tasks")
+print_test(server.get_background_tasks())
+
+
+
+print("Testing get_background_tasks_by_id")
+print_test(server.get_background_tasks_by_id())
 print("Testing create_new_accounts")
 print(server.create_new_accounts(
     account_distribution_id=account_distribution_id,
@@ -92,15 +97,16 @@ print(server.create_new_accounts(
             price=100,
             unit=0
         )]))
-))"""
+))
 
-print("Testing get_projects")
-print(server.get_projects(company_nr))
-"""
+
+print("Testing begin_background_task_rollback_release")
+print_test(server.begin_background_task_rollback_release(RollbackReleaseModel()))
+
+
+
 print("Testing get_project_by_id")
 print(server.get_project_by_id(proj_id))
-
-
 
 
 
@@ -108,23 +114,30 @@ print("Testing batch_post_project_by_account_distribution_id")
 print_test(server.batch_post_project_by_account_distribution_id(account_distribution_id=account_distribution_id, ProjectModel()))
 
 
-print("Testing batch_update_employment_rate_by_employee_id")
-print_test(server.batch_update_employment_rate_by_employee_id())
-
 print("Testing begin_background_task_release_accounts_to_billing")
-print_test(server.begin_background_task_release_accounts_to_billing())
+print_test(server.begin_background_task_release_accounts_to_billing(BillingReleaseSelectionModel(company=company_id)))
 
-print("Testing begin_background_task_rollback_release")
-print_test(server.begin_background_task_rollback_release())
+
 
 print("Testing check_status")
 print_test(server.check_status())
 
-print("Testing create_account_budget_for_account_id")
-print_test(server.create_account_budget_for_account_id())
 
-print("Testing create_account_combination")
-print_test(server.create_account_combination())
+
+for account in account_distributions:
+    print(account["Description"])
+    print(account["Id"])
+    print(server.get_accounts_by_account_distribution_id(account_distribution_id=account["Id"]))
+
+"""
+
+
+
+
+
+"""
+
+
 
 print("Testing create_balance_adjustment_batch_by_company")
 print_test(server.create_balance_adjustment_batch_by_company())
@@ -297,20 +310,9 @@ print_test(server.get_account_combination_by_account_distribution_id_and_account
 print("Testing get_account_combination_by_id")
 print_test(server.get_account_combination_by_id())
 
-print("Testing get_all_roles_of_account")
-print_test(server.get_all_roles_of_account())
 
-print("Testing get_all_roles_of_user_for_company")
-print_test(server.get_all_roles_of_user_for_company())
 
-print("Testing get_all_roles_of_user_for_employee")
-print_test(server.get_all_roles_of_user_for_employee())
 
-print("Testing get_background_tasks")
-print_test(server.get_background_tasks())
-
-print("Testing get_background_tasks_by_id")
-print_test(server.get_background_tasks_by_id())
 
 print("Testing get_balance_adjustment_by_id")
 print_test(server.get_balance_adjustment_by_id())

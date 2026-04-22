@@ -1,4 +1,4 @@
-import models
+from models import *
 import server
 from test_consts import * 
 from datetime import date, time, datetime, timedelta
@@ -43,7 +43,7 @@ print("Testing get_absence_application_by_parameters")
 print_test(server.get_absence_application_by_parameters())
 
 print("Testing create_absence_application")
-id = print_test(server.create_absence_application(application=models.ImportAbsenceApplicationModelAPIBase(
+id = print_test(server.create_absence_application(application=ImportAbsenceApplicationModelAPIBase(
     absenceTypeId=absence_type_id, companyId=company_id, message="Hunden", employmentNumber=alt_employee_nr,
     fromDate=datetime(2026, 4, 9, 0, 0, 0), toDate=datetime(2026, 4, 10, 0, 0, 0),
     hours=8, id="ed3dd816-4a46-41de-b708-b427009d8545")), put=True)
@@ -52,7 +52,7 @@ print("Testing get_absence_application_by_id")
 print_test(server.get_absence_application_by_id(id))
 
 print("Testing update_absence_application")
-print_test(server.update_absence_application(id=id, application=models.ImportAbsenceApplicationModelAPIBase(
+print_test(server.update_absence_application(id=id, application=ImportAbsenceApplicationModelAPIBase(
     absenceTypeId=absence_type_id, companyId=company_id, message="Hunden åt", employmentNumber=alt_employee_nr,
     fromDate=datetime(2026, 4, 9, 0, 0, 0), toDate=datetime(2026, 4, 10, 0, 0, 0),
     hours=8, id=id)))
@@ -86,15 +86,15 @@ print(prev_salary)
 new_salary = prev_salary + 1
 
 print("Testing update_salary_by_id")
-print_test(server.update_salary_by_id_put(salary_id, models.SalaryModel(fullTimeSalary=new_salary,
+print_test(server.update_salary_by_id_put(salary_id, SalaryModel(fullTimeSalary=new_salary,
     from_date=datetime(2060, 4, 9, 8, 0, 0),
     to_date=datetime(2060, 4, 9, 16, 0, 0))),
     True, "FullTimeSalary", new_salary)
-print_test(server.update_salary_by_id_post(salary_id, models.SalaryModel(fullTimeSalary=new_salary,
+print_test(server.update_salary_by_id_post(salary_id, SalaryModel(fullTimeSalary=new_salary,
     from_date=datetime(2060, 4, 9, 8, 0, 0),
     to_date=datetime(2060, 4, 9, 16, 0, 0))), True, "FullTimeSalary", new_salary)
 print("Testing batch_update_salaries_by_employee_id")
-print_test(server.batch_update_salaries_by_employee_id(employee_id, [models.SalaryModel(id=salary_id, fullTimeSalary=new_salary,
+print_test(server.batch_update_salaries_by_employee_id(employee_id, [SalaryModel(id=salary_id, fullTimeSalary=new_salary,
     from_date=datetime(2060, 4, 9, 8, 0, 0),
     to_date=datetime(2060, 4, 9, 16, 0, 0))]))
 
@@ -114,7 +114,7 @@ print_test(server.get_salaries())
 
 
 print("Testing create_salary")
-id = print_test(server.create_salary(models.SalaryModel(
+id = print_test(server.create_salary(SalaryModel(
     employeeId=employee_id, companyId=company_id,
     fullTimeSalary=200, salaryType=0,
     fromDate=datetime(2029, 10, 11), isHistoricalSalary=False, comment="test",
@@ -125,36 +125,36 @@ print(server.delete_salary(id))
 
 print("Testing get_time_report_by_employee")
 print("Works")
-#print(server.get_time_report_by_employee(models.GetTimeReportByEmployee(employee_id=alt_employee)))
+#print(server.get_time_report_by_employee(GetTimeReportByEmployee(employee_id=alt_employee)))
 
 print("Testing create_time_report")
 print(server.create_time_report(alt_employee, datetime(2026, 4, 9, 0, 0, 0),
-    models.PutTimereportModel(
+    PutTimereportModel(
     time_rows=[
-        models.PutTimereportTimeRowModel(
+        PutTimereportTimeRowModel(
             fromTimeDateTime=datetime(2026, 4, 9, 8, 0, 0),
             toTimeDateTime=datetime(2026, 4, 9, 16, 0, 0),
-            timeCode=models.PutTimereportTimeCodeModel(code="ARB")
+            timeCode=PutTimereportTimeCodeModel(code="ARB")
         ),
-        models.PutTimereportTimeRowModel(
+        PutTimereportTimeRowModel(
             fromTimeDateTime=datetime(2026, 4, 9, 7, 0, 0),
             toTimeDateTime=datetime(2026, 4, 9, 8, 0, 0),
-            timeCode=models.PutTimereportTimeCodeModel(code="RAST")
+            timeCode=PutTimereportTimeCodeModel(code="RAST")
         )
     ]
 )))
 
 print("Testing get_schedule_days_by_employee_id")
 print("Works!")
-#print(server.get_schedule_days_by_employee_id(models.GetScheduleDaysByEmployee(employee_id=alt_employee, from_date=datetime(2024, 11, 10, 0, 0, 0),
+#print(server.get_schedule_days_by_employee_id(GetScheduleDaysByEmployee(employee_id=alt_employee, from_date=datetime(2024, 11, 10, 0, 0, 0),
  #   to_date=datetime(2025, 1, 1, 0, 0, 0))))
 print("Testing get_reported_hours")
 print("Works!")
-#print(server.get_reported_hours(models.GetReportedHoursModel(from_date_time=datetime(2024, 11, 10, 0, 0, 0),
+#print(server.get_reported_hours(GetReportedHoursModel(from_date_time=datetime(2024, 11, 10, 0, 0, 0),
  #   to_date_time=datetime(2025, 1, 1, 0, 0, 0), accountDistributionIds=[account_distribution_id])))
 
 print("Testing get_account_distribution_by_company_number")
-print_test(server.get_account_distribution_by_company_number(models.GetAccountDistribution(company=company_nr)))
+print_test(server.get_account_distribution_by_company_number(GetAccountDistribution(company=company_nr)))
 
 
 print("Testing get_employment_periods")
@@ -215,24 +215,24 @@ print("Testing get_employee_qualifications")
 print_test(server.get_employee_qualifications())
 
 print("Testing update_employmee_qualification_by_id_put")
-print_test(server.update_employmee_qualification_by_id_put(employee_qualification["Id"], models.EmployeeQualificationModel(companyId=employee_qualification["CompanyId"],
+print_test(server.update_employmee_qualification_by_id_put(employee_qualification["Id"], EmployeeQualificationModel(companyId=employee_qualification["CompanyId"],
     employeeId=employee_qualification["EmployeeId"], instanceId=employee_qualification["InstanceId"], qualificationId=employee_qualification["QualificationId"], qualificationLevel=0.9)))
 
 
-print_test(server.update_employee_qualification_by_id_post(employee_qualification["Id"], models.EmployeeQualificationModel(companyId=employee_qualification["CompanyId"],
+print_test(server.update_employee_qualification_by_id_post(employee_qualification["Id"], EmployeeQualificationModel(companyId=employee_qualification["CompanyId"],
     employeeId=employee_qualification["EmployeeId"], instanceId=employee_qualification["InstanceId"], qualificationId=employee_qualification["QualificationId"], qualificationLevel=0.9)))
 
 print("Testing delete_employee_qualification_by_id")
 print("Works")
 
 print("Testing get_customers_by_company")
-print_test(server.get_customers_by_company(models.GetCustomersByCompany(company=company_nr)))
+print_test(server.get_customers_by_company(GetCustomersByCompany(company=company_nr)))
 
 print("Testing get_customer_by_id")
 print_test(server.get_customer_by_id(customer_id))
 
 print("Testing update_customer_by_id")
-print(server.update_customer_by_id(customer_id, models.CustomerModel(code="1001", name="Inte test")))
+print(server.update_customer_by_id(customer_id, CustomerModel(code="1001", name="Inte test")))
 
 
 print("Testing get_balance_adjustment_by_employee_id")
@@ -262,3 +262,19 @@ print_test(server.add_or_replace_employee_image(EmployeeImageModel(companyId=com
 
 print("Testing batch_create_imported_trip")
 print_test(server.batch_create_imported_trip([ImportedTripModel(employeeId=employee_id, fromDateTime=datetime(2025, 1, 1, 0, 0, 0), toDateTime=datetime(2025, 1, 1, 10, 0, 0), distance=100)]))
+
+print("Testing batch_update_employment_rate_by_employee_id")
+print_test(server.batch_update_employment_rate_by_employee_id(employee_id, [EmploymentRateModel(companyId=company_id, employeeId=employee_id, )]))
+
+print("Testing create_account_budget_for_account_id")
+print_test(server.create_account_budget_for_account_id(account_id=proj_id, query=AccountBudgetModel(actualSales=1800,budgetedCost=2000,
+        budgetedHours=200,budgetedSales=2200,dateTime="2025-04-10 00:00")))
+
+
+print("Testing create_account_combination")
+print_test(server.create_account_combination(AccountCombinationModel(accountCombinationAccounts=[AccountCombinationAccountModel(accountDistribution=account_distribution_id, accountSelection=account_nr),
+    AccountCombinationAccountModel(accountDistribution="806a9a28-17d2-4c5a-85df-ab1948424913", accountSelection="1"),
+    AccountCombinationAccountModel(accountDistribution="206673b8-fa55-45f2-89f6-b43400978ecc", accountSelection="1000"),
+    AccountCombinationAccountModel(accountDistribution="7a21a56d-c4b9-4625-93e0-d9d8c8e2cddf", accountSelection="1000"),
+    AccountCombinationAccountModel(accountDistribution="e41a1471-a598-4084-b270-dc9872f6ab2d", accountSelection="1619")], combinationRule=1, companyId=company_id)))
+

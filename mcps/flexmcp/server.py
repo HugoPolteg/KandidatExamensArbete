@@ -475,9 +475,9 @@ def create_account_budget_for_account_id(
     Retruns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/account/{account_id}/accountbudgets"
-    payload = query.model_dump(by_alias=True, exclude_none=True)
-
+    url = f"{consts.API_ENDPOINT}/accounts/{account_id}/accountbudgets"
+    payload = [query.model_dump(by_alias=True, exclude_none=True)]
+    print(payload)
     try:
         response = s.post(
             url,
@@ -525,7 +525,7 @@ def create_account_combination(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accountcombinations"
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    payload = query.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -1027,8 +1027,8 @@ def begin_background_task_release_accounts_to_billing(
         API response as a JSON dict containing a background task object with an id 
         that can be used to track progress by calling get_background_task_by_id.
     """
-    url = f"{consts.API_ENDPOINT}/backroundtasks/BEGIN_RELEASE_ACCOUNTS_TO_BILLING"
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    url = f"{consts.API_ENDPOINT}/backgroundtasks/BEGIN_RELEASE_ACCOUNTS_TO_BILLING"
+    payload = query.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -1046,7 +1046,7 @@ def begin_background_task_release_accounts_to_billing(
 
 @mcp.tool()
 def begin_background_task_rollback_release(
-    query: RollbackReleaseModel = Field(description="Query object all fields optional")
+    query: RollbackReleaseModel = RollbackReleaseModel()
     )->dict:
     """
     Creates a background task that rollbacks a billing release by release ID.
@@ -1055,8 +1055,8 @@ def begin_background_task_rollback_release(
         API response as a JSON dict containing a background task object with an id 
         that can be used to track progress by calling get_background_task_by_id.
     """
-    url = f"{consts.API_ENDPOINT}/backroundtasks/BEGIN_ROLLBACK_RELEASE"
-    payload = query.model_dump(by_alias=True, exclude_none=True)
+    url = f"{consts.API_ENDPOINT}/backgroundtasks/BEGIN_ROLLBACK_RELEASE"
+    payload = query.model_dump(by_alias=True, exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -1426,14 +1426,15 @@ def check_status()->dict:
     Returns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/CheckStatus"
+    url = f"{consts.API_ENDPOINT[:23]}/CheckStatus"
+    print(url)
 
     try:
         response = s.get(
             url,
             timeout=consts.API_TIMEOUT
         )
-        url = f"{consts.API_ENDPOINT}/CheckStatusWorkServer"
+        url = f"{consts.API_ENDPOINT[:23]}/CheckStatusWorkerServer"
         response.raise_for_status()
         response = response = s.get(
             url,
@@ -3520,7 +3521,7 @@ def batch_update_employment_rate_by_employee_id(
     payload = [employment_rate.model_dump(mode="json", by_alias=True, exclude_none=True) for employment_rate in employment_rates]
 
     try:
-        response = s.post(
+        response = s.put(
             url,
             json=payload,
             timeout=consts.API_TIMEOUT)
@@ -6483,7 +6484,7 @@ def get_all_roles_of_user_for_company(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/users/{query.user_id}/companies/{query.company_id}/roles"
-    params=query.model_dump(by_alias=True, exclude_none=True, exclude={"user_id", "company_id"}),
+    params=query.model_dump(by_alias=True, exclude_none=True, exclude={"user_id", "company_id"})
 
     try:
         response = s.get(
@@ -6578,7 +6579,7 @@ def get_all_roles_of_user_for_employee(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/users/{query.user_id}/companies/{query.company_id}/employees/{query.employee_id}/roles"
-    params=query.model_dump(by_alias=True, exclude_none=True, exclude={"user_id", "company_id", "employee_id"}),
+    params=query.model_dump(by_alias=True, exclude_none=True, exclude={"user_id", "company_id", "employee_id"})
 
     try:
         response = s.get(
@@ -6673,7 +6674,8 @@ def get_all_roles_of_account(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/users/{query.user_id}/companies/{query.company_id}/accounts/{query.account_id}/roles"
-    params=query.model_dump(by_alias=True, exclude_none=True, exclude={"user_id", "company_id", "account_id"}),
+    print(url)
+    params=query.model_dump(by_alias=True, exclude_none=True, exclude={"user_id", "company_id", "account_id"})
 
     try:
         response = s.get(

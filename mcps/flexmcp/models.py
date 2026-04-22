@@ -141,6 +141,7 @@ class AccountBudgetModel(BaseModel):
     date_time: str = Field(...,min_length=1,alias="dateTime",description="Budget period identifier as a string.")
     id: UUID = Field(None, description="UUID of the Account budget")
     model_config = {"populate_by_name": True}
+    
 
 class AccountModel(BaseModel):
     account_locations: Optional[List[AccountLocationModel]] = Field([], alias="accountLocations", description="A list of account locations")
@@ -698,7 +699,7 @@ class EmploymentRateModel(BaseModel):
     hours_per_full_time_work_week: Optional[float] = Field(None, alias="hoursPerFullTimeWorkWeek", description="Number of hours per week for a full time employee.")
     hours_per_full_time_work_year: Optional[float] = Field(None, alias="hoursPerFullTimeWorkYear", description="Number of hours per year for a full time employee.")
     id: Optional[UUID] = Field(None, description="UUID of the employment rate record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment rate period. Nullable.")
     model_config = {"populate_by_name": True}
 
