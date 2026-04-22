@@ -256,3 +256,9 @@ print_test(server.get_account_budget_by_account_id(proj_id))
 print("Testing get_account_combination_by_account_id")
 print_test(server.get_account_combination_by_account_id(account_id=account_id))
 
+print("Testing add_or_replace_employee_image")
+print_test(server.add_or_replace_employee_image(EmployeeImageModel(companyId=company_id, employeeId=employee_id, image=base64_img)))
+
+
+print("Testing batch_create_imported_trip")
+print_test(server.batch_create_imported_trip([ImportedTripModel(employeeId=employee_id, fromDateTime=datetime(2025, 1, 1, 0, 0, 0), toDateTime=datetime(2025, 1, 1, 10, 0, 0), distance=100)]))

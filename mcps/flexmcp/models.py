@@ -841,7 +841,7 @@ class GetImportedTripsByEmployeeId(BaseModel):
 
 class ImportedTripModel(BaseModel):
     comment: Optional[str] = Field(None, description="Comment for the trip. Nullable.")
-    distance: Optional[float] = Field(None, description="Distance of the trip. Nullable.")
+    distance: float = Field(..., description="Distance of the trip.")
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     from_date_time: datetime = Field(..., alias="fromDateTime", description="Start date and time of the trip.")
     from_mileage: Optional[float] = Field(None, alias="fromMileage", description="Odometer reading at the start of the trip. Nullable.")
@@ -852,6 +852,9 @@ class ImportedTripModel(BaseModel):
     to_mileage: Optional[float] = Field(None, alias="toMileage", description="Odometer reading at the end of the trip. Nullable.")
     to_street: Optional[str] = Field(None, alias="toStreet", description="Street address at the end of the trip. Nullable.")
     model_config = {"populate_by_name": True}
+    @field_serializer("from_date_time", "to_date_time")
+    def serialize_datetime(self, value: datetime):
+        return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
 
 class NextOfKinModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -1159,7 +1162,7 @@ class GetReportedHoursOnProjects(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetProjects(BaseModel):
-    instance: str = Field(INSTANCE, description="Domain name.")
+    instance: str = Field(DOMAIN, description="Domain name.")
     code: Optional[str] = Field(None, description="Project code to filter by.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     modified_since: Optional[datetime] = Field(None, alias="modifiedSince", description="Get projects that have been created or modified from this date and time. YYYY-MM-DDTHH:MM:SS.")

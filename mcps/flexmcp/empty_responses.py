@@ -37,3 +37,6 @@ def print_test(input, update = False, update_param = "", update_value = None, pu
 
 
 
+
+print("Testing get_projects")
+print(server.get_projects(company_nr))

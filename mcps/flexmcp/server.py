@@ -2155,7 +2155,7 @@ def delete_employee_image_by_id(
 
 @mcp.tool()
 def add_or_replace_employee_image(
-    query: EmployeeImageModel = Field(...,description="Query object, companyId, employeeId and iamge are requiered.")
+    query: EmployeeImageModel = Field(...,description="Query object, companyId, employeeId and image are requiered.")
     )->dict:
     """
     Adds or replaces an employee image
@@ -2164,7 +2164,7 @@ def add_or_replace_employee_image(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employeeimages"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     
     try:
@@ -4352,7 +4352,7 @@ def batch_create_imported_trip(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/importedtrips"
+    url = f"{consts.API_ENDPOINT}/importedtrips/batch"
 
     trips = [
         ImportedTripModel(**trip) if isinstance(trip, dict) else trip
@@ -4360,7 +4360,7 @@ def batch_create_imported_trip(
     ]
 
     payload = [trip.model_dump(mode="json", by_alias=True, exclude_none=True) for trip in trips]
-
+    print(payload)
     try:
         response = s.post(
             url,
@@ -6094,6 +6094,7 @@ def get_projects(
     url = f"{consts.API_ENDPOINT}/projects"
     params = filters.model_dump(by_alias=True, exclude_none=True)
     params["company"] = company
+    print(params)
     try:
         response = s.get(
             url,
