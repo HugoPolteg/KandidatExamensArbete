@@ -1356,7 +1356,7 @@ def get_balance_report_by_balance_id_and_employee_id(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/balance/{balance_id}/balancereport"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -1383,7 +1383,7 @@ def get_billing_releases_by_company(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/billingreleases"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -1482,7 +1482,7 @@ def update_child_by_id_put(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/child/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -1511,7 +1511,7 @@ def update_child_by_id_post(
     """
 
     url = f"{consts.API_ENDPOINT}/child/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -1554,10 +1554,10 @@ def delete_child_by_id(
 
 @mcp.tool()
 def get_children(   
-    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to search the children by, all feilds optinal")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     url = f"{consts.API_ENDPOINT}/child"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -1575,7 +1575,7 @@ def get_children(
 
 @mcp.tool()
 def create_child(
-    query: ChildModel = Field(...,description="Full query object")
+    query: ChildModel = Field(..., description="Full query object")
     )->dict:
     """
     Create a new child
@@ -1584,7 +1584,7 @@ def create_child(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/child"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.post(
@@ -1637,7 +1637,7 @@ def update_company_by_id_put(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/companies/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -1664,7 +1664,7 @@ def update_company_by_id_post(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/companies/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -1719,19 +1719,19 @@ def create_company(
     """
 
     url = f"{consts.API_ENDPOINT}/companies"
-    payload = query.model_dump(by_alias=True, exclude_none=True),
+    payload = query.model_dump(by_alias=True, exclude_none=True)
     params = {}
     if company_id_to_copy_from is not None:
         params["companyIdToCopyFrom"] = str(company_id_to_copy_from)
     if copy_settings is not None:
         params["copySettings"] = copy_settings
-
+    print(payload)
     try:
         response = s.post(
             url,
             params=params,
             json=payload,
-            timeout=consts.API_TIMEOUT
+            timeout=consts.API_TIMEOUT*5
         )
         response.raise_for_status()
     except requests.RequestException as e:
@@ -1828,7 +1828,7 @@ def get_customers_by_company(
         API response as JSON dict
     """
     url = f"{consts.API_ENDPOINT}/customers"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -1856,7 +1856,7 @@ def get_customers_by_account_distribution_id(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distribution_id}/customers"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -1884,7 +1884,7 @@ def post_customers_by_account_distribution_id(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distirbution_id}/customers"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -1911,7 +1911,7 @@ def get_from_time_schedule_by_employee_and_date(
         API response as a JSON dict¨
     """
     url = f"{consts.API_ENDPOINT}/DaySchedule/GetScheduleFromTime"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     try:
         response = s.post(
             url,
@@ -1937,7 +1937,7 @@ def get_to_time_schedule_by_employee_and_date(
         API response as a JSON dict¨
     """
     url = f"{consts.API_ENDPOINT}/DaySchedule/GetScheduleToTime"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     try:
         response = s.post(
             url,
@@ -1984,7 +1984,7 @@ def update_employee_by_id_put(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -2011,7 +2011,7 @@ def update_employee_by_id_post(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -2029,7 +2029,7 @@ def update_employee_by_id_post(
 
 @mcp.tool()
 def get_employees(
-    filters: GetEmployees = Field(...,description="filter parameters to optionaly filter the search by")
+    filters: GetEmployees = GetEmployees()
     ) -> dict:
     """
     Gets employees optionaly filterd fy filter parameters
@@ -2038,7 +2038,7 @@ def get_employees(
         Employee data as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/employees"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -2056,7 +2056,7 @@ def get_employees(
 @mcp.tool()
 def create_employee(
     parameters: EmployeeCreateParams = Field(...,description="Params object all fields optional"),
-    query: EmployeeCreateModel = Field(...,description="Query object all filed optional")
+    query: EmployeeCreateModel = EmployeeCreateModel()
     )->dict:
     """
     Create a new employee
@@ -2065,9 +2065,9 @@ def create_employee(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employees"
-    params = parameters.model_dump(by_alias=True,exclude_none=True)
-    payload = query.model_dump(by_alias=True,exclude_none=True)
-
+    params = parameters.model_dump(by_alias=True,exclude_none=True, mode="json")
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
+    print(payload)
     try:
         response = s.post(
             url, 
@@ -2192,7 +2192,7 @@ def get_employee_images(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employeeimages"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     
     try:
@@ -2323,7 +2323,7 @@ def get_employee_qualifications(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employeequalifications"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -2353,7 +2353,7 @@ def update_employment_default_accunt_by_id_put(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.put(
@@ -2380,7 +2380,7 @@ def update_employment_default_accunt_by_id_post(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.post(
@@ -2424,7 +2424,7 @@ def get_employment_default_accounts(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -2450,7 +2450,7 @@ def create_employment_default_accunt(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccounts"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.post(
@@ -2527,7 +2527,7 @@ def update_employment_default_account_interval_by_id_put(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -2554,7 +2554,7 @@ def update_employment_default_account_interval_by_id_post(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -2580,7 +2580,7 @@ def get_employment_default_account_intervals(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -2606,7 +2606,7 @@ def create_employment_default_account_interval(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/employmentdefaultaccountintervals"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -2682,7 +2682,7 @@ def get_employment_documents_collection_by_company(
         API response as a JSON dict. Note: The returned property "title" is the filename
     """
     url = f"{consts.API_ENDPOINT}/employmentdocuments"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -2748,7 +2748,7 @@ def get_employment_document_categories(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/documentcategories"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -2805,7 +2805,7 @@ def update_employment_empty_schedule_by_id(
     params = {
         "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
     }
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -2856,7 +2856,7 @@ def get_employment_empty_schedules(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentemptyschedules"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -2888,7 +2888,7 @@ def create_employment_empty_schedule(
     params = {
         "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
     }
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -2968,7 +2968,7 @@ def update_employment_period_by_id_put(
     params = {
         "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
     }
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -3002,7 +3002,7 @@ def update_employment_period_by_id_post(
     params = {
         "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
     }
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -3060,7 +3060,7 @@ def update_employment_period_by_employee_id(
     params = {
         "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
     }
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -3087,7 +3087,7 @@ def get_employment_periods(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentperiods"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -3114,8 +3114,8 @@ def create_employment_period(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentperiods"
-    params = template.model_dump(by_alias=True,exclude_none=True)
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    params = template.model_dump(by_alias=True,exclude_none=True, mode="json")
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -3222,7 +3222,7 @@ def delete_employment_personal_schedule_by_id(
 
 @mcp.tool()
 def get_employment_personal_schedules(
-    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
+    filters: GenericGetModel = GenericGetModel()
     )->dict:
     """"
     Get employment personal schedules optionally filtered by filter parameters
@@ -3231,7 +3231,7 @@ def get_employment_personal_schedules(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentpersonalschedules"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -3370,7 +3370,7 @@ def get_employment_public_schedules(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentpublicschedules"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -3541,7 +3541,7 @@ def get_employment_rates(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentates"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -3578,7 +3578,7 @@ def create_employment_rate(
 @mcp.tool()
 def get_employment_templates_by_company_id(
     company_id: UUID = Field(..., description="UUID of the company"),
-    page_params: PageModel = Field(PageModel(),description="Page parameters")
+    page_params: PageModel = PageModel()
     )->dict:
     """
     Get employment templates by company id
@@ -3587,7 +3587,7 @@ def get_employment_templates_by_company_id(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/companies/{company_id}/employmenttemplate"
-    params = page_params.model_dump(by_alias=True,exclude_none=True)
+    params = page_params.model_dump(by_alias=True,exclude_none=True, mode="json")
     try:
         response = s.get(
             url,
@@ -3697,7 +3697,7 @@ def get_employment_titles(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmenttitles"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -3764,7 +3764,7 @@ def get_employment_types(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmenttitles"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -3855,7 +3855,7 @@ def get_employment_vacations(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentvaccations"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -3882,7 +3882,7 @@ def get_employment_vacations_quotas(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentvaccationquoatas"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -3975,7 +3975,7 @@ def get_employment_vehciles(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/employmentvehicle"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -4204,7 +4204,7 @@ def get_hr_forms(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/hrforms"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -4437,7 +4437,7 @@ def update_next_of_kin_by_id_put(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/nextofkin/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.put(
@@ -4465,7 +4465,7 @@ def update_next_of_kin_by_id_post(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/nextofkin/{id}"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -4513,7 +4513,7 @@ def get_next_of_kins(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/nextofkin"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -4540,7 +4540,7 @@ def create_next_of_kin(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/nextofkin"
-    payload = query.model_dump(by_alias=True,exclude_none=True)
+    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.post(
@@ -4767,7 +4767,7 @@ def get_own_assessment_fields(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/ownassessmentfields"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     try:
         response = s.get(
             url,
@@ -4911,7 +4911,7 @@ def get_own_assessment_field_values(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/ownassessmentfieldvalues"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -4938,7 +4938,7 @@ def get_own_date_fields(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/owndatefields"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -5059,7 +5059,7 @@ def get_own_date_field_values(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/owndatefieldvalues"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -5111,7 +5111,7 @@ def get_own_numerical_fields(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/ownnumericalfields"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -5232,7 +5232,7 @@ def get_own_numerical_field_values(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -5283,7 +5283,7 @@ def get_own_text_fields(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/owntextfields"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -5404,7 +5404,7 @@ def get_own_text_field_values(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/owntextfieldvalues"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
         response = s.get(
@@ -5889,7 +5889,7 @@ def get_personal_schedules(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/personalschedules"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -6139,7 +6139,7 @@ def get_public_schedules(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/publicschedules"
-    params = filters.model_dump(by_alias=True,exclude_none=True)
+    params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
         response = s.get(
@@ -7609,7 +7609,7 @@ def get_collection_of_travel_time_rule_sets(
 #Works
 @mcp.tool()
 def get_unions(
-    filters: Union = Field(description="Union details for filtering the unions list. All fields are optional and used for filtering the results.")
+    filters: Union = Union()
 )-> dict:
     """
     Filter unions by specified criteria.

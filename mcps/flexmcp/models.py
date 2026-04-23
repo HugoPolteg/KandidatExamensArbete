@@ -341,11 +341,11 @@ class ChildModel(BaseModel):
     company_id: UUID = Field(...,alias="companyId",description="UUID of the company")
     employee_id: UUID = Field(...,alias="employeeId",description="UUID of the employee") 
     id: Optional[UUID] = Field(None,description="UUID child")
-    identification_string: Optional[str] = Field(None, max_length=100, alias="identificationString", description="Identification string")
-    identification_type: Optional[int] = Field(None,alias="identificationType",description="Type of identification: 0 = Birth date, 1 = Social security number, 2 = Optional identification number, 3 = Birth Year")
-    instance_id: UUID = Field(..., alias="instanceId",description="Instance Id")
+    identification_string: str = Field(..., max_length=100, alias="identificationString", description="Identification string")
+    identification_type: int = Field(...,alias="identificationType",description="Type of identification: 0 = Birth date, 1 = Social security number, 2 = Optional identification number, 3 = Birth Year")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId",description="Instance Id")
     is_chronically_ill: Optional[bool] = Field(None,alias="isChronicallyIll",description="If the child is chronically ill")
-    name: Optional[str] = Field(None, description="Name of the child")
+    name: str = Field(..., description="Name of the child")
     user: Optional[UserViewModel] = Field(None, )
     model_config = {"populate_by_name": True}
 
@@ -528,7 +528,7 @@ class EmployeeModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetEmployees(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
     company_number: Optional[int] = Field(None, alias="companynumber", description="Company number.")
     employment_number: Optional[str] = Field(None, alias="employmentnumber", description="Employment number.")
@@ -541,10 +541,15 @@ class GetEmployees(BaseModel):
     model_config = {"populate_by_name": True}
 
 class EmployeeCreateParams(BaseModel):
-    employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employee with use of selected employment template. If left empty then company default template will be used.")
+    employementtemplate_id: UUID = Field(None,alias="employmenttemplateId",description="Create employee with use of selected employment template. If left empty then company default template will be used.")
     employment_period_start: datetime = Field(None,alias="employmentPeriodStart",description="Set start date of the default employmentPeriod created. Must be specified for the employment templates assignment template to be applied.")
     employement_period_end: datetime = Field(None,alias="employmentPeriodEnd",description="Set end date of the default employmentPeriod created.")
     model_config = {"populate_by_name": True}
+    @field_serializer("employment_period_start", "employement_period_end")
+    def serialize_datetime(self, value: Optional[datetime]):
+        if value is None:
+            return value
+        return value.strftime("%Y-%m-%d")
 
 class EmployeeCreateModel(EmployeeModel):
     email_visma_connect: Optional[str] = Field(None, alias="emailVismaConnect", description="Employee's Visma Connect email address used for system authentication. Nullable.")
@@ -670,7 +675,7 @@ class EmploymentPersonalScheduleModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the personal schedule. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the employment personal schedule record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     personal_schedule_id: UUID = Field(..., alias="personalScheduleId", description="UUID of the personal schedule.")
     time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the personal schedule.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the personal schedule. Nullable.")

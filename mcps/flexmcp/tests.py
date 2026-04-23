@@ -129,8 +129,17 @@ for account in account_distributions:
     print(account["Id"])
     print(server.get_accounts_by_account_distribution_id(account_distribution_id=account["Id"]))
 
+
+
+print("Testing create_employee")
+print(server.create_employee(EmployeeCreateParams(employmenttemplateId=employment_template_id,
+    employmentPeriodStart=datetime(2025, 1, 1, 0, 0, 0), employmentPeriodEnd=datetime(2027, 1, 1, 0, 0, 0)), EmployeeCreateModel(firstName="Test", lastName="Testson")))
+
 """
 
+
+#print("Testing get_employment_personal_schedule_by_id")
+#print_test(server.get_employment_personal_schedule_by_id())
 
 
 
@@ -142,17 +151,10 @@ for account in account_distributions:
 print("Testing create_balance_adjustment_batch_by_company")
 print_test(server.create_balance_adjustment_batch_by_company())
 
-print("Testing create_child")
-print_test(server.create_child())
-
-print("Testing create_company")
-print_test(server.create_company())
 
 print("Testing create_company_account_part_approval_permissions_by_user_id")
 print_test(server.create_company_account_part_approval_permissions_by_user_id())
 
-print("Testing create_employee")
-print_test(server.create_employee())
 
 print("Testing create_employment_default_account_interval")
 print_test(server.create_employment_default_account_interval())
@@ -169,8 +171,6 @@ print_test(server.create_employment_empty_schedule())
 print("Testing create_employment_period")
 print_test(server.create_employment_period())
 
-print("Testing create_employment_personal_schedule")
-print_test(server.create_employment_personal_schedule())
 
 print("Testing create_employment_public_schedule")
 print_test(server.create_employment_public_schedule())
@@ -226,8 +226,6 @@ print_test(server.delete_account_combination_by_id())
 print("Testing delete_balance_adjustment_by_id")
 print_test(server.delete_balance_adjustment_by_id())
 
-print("Testing delete_child_by_id")
-print_test(server.delete_child_by_id())
 
 print("Testing delete_compamny_account_approval_permission_by_id")
 print_test(server.delete_compamny_account_approval_permission_by_id())
@@ -326,11 +324,6 @@ print_test(server.get_billing_releases_by_company())
 print("Testing get_billing_releases_by_id")
 print_test(server.get_billing_releases_by_id())
 
-print("Testing get_child_by_id")
-print_test(server.get_child_by_id())
-
-print("Testing get_children")
-print_test(server.get_children())
 
 print("Testing get_collection_of_travel_time_rule_sets")
 print_test(server.get_collection_of_travel_time_rule_sets())
@@ -341,11 +334,7 @@ print_test(server.get_company_information())
 print("Testing get_customers_by_account_distribution_id")
 print_test(server.get_customers_by_account_distribution_id())
 
-print("Testing get_employee_image_by_id")
-print_test(server.get_employee_image_by_id())
 
-print("Testing get_employee_images")
-print_test(server.get_employee_images())
 
 print("Testing get_employee_presence_by_company")
 print_test(server.get_employee_presence_by_company())
@@ -356,8 +345,6 @@ print_test(server.get_employee_qualification_by_id())
 print("Testing get_employeee_data_by_organizational_chart_node_id")
 print_test(server.get_employeee_data_by_organizational_chart_node_id())
 
-print("Testing get_employees")
-print_test(server.get_employees())
 
 print("Testing get_employment_default_account_interval_by_id")
 print_test(server.get_employment_default_account_interval_by_id())
@@ -386,12 +373,6 @@ print_test(server.get_employment_empty_schedules())
 print("Testing get_employment_period_by_id")
 print_test(server.get_employment_period_by_id())
 
-print("Testing get_employment_personal_schedule_by_id")
-print_test(server.get_employment_personal_schedule_by_id())
-
-print("Testing get_employment_personal_schedules")
-print_test(server.get_employment_personal_schedules())
-
 print("Testing get_employment_public_schedule_by_id")
 print_test(server.get_employment_public_schedule_by_id())
 
@@ -403,9 +384,6 @@ print_test(server.get_employment_rate_by_id())
 
 print("Testing get_employment_rates")
 print_test(server.get_employment_rates())
-
-print("Testing get_employment_templates_by_company_id")
-print_test(server.get_employment_templates_by_company_id())
 
 print("Testing get_employment_title_by_id")
 print_test(server.get_employment_title_by_id())
@@ -659,11 +637,7 @@ print_test(server.get_to_time_schedule_by_employee_and_date())
 print("Testing get_travel_claim_audit_levels_by_company_id")
 print_test(server.get_travel_claim_audit_levels_by_company_id())
 
-print("Testing get_union_by_id")
-print_test(server.get_union_by_id())
 
-print("Testing get_unions")
-print_test(server.get_unions())
 
 print("Testing get_user_account_part_approval_permission_by_id")
 print_test(server.get_user_account_part_approval_permission_by_id())

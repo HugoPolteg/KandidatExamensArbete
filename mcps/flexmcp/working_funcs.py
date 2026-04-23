@@ -278,3 +278,62 @@ print_test(server.create_account_combination(AccountCombinationModel(accountComb
     AccountCombinationAccountModel(accountDistribution="7a21a56d-c4b9-4625-93e0-d9d8c8e2cddf", accountSelection="1000"),
     AccountCombinationAccountModel(accountDistribution="e41a1471-a598-4084-b270-dc9872f6ab2d", accountSelection="1619")], combinationRule=1, companyId=company_id)))
 
+
+print("Testing create_company")
+print_test(server.create_company(company_id_to_copy_from=company_id, copy_settings=0, query=CompanyPostRequestModel(companyNumber=8080, countryCode="SWE", currencyCode="SEK", name="Test AB")))
+
+
+print("Testing get_employment_templates_by_company_id")
+print_test(server.get_employment_templates_by_company_id(company_id=company_id))
+
+
+print("Testing get_employee_images")
+print_test(server.get_employee_images())
+
+
+print("Testing get_employee_image_by_id")
+print_test(server.get_employee_image_by_id(employee_img_id))
+
+
+print("Testing get_employees")
+print_test(server.get_employees())
+
+print("Testing create_child")
+print_test(server.create_child(
+    ChildModel(
+        companyId=company_id,
+        employeeId=employee_id,
+        identificationString="2020-01-20",
+        identificationType=0,  # 0 = Birth date
+        name="Testbarn"
+        )
+))
+
+print("Testing get_children")
+print_test(server.get_children())
+
+
+print("Testing get_employment_personal_schedules")
+print_test(server.get_employment_personal_schedules())
+
+
+print("Testing create_employment_personal_schedule")
+print_test(server.create_employment_personal_schedule(query=EmploymentPersonalScheduleModel(companyId=company_id, employeeId=employee_id,
+    fromDate=datetime(2027, 1, 1, 0, 0, 0), toDate=datetime(2028, 1, 1, 0, 0, 0), time_group_id=employment_personal_schedule["TimeGroupId"], personalScheduleId=employment_personal_schedule["PersonalScheduleId"])))
+
+
+print("Testing get_child_by_id")
+print_test(server.get_child_by_id(child_id))
+
+
+print("Testing get_unions")
+print_test(server.get_unions())
+
+
+print("Testing get_union_by_id")
+print_test(server.get_union_by_id(union["Id"]))
+
+
+print("Testing delete_child_by_id")
+#print_test(server.delete_child_by_id("533abf8b-9dbc-46a4-b2dd-b43500ef83fc"))
+print("Works!")
