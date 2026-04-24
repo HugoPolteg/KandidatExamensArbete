@@ -52,3 +52,8 @@ print_test(server.get_all_roles_of_user_for_company(GetAllRolesOfUserForCompany(
 
 print("Testing get_all_roles_of_user_for_employee")
 print_test(server.get_all_roles_of_user_for_employee(GetAllRolesOfUserForEmployee(userId=user_id, companyId=company_id, employeeId=employee_id)))
+
+print("Testing get_invocing_basis_by_billing_release_id")
+print_test(server.get_invoicing_basis_by_billing_release_id(billing_release_id))
+
+

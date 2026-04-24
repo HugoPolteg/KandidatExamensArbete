@@ -157,19 +157,15 @@ print_test(server.get_hr_form_document_template_by_id(employment_doc_id))
 #print("Testing get_employment_personal_schedule_by_id")
 #print_test(server.get_employment_personal_schedule_by_id())
 
+
+
+
+
 """
 for account in account_distributions:
     print(account["Description"])
     print(account["Id"])
     print(server.get_accounts_by_account_distribution_id(account_distribution_id=account["Id"]))"""
-
-
-
-
-
-
-print("Testing get_invocing_basis_by_billing_release_id")
-print_test(server.get_invoicing_basis_by_billing_release_id(billing_release_id))
 
 
 """
@@ -178,53 +174,12 @@ print_test(server.get_invoicing_basis_by_billing_release_id(billing_release_id))
 print("Testing get_organizational_chart_node_by_id")
 print_test(server.get_organizational_chart_node_by_id())
 
-print("Testing get_overtime_by_employee_id")
-print_test(server.get_overtime_by_employee_id(employee_id))
 
-print("Testing get_overtime_by_user_id")
-print_test(server.get_overtime_by_user_id(user_id))
 
-print("Testing get_own_assessment_field_value_by_id")
-print_test(server.get_own_assessment_field_value_by_id())
 
-print("Testing get_own_assessment_field_values")
-print_test(server.get_own_assessment_field_values())
 
-print("Testing get_own_assessment_fields")
-print_test(server.get_own_assessment_fields())
 
-print("Testing get_own_date_field_value_by_id")
-print_test(server.get_own_date_field_value_by_id())
 
-print("Testing get_own_date_field_values")
-print_test(server.get_own_date_field_values())
-
-print("Testing get_own_date_fields")
-print_test(server.get_own_date_fields())
-
-print("Testing get_own_numerical_field_value_by_id")
-print_test(server.get_own_numerical_field_value_by_id())
-
-print("Testing get_own_numerical_field_values")
-print_test(server.get_own_numerical_field_values())
-
-print("Testing get_own_numerical_fields")
-print_test(server.get_own_numerical_fields())
-
-print("Testing get_own_text_field_value_by_id")
-print_test(server.get_own_text_field_value_by_id())
-
-print("Testing get_own_text_field_values")
-print_test(server.get_own_text_field_values())
-
-print("Testing get_own_text_fields")
-print_test(server.get_own_text_fields())
-
-print("Testing get_paycode_by_id")
-print_test(server.get_paycode_by_id())
-
-print("Testing get_paycodes_with_staff_category_settings")
-print_test(server.get_paycodes_with_staff_category_settings())
 
 print("Testing get_payment_group_by_id")
 print_test(server.get_payment_group_by_id())
@@ -429,20 +384,6 @@ print_test(server.create_imported_trip())
 print("Testing create_new_accounts")
 print_test(server.create_new_accounts())
 
-print("Testing create_next_of_kin")
-print_test(server.create_next_of_kin())
-
-print("Testing create_own_assessment_field_value")
-print_test(server.create_own_assessment_field_value())
-
-print("Testing create_own_date_field_value")
-print_test(server.create_own_date_field_value())
-
-print("Testing create_own_numerical_field_value")
-print_test(server.create_own_numerical_field_value())
-
-print("Testing create_own_text_field_value")
-print_test(server.create_own_text_field_value())
 
 print("Testing create_user")
 print_test(server.create_user())
@@ -505,17 +446,7 @@ print_test(server.delete_hr_form__by_id())
 print("Testing delete_next_of_kin_by_id")
 print_test(server.delete_next_of_kin_by_id())
 
-print("Testing delete_own_assessment_field_value_by_id")
-print_test(server.delete_own_assessment_field_value_by_id())
 
-print("Testing delete_own_date_field_value_by_id")
-print_test(server.delete_own_date_field_value_by_id())
-
-print("Testing delete_own_numerical_field_value_by_id")
-print_test(server.delete_own_numerical_field_value_by_id())
-
-print("Testing delete_own_text_field_value_by_id")
-print_test(server.delete_own_text_field_value_by_id())
 
 print("Testing delete_project_by_id")
 print_test(server.delete_project_by_id())
@@ -666,24 +597,6 @@ print_test(server.update_own_assessment_field_value_by_id_post())
 
 print("Testing update_own_assessment_field_value_by_id_put")
 print_test(server.update_own_assessment_field_value_by_id_put())
-
-print("Testing update_own_date_field_value_by_id_post")
-print_test(server.update_own_date_field_value_by_id_post())
-
-print("Testing update_own_date_field_value_by_id_put")
-print_test(server.update_own_date_field_value_by_id_put())
-
-print("Testing update_own_numerical_field_value_by_id_post")
-print_test(server.update_own_numerical_field_value_by_id_post())
-
-print("Testing update_own_numerical_field_value_by_id_put")
-print_test(server.update_own_numerical_field_value_by_id_put())
-
-print("Testing update_own_text_field_value_by_id_post")
-print_test(server.update_own_text_field_value_by_id_post())
-
-print("Testing update_own_text_field_value_by_id_put")
-print_test(server.update_own_text_field_value_by_id_put())
 
 print("Testing update_pension_and_insurance_setting_by_employee_id_post")
 print_test(server.update_pension_and_insurance_setting_by_employee_id_post())

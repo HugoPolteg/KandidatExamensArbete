@@ -513,3 +513,102 @@ print_test(server.get_employment_empty_schedules())
 
 print("Testing get_employment_empty_schedule_by_id")
 print_test(server.get_employment_empty_schedule_by_id(empty_schedule_id))
+
+
+print("Testing get_overtime_by_employee_id")
+print_test(server.get_overtime_by_employee_id(employee_id))
+
+
+print("Testing get_overtime_by_user_id")
+print_test(server.get_overtime_by_user_id(user_id))
+
+print("Testing get_own_assessment_fields")
+print_test(server.get_own_assessment_fields())
+
+print("Testing create_own_assessment_field_value")
+print_test(server.create_own_assessment_field_value(OwnAssessmentFieldValueModel(companyId=company_id, employeeId=employee_id, ownAssessmentFieldId=, value=1)))
+
+
+print("Testing get_own_assessment_field_value_by_id")
+print_test(server.get_own_assessment_field_value_by_id(own_assesment_field_value_id))
+
+print("Testing get_own_assessment_field_values")
+print_test(server.get_own_assessment_field_values())
+
+print("Testing create_next_of_kin")
+print_test(server.create_next_of_kin(NextOfKinModel(companyId=company_id, employeeId=employee_id, relation="Father")))
+
+
+print("Testing get_own_text_fields")
+print_test(server.get_own_text_fields())
+
+print("Testing get_own_numerical_fields")
+print_test(server.get_own_numerical_fields())
+
+print("Testing update_own_date_field_value_by_id_post")
+print_test(server.update_own_date_field_value_by_id_post(own_date_field_value_id,OwnDateFieldValueModel(companyId=company_id, employeeId=employee_id, ownDateFieldId=own_date_field_id)))
+
+print("Testing update_own_date_field_value_by_id_put")
+print_test(server.update_own_date_field_value_by_id_put(own_date_field_value_id,OwnDateFieldValueModel(companyId=company_id, employeeId=employee_id, ownDateFieldId=own_date_field_id)))
+
+print("Testing update_own_numerical_field_value_by_id_post")
+print_test(server.update_own_numerical_field_value_by_id_post(own_numerical_field_value_id,OwnNumericalFieldValueModel(companyId=company_id, employeeId=employee_id, ownNumericalFieldId=own_numerical_field_id, value=1)))
+
+print("Testing update_own_numerical_field_value_by_id_put")
+print_test(server.update_own_numerical_field_value_by_id_put(own_numerical_field_value_id,OwnNumericalFieldValueModel(companyId=company_id, employeeId=employee_id, ownNumericalFieldId=own_numerical_field_id, value=1)))
+
+print("Testing update_own_text_field_value_by_id_post")
+print_test(server.update_own_text_field_value_by_id_post(own_text_field_value_id,OwnTextFieldValueModel(companyId=company_id, employeeId=employee_id, ownTextFieldId=own_text_field_id, value="ait")))
+
+print("Testing update_own_text_field_value_by_id_put")
+print_test(server.update_own_text_field_value_by_id_put(own_text_field_value_id,OwnTextFieldValueModel(companyId=company_id, employeeId=employee_id, ownTextFieldId=own_text_field_id, value="ait")))
+
+print("Testing delete_own_date_field_value_by_id")
+print_test(server.delete_own_date_field_value_by_id(own_date_field_value_id))
+
+print("Testing delete_own_numerical_field_value_by_id")
+print_test(server.delete_own_numerical_field_value_by_id(own_numerical_field_value_id))
+
+print("Testing delete_own_text_field_value_by_id")
+print_test(server.delete_own_text_field_value_by_id(own_text_field_value_id))
+
+
+print("Testing get_paycode_by_id")
+print_test(server.get_paycode_by_id(paycode_id))
+print("Testing get_paycodes_with_staff_category_settings")
+print_test(server.get_paycodes_with_staff_category_settings())
+print("Testing create_own_numerical_field_value")
+print_test(server.create_own_numerical_field_value(OwnNumericalFieldValueModel(companyId=company_id, employeeId=employee_id, ownNumericalFieldId=own_numerical_field_id, value=1)))
+
+print("Testing create_own_text_field_value")
+print_test(server.create_own_text_field_value(OwnTextFieldValueModel(companyId=company_id, employeeId=employee_id, ownTextFieldId=own_text_field_id, value="ait")))
+
+print("Testing get_own_text_field_values")
+print_test(server.get_own_text_field_values())
+
+
+print("Testing get_own_numerical_field_values")
+print_test(server.get_own_numerical_field_values())
+
+
+print("Testing get_own_date_field_values")
+print_test(server.get_own_date_field_values())
+
+print("Testing delete_own_assessment_field_value_by_id")
+print_test(server.delete_own_assessment_field_value_by_id(own_assesment_field_value_id))
+
+print("Testing get_own_date_fields")
+print_test(server.get_own_date_fields())
+
+print("Testing create_own_date_field_value")
+print(server.create_own_date_field_value(OwnDateFieldValueModel(companyId=company_id, employeeId=employee_id, ownDateFieldId=own_date_field_id)))
+
+print("Testing get_own_text_field_value_by_id")
+print_test(server.get_own_text_field_value_by_id(own_text_field_value_id))
+
+
+print("Testing get_own_date_field_value_by_id")
+print_test(server.get_own_date_field_value_by_id(own_date_field_value_id))
+
+print("Testing get_own_numerical_field_value_by_id")
+print_test(server.get_own_numerical_field_value_by_id(own_numerical_field_value_id))

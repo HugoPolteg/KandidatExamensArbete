@@ -4793,8 +4793,8 @@ def get_own_assessment_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def update_own_assessment_field_value_by_id_put(
     id: UUID = Field(..., description="UUID of the own assessment field value"),
     query: OwnAssessmentFieldValueModel = Field(..., description="Full query object to update the own assessment field value with")
@@ -4818,8 +4818,8 @@ def update_own_assessment_field_value_by_id_put(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def update_own_assessment_field_value_by_id_post(
     id: UUID = Field(..., description="UUID of the own assessment field value"),
     query: OwnAssessmentFieldValueModel = Field(..., description="Full query object to update the own assessment field value with")
@@ -4844,8 +4844,8 @@ def update_own_assessment_field_value_by_id_post(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def delete_own_assessment_field_value_by_id(
     id: UUID = Field(..., description="UUID of the own assessment field value"),
     )->dict:
@@ -4866,7 +4866,8 @@ def delete_own_assessment_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 @mcp.tool()
 def create_own_assessment_field_value(
     query: OwnAssessmentFieldValueModel = Field(..., description="Full query object to update the own assessment field value with")
@@ -4891,7 +4892,8 @@ def create_own_assessment_field_value(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 @mcp.tool()
 def get_own_assessment_field_values(   
     filters: Optional[GenericGetModel] = GenericGetModel()
@@ -4967,8 +4969,8 @@ def get_own_date_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def update_own_date_field_value_by_id_put(
     id: UUID = Field(..., description="UUID of the own date field value"),
     query: OwnDateFieldValueModel = Field(..., description="Full query object to update the own date field value with")
@@ -5017,8 +5019,8 @@ def update_own_date_field_value_by_id_post(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def delete_own_date_field_value_by_id(
     id: UUID = Field(..., description="UUID of the own date field value"),
     )->dict:
@@ -5039,6 +5041,8 @@ def delete_own_date_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_own_date_field_values(   
@@ -5077,7 +5081,7 @@ def create_own_date_field_value(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/owndatefieldvalues/{id}"
+    url = f"{consts.API_ENDPOINT}/owndatefieldvalues"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.post(
@@ -5090,8 +5094,8 @@ def create_own_date_field_value(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 @mcp.tool()
 def get_own_numerical_fields(   
     filters: Optional[GetOwnFieldModel] = GetOwnFieldModel()
@@ -5140,6 +5144,8 @@ def get_own_numerical_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_own_numerical_field_value_by_id_put(
@@ -5165,6 +5171,8 @@ def update_own_numerical_field_value_by_id_put(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_own_numerical_field_value_by_id_post(
@@ -5190,6 +5198,8 @@ def update_own_numerical_field_value_by_id_post(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def delete_own_numerical_field_value_by_id(
@@ -5212,6 +5222,8 @@ def delete_own_numerical_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_own_numerical_field_values(   
@@ -5252,6 +5264,7 @@ def create_own_numerical_field_value(
     """
     url = f"{consts.API_ENDPOINT}/ownnumericalfieldvalues"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    print(payload)
     try:
         response = s.post(
             url,
@@ -5263,6 +5276,8 @@ def create_own_numerical_field_value(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_own_text_fields(   
@@ -5312,6 +5327,8 @@ def get_own_text_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_own_text_field_value_by_id_put(
@@ -5337,8 +5354,8 @@ def update_own_text_field_value_by_id_put(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def update_own_text_field_value_by_id_post(
     id: UUID = Field(..., description="UUID of the own text field value"),
     query: OwnTextFieldValueModel = Field(..., description="Full query object to update the own text field value with")
@@ -5362,8 +5379,8 @@ def update_own_text_field_value_by_id_post(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def delete_own_text_field_value_by_id(
     id: UUID = Field(..., description="UUID of the own text field value"),
     )->dict:
@@ -5384,6 +5401,8 @@ def delete_own_text_field_value_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_own_text_field_values(   
@@ -5436,8 +5455,8 @@ def create_own_text_field_value(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_paycodes_with_staff_category_settings(
     filters: Optional[GetPaycodesWithStaffCategorySettings] = GetPaycodesWithStaffCategorySettings()
     )->dict:
@@ -5460,8 +5479,8 @@ def get_paycodes_with_staff_category_settings(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_paycode_by_id(
     id: UUID = Field(..., description="UUID of the pay code"),
     )->dict:
@@ -5482,8 +5501,8 @@ def get_paycode_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 @mcp.tool()
 def get_payment_group_by_id(
     id: UUID = Field(..., description="UUID of the payment group"),
@@ -5505,8 +5524,8 @@ def get_payment_group_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payment_groups(
     filters: Optional[GetPaymentGroups] = GetPaymentGroups()
     )->dict:
@@ -5551,8 +5570,8 @@ def get_payroll_runs(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payroll_run_by_id(
     id: UUID = Field(..., description="UUID of the payroll run"),
     )->dict:
@@ -5573,8 +5592,8 @@ def get_payroll_run_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payroll_run_employments(
     filters: Optional[GetPayrollRunEmployments] = GetPayrollRunEmployments()
 )-> dict:
@@ -5595,8 +5614,8 @@ def get_payroll_run_employments(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payroll_run_employee_by_id(
     id: UUID = Field(..., description="UUID of the paycode id"),
     )->dict:
@@ -5617,8 +5636,8 @@ def get_payroll_run_employee_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payroll_run_transactions(
     filters: Optional[GetPayrollRunTransactions] = GetPayrollRunTransactions()
 )-> dict:
@@ -5661,8 +5680,8 @@ def get_payroll_run_transaction_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payroll_run_transaction_account_collections(
     filters: Optional[GetPayrollRunTransactions] = GetPayrollRunTransactions()
 )-> dict:
@@ -5683,8 +5702,8 @@ def get_payroll_run_transaction_account_collections(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_payroll_run_transaction_account_collectioion_by_id(
     id: UUID = Field(..., description="Payroll run transaction account collection id. (UUID)"),
     )->dict:
@@ -5705,8 +5724,8 @@ def get_payroll_run_transaction_account_collectioion_by_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_settled_payslip_by_payroll_run_employee_id(
     payroll_run_employee_id: UUID = Field(..., alias="payrollrunEmployeeId", description="UUID of the payroll run employee."),
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company.")
@@ -5731,8 +5750,8 @@ def get_settled_payslip_by_payroll_run_employee_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_pension_and_insurance_setting_by_employee_id(
     employee_id: UUID = Field(..., alias="id", description="Employee ID (UUID)"),
     )->dict:
@@ -5753,8 +5772,8 @@ def get_pension_and_insurance_setting_by_employee_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 @mcp.tool()
 def update_pension_and_insurance_setting_by_employee_id_put(
     employee_id: UUID = Field(..., alias="id", description="Employee ID (UUID)"),
@@ -5804,8 +5823,8 @@ def update_pension_and_insurance_setting_by_employee_id_post(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_pension_and_insurance_settings(
     filters: Optional[GetPensionAndInsuranceSettings] = GetPensionAndInsuranceSettings()
 )-> dict:
@@ -5848,8 +5867,8 @@ def get_permissions_to_commpanies_by_user_id(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-
-@mcp.tool()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"@mcp.tool()
 def get_personal_schedule_by_id(
     id: UUID = Field(..., description="UUID of the personal  schedule"),
     )->dict:

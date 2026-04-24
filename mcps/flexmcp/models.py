@@ -868,7 +868,7 @@ class NextOfKinModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     id: Optional[UUID] = Field(None, description="UUID of the next of kin record.")
     informed: Optional[bool] = Field(None, description="Whether the next of kin has been informed.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     name: Optional[str] = Field(None, description="Name of the next of kin. Nullable.")
     relation: str = Field(..., min_length=1, description="Relation of the next of kin to the employee. Minimum length: 1.")
     model_config = {"populate_by_name": True}
@@ -895,7 +895,7 @@ class OwnAssessmentFieldValueModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own assessment field value validity period. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the own assessment field value record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     own_assessment_field_id: UUID = Field(..., alias="ownAssessmentFieldId", description="UUID of the own assessment field this value belongs to.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own assessment field value validity period. Nullable.")
     value: Optional[float] = Field(None, description="The assessment field value.")
@@ -906,7 +906,7 @@ class OwnDateFieldValueModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own date field value validity period. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the own date field value record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     own_date_field_id: UUID = Field(..., alias="ownDateFieldId", description="UUID of the own date field this value belongs to.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own date field value validity period. Nullable.")
     model_config = {"populate_by_name": True}
@@ -916,10 +916,10 @@ class OwnNumericalFieldValueModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own numerical field value validity period. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the own numerical field value record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     own_numerical_field_id: UUID = Field(..., alias="ownNumericalFieldId", description="UUID of the own numerical field this value belongs to.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own numerical field value validity period. Nullable.")
-    value: Optional[float] = Field(None, description="The numerical field value.")
+    value: float = Field(..., description="The numerical field value.")
     model_config = {"populate_by_name": True}
 
 class OwnTextFieldValueModel(BaseModel):
@@ -927,10 +927,10 @@ class OwnTextFieldValueModel(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="UUID of the employee.")
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the own text field value validity period. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the own text field value record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     own_text_field_id: UUID = Field(..., alias="ownTextFieldId", description="UUID of the own text field this value belongs to.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the own text field value validity period. Nullable.")
-    value: Optional[str] = Field(None, description="The text field value.")
+    value: str = Field(..., description="The text field value.")
     model_config = {"populate_by_name": True}
 
 class GetPaycodesWithStaffCategorySettings(BaseModel):
