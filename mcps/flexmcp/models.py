@@ -317,8 +317,8 @@ class GetBalanceReportByBalanceIdAndEmployeeId(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetBillingReleasesByCompany(BaseModel):
-    company: str = Field(...,description="company")
-    instance: str = Field(INSTANCE,description="The customer instance (domain)")
+    company: str = Field(...,description="company number")
+    instance: str = Field(DOMAIN,description="The customer instance (domain)")
     hide_completed_releasees: Optional[bool] = Field(None,description="Hides the billing releases that is fully released")
     page_params: Optional[PageModel] = Field(PageModel(),description="Page parameters")
     model_config = {"populate_by_name": True}
@@ -874,13 +874,13 @@ class NextOfKinModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetOrganizationalChartNodeById(BaseModel):
-    include_hierarchy: Optional[bool] = Field(False, description="Whether or not to include hierearchy, default value false", alias="includeHierarchy"),
-    hierarchy_depth: Optional[int] = Field(0, description="Hierarchy levels. Default Value 0", alias="hierarchyDepth"),
+    include_hierarchy: Optional[bool] = Field(False, description="Whether or not to include hierearchy, default value false", alias="includeHierarchy")
+    hierarchy_depth: Optional[int] = Field(0, description="Hierarchy levels. Default Value 0", alias="hierarchyDepth")
 
 class GetOrganizationalChartAccountingsByCompany(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
-    include_hierarchy: Optional[bool] = Field(False, description="Whether or not to include hierearchy, default value false", alias="includeHierarchy"),
-    hierarchy_depth: Optional[int] = Field(0, description="Hierarchy levels. Default Value 0", alias="hierarchyDepth"),
+    include_hierarchy: Optional[bool] = Field(False, description="Whether or not to include hierearchy, default value false", alias="includeHierarchy")
+    hierarchy_depth: Optional[int] = Field(0, description="Hierarchy levels. Default Value 0", alias="hierarchyDepth")
 
 class GetOwnFieldModel(BaseModel):
     instance: Optional[str] = Field(None, description="Domain name.")
@@ -1630,7 +1630,7 @@ class VehicleTypeRequestModel(BaseModel):
     average_fuel_price: Optional[float] = Field(None, alias="price", description="Average fuel price to use for the vehicle type.")
     average_fuel_price_to_month: Optional[int] = Field(None, alias="toMonth", description="Average fuel price to month (1-12).")
     average_fuel_price_to_year: Optional[int] = Field(None, alias="toYear", description="Average fuel price to year (e.g. 2025).")
-    company_id: Optional[UUID] = Field(..., alias="companyId", description="Company ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     consumption_unit_type: Optional[int] = Field(None, alias="consumptionUnit", description="Consumption unit: 0 = LPer100Km, 1 = KWhPer100Km")
     default_private_vehicle: Optional[bool] = Field(None, alias="defaultPrivateVehicle", description="Whether this is the default private vehicle.")
     fuel_benefit_20_percent_paycode_id: Optional[UUID] = Field(None, alias="fuelBenefit20PercentPaycodeId", description=r"UUID of the pay code to use for the 20% fuel benefit when this vehicle type is used.")

@@ -214,6 +214,10 @@ print_test(server.get_qualification_by_id(qualification["Id"]))
 print("Testing get_employee_qualifications")
 print_test(server.get_employee_qualifications())
 
+
+print("Testing get_employee_qualification_by_id")
+print_test(server.get_employee_qualification_by_id(employee_qualification["Id"]))
+
 print("Testing update_employmee_qualification_by_id_put")
 print_test(server.update_employmee_qualification_by_id_put(employee_qualification["Id"], EmployeeQualificationModel(companyId=employee_qualification["CompanyId"],
     employeeId=employee_qualification["EmployeeId"], instanceId=employee_qualification["InstanceId"], qualificationId=employee_qualification["QualificationId"], qualificationLevel=0.9)))
@@ -243,6 +247,9 @@ print("Testing get_balance_adjustment_by_company_id")
 print_test(server.get_balance_adjustment_by_company_id(company_id))
 
 
+print("Testing get_balance_adjustment_by_id")
+print_test(server.get_balance_adjustment_by_id(balance_adjustment_id))
+
 print("Testing get_balance_adjustments")
 print_test(server.get_balance_adjustments())
 
@@ -269,14 +276,6 @@ print_test(server.batch_update_employment_rate_by_employee_id(employee_id, [Empl
 print("Testing create_account_budget_for_account_id")
 print_test(server.create_account_budget_for_account_id(account_id=proj_id, query=AccountBudgetModel(actualSales=1800,budgetedCost=2000,
         budgetedHours=200,budgetedSales=2200,dateTime="2025-04-10 00:00")))
-
-
-print("Testing create_account_combination")
-print_test(server.create_account_combination(AccountCombinationModel(accountCombinationAccounts=[AccountCombinationAccountModel(accountDistribution=account_distribution_id, accountSelection=account_nr),
-    AccountCombinationAccountModel(accountDistribution="806a9a28-17d2-4c5a-85df-ab1948424913", accountSelection="1"),
-    AccountCombinationAccountModel(accountDistribution="206673b8-fa55-45f2-89f6-b43400978ecc", accountSelection="1000"),
-    AccountCombinationAccountModel(accountDistribution="7a21a56d-c4b9-4625-93e0-d9d8c8e2cddf", accountSelection="1000"),
-    AccountCombinationAccountModel(accountDistribution="e41a1471-a598-4084-b270-dc9872f6ab2d", accountSelection="1619")], combinationRule=1, companyId=company_id)))
 
 
 print("Testing create_company")
@@ -337,3 +336,111 @@ print_test(server.get_union_by_id(union["Id"]))
 print("Testing delete_child_by_id")
 #print_test(server.delete_child_by_id("533abf8b-9dbc-46a4-b2dd-b43500ef83fc"))
 print("Works!")
+
+print("Testing create_balance_adjustment_batch_by_company")
+print_test(server.create_balance_adjustment_batch_by_company(id=company_id, query=[BalanceAdjustmentModel(
+    adjustment_value=150.5,
+    balance_adjustment_type=0,
+    balance_code="SEMT",
+    employee_number=alt_employee_nr,
+    entity_description="Manuell justering av semestersaldo",
+    flex_sql_sort_order=0,
+    is_generated=False,
+    period_determination_date=datetime(2026, 4, 24, 0, 0, 0)
+)]))
+
+
+print("Testing get_user_account_part_approval_permissions")
+print_test(server.get_user_account_part_approval_permissions())
+
+
+
+print("Testing get_account_combination_by_account_distribution_id_and_account_code")
+print_test(server.get_account_combination_by_account_distribution_id_and_account_code(account_distribution_id=account_distribution_id,account_code=account_nr))
+
+
+print("Testing get_account_combination_by_account_id")
+print_test(server.get_account_combination_by_account_id(account_id=account_id))
+
+
+print("Testing get_account_combination_by_id")
+print_test(server.get_account_combination_by_id(account_combination_id))
+
+
+print("Testing create_account_combination")
+print_test(server.create_account_combination(AccountCombinationModel(accountCombinationAccounts=[AccountCombinationAccountModel(accountDistribution=account_distribution_id, accountSelection=account_nr),
+    AccountCombinationAccountModel(accountDistribution="806a9a28-17d2-4c5a-85df-ab1948424913", accountSelection="20"),
+    AccountCombinationAccountModel(accountDistribution="206673b8-fa55-45f2-89f6-b43400978ecc", accountSelection="1000"),
+    AccountCombinationAccountModel(accountDistribution="7a21a56d-c4b9-4625-93e0-d9d8c8e2cddf", accountSelection="1000"),
+    AccountCombinationAccountModel(accountDistribution="e41a1471-a598-4084-b270-dc9872f6ab2d", accountSelection="1619")], combinationRule=1, companyId=company_id)))
+
+print("Testing update_account_combination_by_id")
+print_test(server.update_account_combination_by_id(id=account_combination_id, query=AccountCombinationModel(accountCombinationAccounts=[AccountCombinationAccountModel(accountDistribution=account_distribution_id, accountSelection=account_nr),
+    AccountCombinationAccountModel(accountDistribution="806a9a28-17d2-4c5a-85df-ab1948424913", accountSelection="100"),
+    AccountCombinationAccountModel(accountDistribution="206673b8-fa55-45f2-89f6-b43400978ecc", accountSelection="1000"),
+    AccountCombinationAccountModel(accountDistribution="7a21a56d-c4b9-4625-93e0-d9d8c8e2cddf", accountSelection="1000"),
+    AccountCombinationAccountModel(accountDistribution="e41a1471-a598-4084-b270-dc9872f6ab2d", accountSelection="1619")], combinationRule=1, companyId=company_id)))
+
+
+print("Testing delete_account_combination_by_id")
+print_test(server.delete_account_combination_by_id("5d06372e-5e29-436d-b3fd-b4340116eb91"))
+
+print("Testing get_employment_document_categories")
+print_test(server.get_employment_document_categories())
+
+print("Testing get_employment_documents_collection_by_company")
+print_test(server.get_employment_documents_collection_by_company(GetEmploymentDocumentCollection(companyId=company_id)))
+
+print("Testing get_employment_documents_by_id")
+print_test(server.get_employment_documents_by_id(employment_doc_id))
+
+
+print("Testing create_employment_document")
+print_test(server.create_employment_document(document_category_id=doc_category, employee_id=employee_id, title="CV", file_path="Kandidatexamensarbete.pdf"))
+
+print("Testing delete_employment_documents_by_id")
+print_test(server.delete_employment_documents_by_id(employment_doc_id))
+
+print("Testing get_billing_releases_by_company")
+print_test(server.get_billing_releases_by_company(GetBillingReleasesByCompany(company=company_nr)))
+
+print("Testing get_billing_releases_by_id")
+print_test(server.get_billing_releases_by_id(billing_release_id))
+
+
+print("Testing get_collection_of_travel_time_rule_sets")
+print_test(server.get_collection_of_travel_time_rule_sets())
+
+print("Testing get_employee_presence_by_company")
+print_test(server.get_employee_presence_by_company(GetEmployeePresenceByCompany(companyId=company_id)))
+
+
+
+print("Testing get_customers_by_account_distribution_id")
+print_test(server.get_customers_by_account_distribution_id(customers_acc_distribution_id))
+
+
+print("Testing delete_employee_qualification_by_id")
+print_test(server.delete_employee_qualification_by_id("de42c163-f005-48f8-9b35-b4360076a388"))
+
+
+print("Testing get_employment_default_account_intervals")
+print_test(server.get_employment_default_account_intervals())
+
+
+
+print("Testing get_employment_default_account_interval_by_id")
+print_test(server.get_employment_default_account_interval_by_id(employment_default_account_interval_id))
+
+
+print("Testing get_organizational_chart_accountings_by_company_id")
+print(server.get_organizational_chart_accountings_by_company_id(company_id))
+
+print("Testing get_organizational_chart_employee_data_by_company_id")
+print(server.get_organizational_chart_employee_data_by_company_id(company_id))
+
+print("Testing get_employeee_data_by_organizational_chart_node_id")
+print_test(server.get_employeee_data_by_organizational_chart_node_id(org_node_id))
+
+print("Testing get_employment_default_accounts")
+print_test(server.get_employment_default_accounts())

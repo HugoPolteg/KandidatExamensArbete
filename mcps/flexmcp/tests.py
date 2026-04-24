@@ -54,8 +54,6 @@ print("Testing get_public_travel_claims")
 print_test(server.get_public_travel_claims())
 
 
-print("Testing get_account_combination_by_account_id")
-print_test(server.get_account_combination_by_account_id(account_id=account_id))
 
 print("Testing get_account_budget_by_account_id")
 print_test(server.get_account_budget_by_account_id(account_id))
@@ -135,240 +133,34 @@ print("Testing create_employee")
 print(server.create_employee(EmployeeCreateParams(employmenttemplateId=employment_template_id,
     employmentPeriodStart=datetime(2025, 1, 1, 0, 0, 0), employmentPeriodEnd=datetime(2027, 1, 1, 0, 0, 0)), EmployeeCreateModel(firstName="Test", lastName="Testson")))
 
+
+print("Testing get_balance_report_by_balance_id_and_employee_id")
+print_test(server.get_balance_report_by_balance_id_and_employee_id(balance_id))
+
+print("Testing get_company_information")
+print_test(server.get_company_information(start_range=1000, end_range=2000))
+
 """
 
 
 #print("Testing get_employment_personal_schedule_by_id")
 #print_test(server.get_employment_personal_schedule_by_id())
 
-
-
-
 """
+for account in account_distributions:
+    print(account["Description"])
+    print(account["Id"])
+    print(server.get_accounts_by_account_distribution_id(account_distribution_id=account["Id"]))"""
 
 
 
-print("Testing create_balance_adjustment_batch_by_company")
-print_test(server.create_balance_adjustment_batch_by_company())
-
-
-print("Testing create_company_account_part_approval_permissions_by_user_id")
-print_test(server.create_company_account_part_approval_permissions_by_user_id())
-
-
-print("Testing create_employment_default_account_interval")
-print_test(server.create_employment_default_account_interval())
-
-print("Testing create_employment_default_accunt")
-print_test(server.create_employment_default_accunt())
-
-print("Testing create_employment_document")
-print_test(server.create_employment_document())
-
-print("Testing create_employment_empty_schedule")
-print_test(server.create_employment_empty_schedule())
-
-print("Testing create_employment_period")
-print_test(server.create_employment_period())
-
-
-print("Testing create_employment_public_schedule")
-print_test(server.create_employment_public_schedule())
-
-print("Testing create_employment_rate")
-print_test(server.create_employment_rate())
-
-print("Testing create_employment_title")
-print_test(server.create_employment_title())
-
-print("Testing create_employment_vehicle")
-print_test(server.create_employment_vehicle())
-
-print("Testing create_hr_form")
-print_test(server.create_hr_form())
-
-print("Testing create_imported_trip")
-print_test(server.create_imported_trip())
-
-print("Testing create_new_accounts")
-print_test(server.create_new_accounts())
-
-print("Testing create_next_of_kin")
-print_test(server.create_next_of_kin())
-
-print("Testing create_own_assessment_field_value")
-print_test(server.create_own_assessment_field_value())
-
-print("Testing create_own_date_field_value")
-print_test(server.create_own_date_field_value())
-
-print("Testing create_own_numerical_field_value")
-print_test(server.create_own_numerical_field_value())
-
-print("Testing create_own_text_field_value")
-print_test(server.create_own_text_field_value())
-
-print("Testing create_user")
-print_test(server.create_user())
-
-print("Testing create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id")
-print_test(server.create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id())
-
-print("Testing create_vehicle_type")
-print_test(server.create_vehicle_type())
-
-print("Testing delete_account_by_id")
-print_test(server.delete_account_by_id())
-
-print("Testing delete_account_combination_by_id")
-print_test(server.delete_account_combination_by_id())
-
-print("Testing delete_balance_adjustment_by_id")
-print_test(server.delete_balance_adjustment_by_id())
-
-
-print("Testing delete_compamny_account_approval_permission_by_id")
-print_test(server.delete_compamny_account_approval_permission_by_id())
-
-print("Testing delete_customer_by_id")
-print_test(server.delete_customer_by_id())
-
-print("Testing delete_employee_image_by_id")
-print_test(server.delete_employee_image_by_id())
-
-print("Testing delete_employee_qualification_by_id")
-print_test(server.delete_employee_qualification_by_id())
-
-print("Testing delete_employment_default_account_interval_by_id")
-print_test(server.delete_employment_default_account_interval_by_id())
-
-print("Testing delete_employment_default_accunt_by_id_")
-print_test(server.delete_employment_default_accunt_by_id_())
-
-print("Testing delete_employment_documents_by_id")
-print_test(server.delete_employment_documents_by_id())
-
-print("Testing delete_employment_empty_schedule_by_id")
-print_test(server.delete_employment_empty_schedule_by_id())
-
-print("Testing delete_employment_period_by_id")
-print_test(server.delete_employment_period_by_id())
-
-print("Testing delete_employment_personal_schedule_by_id")
-print_test(server.delete_employment_personal_schedule_by_id())
-
-print("Testing delete_employment_public_schedule_by_id")
-print_test(server.delete_employment_public_schedule_by_id())
-
-print("Testing delete_employment_rate_by_id")
-print_test(server.delete_employment_rate_by_id())
-
-print("Testing delete_employment_title_by_id")
-print_test(server.delete_employment_title_by_id())
-
-print("Testing delete_employment_vehicle_by_id")
-print_test(server.delete_employment_vehicle_by_id())
-
-print("Testing delete_hr_form__by_id")
-print_test(server.delete_hr_form__by_id())
-
-print("Testing delete_next_of_kin_by_id")
-print_test(server.delete_next_of_kin_by_id())
-
-print("Testing delete_own_assessment_field_value_by_id")
-print_test(server.delete_own_assessment_field_value_by_id())
-
-print("Testing delete_own_date_field_value_by_id")
-print_test(server.delete_own_date_field_value_by_id())
-
-print("Testing delete_own_numerical_field_value_by_id")
-print_test(server.delete_own_numerical_field_value_by_id())
-
-print("Testing delete_own_text_field_value_by_id")
-print_test(server.delete_own_text_field_value_by_id())
-
-print("Testing delete_project_by_id")
-print_test(server.delete_project_by_id())
-
-print("Testing delete_user_account_part_approval_permission_by_id")
-print_test(server.delete_user_account_part_approval_permission_by_id())
-
-print("Testing delete_vehicle_type")
-print_test(server.delete_vehicle_type())
-
-print("Testing field_serializer")
-print_test(server.field_serializer())
-
-print("Testing field_validator")
-print_test(server.field_validator())
-
-print("Testing get_account_combination_by_account_distribution_id_and_account_code")
-print_test(server.get_account_combination_by_account_distribution_id_and_account_code())
-
-print("Testing get_account_combination_by_id")
-print_test(server.get_account_combination_by_id())
-
-
-
-
-
-print("Testing get_balance_adjustment_by_id")
-print_test(server.get_balance_adjustment_by_id())
-
-print("Testing get_balance_report_by_balance_id_and_employee_id")
-print_test(server.get_balance_report_by_balance_id_and_employee_id())
-
-print("Testing get_billing_releases_by_company")
-print_test(server.get_billing_releases_by_company())
-
-print("Testing get_billing_releases_by_id")
-print_test(server.get_billing_releases_by_id())
-
-
-print("Testing get_collection_of_travel_time_rule_sets")
-print_test(server.get_collection_of_travel_time_rule_sets())
-
-print("Testing get_company_information")
-print_test(server.get_company_information())
-
-print("Testing get_customers_by_account_distribution_id")
-print_test(server.get_customers_by_account_distribution_id())
-
-
-
-print("Testing get_employee_presence_by_company")
-print_test(server.get_employee_presence_by_company())
-
-print("Testing get_employee_qualification_by_id")
-print_test(server.get_employee_qualification_by_id())
-
-print("Testing get_employeee_data_by_organizational_chart_node_id")
-print_test(server.get_employeee_data_by_organizational_chart_node_id())
-
-
-print("Testing get_employment_default_account_interval_by_id")
-print_test(server.get_employment_default_account_interval_by_id())
-
-print("Testing get_employment_default_account_intervals")
-print_test(server.get_employment_default_account_intervals())
-
-print("Testing get_employment_default_accounts")
-print_test(server.get_employment_default_accounts())
-
-print("Testing get_employment_document_categories")
-print_test(server.get_employment_document_categories())
-
-print("Testing get_employment_documents_by_id")
-print_test(server.get_employment_documents_by_id())
-
-print("Testing get_employment_documents_collection_by_company")
-print_test(server.get_employment_documents_collection_by_company())
-
-print("Testing get_employment_empty_schedule_by_id")
-print_test(server.get_employment_empty_schedule_by_id())
 
 print("Testing get_employment_empty_schedules")
 print_test(server.get_employment_empty_schedules())
+
+
+print("Testing get_employment_empty_schedule_by_id")
+print_test(server.get_employment_empty_schedule_by_id())
 
 print("Testing get_employment_period_by_id")
 print_test(server.get_employment_period_by_id())
@@ -445,11 +237,7 @@ print_test(server.get_next_of_kin_relationships())
 print("Testing get_next_of_kins")
 print_test(server.get_next_of_kins())
 
-print("Testing get_organizational_chart_accountings_by_company_id")
-print_test(server.get_organizational_chart_accountings_by_company_id())
 
-print("Testing get_organizational_chart_employee_data_by_company_id")
-print_test(server.get_organizational_chart_employee_data_by_company_id())
 
 print("Testing get_organizational_chart_node_by_id")
 print_test(server.get_organizational_chart_node_by_id())
@@ -642,8 +430,6 @@ print_test(server.get_travel_claim_audit_levels_by_company_id())
 print("Testing get_user_account_part_approval_permission_by_id")
 print_test(server.get_user_account_part_approval_permission_by_id())
 
-print("Testing get_user_account_part_approval_permissions")
-print_test(server.get_user_account_part_approval_permissions())
 
 print("Testing get_user_by_employee_id")
 print_test(server.get_user_by_employee_id())
@@ -656,6 +442,164 @@ print_test(server.get_users_by_company())
 
 print("Testing get_vehicle_type_by_id")
 print_test(server.get_vehicle_type_by_id())
+
+"""
+
+
+
+
+
+
+
+
+
+print("Testing create_company_account_part_approval_permissions_by_user_id")
+print_test(server.create_company_account_part_approval_permissions_by_user_id(user_id, AccountDistributionPartApprovalPermissionModel(
+    accountDistributionId=account_distribution_id, id=user_acc_approval["AccountDistributionPartApprovalPermissionId"],
+    premissionToAccountWithoutRowOrAccount=False, premissionToAllAccounts=False, userId=user_id)))
+
+print("Testing create_employment_default_account_interval")
+print_test(server.create_employment_default_account_interval())
+
+print("Testing create_employment_default_accunt")
+print_test(server.create_employment_default_accunt())
+
+
+print("Testing create_employment_empty_schedule")
+print_test(server.create_employment_empty_schedule())
+
+print("Testing create_employment_period")
+print_test(server.create_employment_period())
+
+
+print("Testing create_employment_public_schedule")
+print_test(server.create_employment_public_schedule())
+
+print("Testing create_employment_rate")
+print_test(server.create_employment_rate())
+
+print("Testing create_employment_title")
+print_test(server.create_employment_title())
+
+print("Testing create_employment_vehicle")
+print_test(server.create_employment_vehicle())
+
+print("Testing create_hr_form")
+print_test(server.create_hr_form())
+
+print("Testing create_imported_trip")
+print_test(server.create_imported_trip())
+
+print("Testing create_new_accounts")
+print_test(server.create_new_accounts())
+
+print("Testing create_next_of_kin")
+print_test(server.create_next_of_kin())
+
+print("Testing create_own_assessment_field_value")
+print_test(server.create_own_assessment_field_value())
+
+print("Testing create_own_date_field_value")
+print_test(server.create_own_date_field_value())
+
+print("Testing create_own_numerical_field_value")
+print_test(server.create_own_numerical_field_value())
+
+print("Testing create_own_text_field_value")
+print_test(server.create_own_text_field_value())
+
+print("Testing create_user")
+print_test(server.create_user())
+
+print("Testing create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id")
+print_test(server.create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id())
+
+print("Testing create_vehicle_type")
+print_test(server.create_vehicle_type())
+
+print("Testing delete_account_by_id")
+print_test(server.delete_account_by_id())
+
+
+print("Testing delete_balance_adjustment_by_id")
+print_test(server.delete_balance_adjustment_by_id())
+
+
+print("Testing delete_compamny_account_approval_permission_by_id")
+print_test(server.delete_compamny_account_approval_permission_by_id())
+
+print("Testing delete_customer_by_id")
+print_test(server.delete_customer_by_id())
+
+print("Testing delete_employee_image_by_id")
+print_test(server.delete_employee_image_by_id())
+
+
+print("Testing delete_employment_default_account_interval_by_id")
+print_test(server.delete_employment_default_account_interval_by_id())
+
+print("Testing delete_employment_default_accunt_by_id_")
+print_test(server.delete_employment_default_accunt_by_id_())
+
+
+print("Testing delete_employment_empty_schedule_by_id")
+print_test(server.delete_employment_empty_schedule_by_id())
+
+print("Testing delete_employment_period_by_id")
+print_test(server.delete_employment_period_by_id())
+
+print("Testing delete_employment_personal_schedule_by_id")
+print_test(server.delete_employment_personal_schedule_by_id())
+
+print("Testing delete_employment_public_schedule_by_id")
+print_test(server.delete_employment_public_schedule_by_id())
+
+print("Testing delete_employment_rate_by_id")
+print_test(server.delete_employment_rate_by_id())
+
+print("Testing delete_employment_title_by_id")
+print_test(server.delete_employment_title_by_id())
+
+print("Testing delete_employment_vehicle_by_id")
+print_test(server.delete_employment_vehicle_by_id())
+
+print("Testing delete_hr_form__by_id")
+print_test(server.delete_hr_form__by_id())
+
+print("Testing delete_next_of_kin_by_id")
+print_test(server.delete_next_of_kin_by_id())
+
+print("Testing delete_own_assessment_field_value_by_id")
+print_test(server.delete_own_assessment_field_value_by_id())
+
+print("Testing delete_own_date_field_value_by_id")
+print_test(server.delete_own_date_field_value_by_id())
+
+print("Testing delete_own_numerical_field_value_by_id")
+print_test(server.delete_own_numerical_field_value_by_id())
+
+print("Testing delete_own_text_field_value_by_id")
+print_test(server.delete_own_text_field_value_by_id())
+
+print("Testing delete_project_by_id")
+print_test(server.delete_project_by_id())
+
+print("Testing delete_user_account_part_approval_permission_by_id")
+print_test(server.delete_user_account_part_approval_permission_by_id())
+
+print("Testing delete_vehicle_type")
+print_test(server.delete_vehicle_type())
+
+print("Testing field_serializer")
+print_test(server.field_serializer())
+
+print("Testing field_validator")
+print_test(server.field_validator())
+
+
+
+
+
 
 print("Testing import_company")
 print_test(server.import_company())
@@ -687,8 +631,6 @@ print_test(server.update_account_budget_by_id())
 print("Testing update_account_by_id")
 print_test(server.update_account_by_id())
 
-print("Testing update_account_combination_by_id")
-print_test(server.update_account_combination_by_id())
 
 print("Testing update_balance_adjustment_by_id")
 print_test(server.update_balance_adjustment_by_id())
