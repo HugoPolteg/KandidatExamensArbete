@@ -3532,7 +3532,7 @@ def batch_update_employment_rate_by_employee_id(
 
 @mcp.tool()
 def get_employment_rates(
-    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
+    filters: GenericGetModel = GenericGetModel()
     )->dict:
     """"
     Get employment rates optionaly filtered by filter parameters
@@ -3540,7 +3540,7 @@ def get_employment_rates(
     Returns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/employmentates"
+    url = f"{consts.API_ENDPOINT}/employmentrates"
     params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
@@ -3688,7 +3688,7 @@ def delete_employment_title_by_id(
 
 @mcp.tool()
 def get_employment_titles(
-    filters: GetEmplploymentTitles = Field(GetEmplploymentTitles(),description="filter parameters to filter the search by all feilds optional")
+    filters: GetEmplploymentTitles = GetEmplploymentTitles()
     )->dict:
     """"
     Get employment titles optionaly filtered by filter parameters
@@ -3741,8 +3741,8 @@ def get_employment_type_by_id(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmenttypes{id}"
-
+    url = f"{consts.API_ENDPOINT}/employmenttypes/{id}"
+    print(url)
     try:
         response = s.get(
             url,
@@ -3755,7 +3755,7 @@ def get_employment_type_by_id(
 
 @mcp.tool()
 def get_employment_types(
-    filters: GetEmploymentTypes = Field(GetEmploymentTypes(),description="filter parameters to filter the search by all feilds optional")
+    filters: GetEmploymentTypes = GetEmploymentTypes()
     )->dict:
     """"
     Get employment titles optionaly filtered by filter parameters
@@ -3786,7 +3786,7 @@ def get_employment_vacation_by_id(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmenvacations{id}"
+    url = f"{consts.API_ENDPOINT}/employmenvacations/{id}"
 
     try:
         response = s.get(
@@ -3845,7 +3845,7 @@ def update_employment_vaction_by_id_post(
 
 @mcp.tool()
 def get_employment_vacations(   
-    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
 
     """
@@ -3854,7 +3854,7 @@ def get_employment_vacations(
     Retruns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/employmentvaccations"
+    url = f"{consts.API_ENDPOINT}/employmentvacations"
     params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
@@ -3873,7 +3873,7 @@ def get_employment_vacations(
 
 @mcp.tool()
 def get_employment_vacations_quotas(
-    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
     Get employment vacation quotas optionaly filtered by filter parameters
@@ -3881,7 +3881,7 @@ def get_employment_vacations_quotas(
     Retruns:
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/employmentvaccationquoatas"
+    url = f"{consts.API_ENDPOINT}/employmentvacationquotas"
     params = filters.model_dump(by_alias=True,exclude_none=True, mode="json")
     
     try:
@@ -3964,8 +3964,8 @@ def delete_employment_vehicle_by_id(
     return response.json()
 
 @mcp.tool()
-def get_employment_vehciles(   
-    filters: Optional[GetEmploymentVehicles] = Field(GetEmploymentVehicles(), description="Parameters to filter the search by all feilds optional")
+def get_employment_vehicles(   
+    filters: Optional[GetEmploymentVehicles] = GetEmploymentVehicles()
     )->dict:
 
     """
@@ -4373,11 +4373,9 @@ def batch_create_imported_trip(
     return response.json()
 
 @mcp.tool()
-def get_invocing_basis_by_billing_release_id(
+def get_invoicing_basis_by_billing_release_id(
     billing_release_id: UUID = Field(..., description="UUID of the billing release"),
-    page_params: PageModel = Field(PageModel(), description="Page parameters"),
-    include_exported: Optional[bool] = Field(False, description="Whether to include exported invoicing basis in the result. Optional, defaults to false."),
-    include_all_accounts: Optional[bool] = Field(False, description="Whether to include invoicing basis for all accounts in the result. Optional, defaults to false.")
+    query: GetInvocingBasisByBillingReleaseId = GetInvocingBasisByBillingReleaseId()
     )->dict:
     """
     Get invoicing basis by billing release id.
@@ -4386,18 +4384,12 @@ def get_invocing_basis_by_billing_release_id(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/invoicingbasis"
-    parapms = {
-        "billingReleaseId": billing_release_id,
-        "pageNumber": page_params.page_number,
-        "pageSize": page_params.page_size,
-        "includeExported": include_exported,
-        "includeAllAccounts": include_all_accounts
-    }
-    
+    payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    payload["billingReleaseId"] = billing_release_id
     try:
-        response = s.post(
+        response = s.get(
             url,
-            params=parapms,
+            params=payload,
             timeout=consts.API_TIMEOUT
         )
     except requests.RequestException as e:
@@ -4504,7 +4496,7 @@ def delete_next_of_kin_by_id(
 
 @mcp.tool()
 def get_next_of_kins(
-    filters: Optional[GenericGetModel] = Field(GenericGetModel(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GenericGetModel] = GenericGetModel()
     )->dict:
     """
     Get next of kins optionaly filtered by filter parameters
@@ -4579,7 +4571,7 @@ def get_next_of_kin_relationship_by_id(
 
 @mcp.tool()
 def get_next_of_kin_relationships(
-    page_params: PageModel = Field(PageModel(), description="Page parameters"),
+    page_params: PageModel = PageModel()
     )->dict:
     """
     Get next of kin relationship by id.
@@ -4758,7 +4750,7 @@ def get_overtime_by_employee_id(
 
 @mcp.tool()
 def get_own_assessment_fields(
-    filters: Optional[GetOwnFieldModel] = Field(GetOwnFieldModel(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetOwnFieldModel] = GetOwnFieldModel()
     )->dict:
     """
     Get own assessment fields optionaly filtered by filter parameters
@@ -5516,7 +5508,7 @@ def get_payment_group_by_id(
 
 @mcp.tool()
 def get_payment_groups(
-    filters: Optional[GetPaymentGroups] = Field(GetPaymentGroups(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPaymentGroups] = GetPaymentGroups()
     )->dict:
     """
     Get payment groups, optionally filtered by filter parameters.
@@ -5540,7 +5532,7 @@ def get_payment_groups(
     
 @mcp.tool()
 def get_payroll_runs(
-    filters: Optional[GetPayrollRuns] = Field(GetPayrollRuns(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPayrollRuns] = GetPayrollRuns()
 )-> dict:
     """
     Get payroll runs.
@@ -5584,7 +5576,7 @@ def get_payroll_run_by_id(
 
 @mcp.tool()
 def get_payroll_run_employments(
-    filters: Optional[GetPayrollRunEmployments] = Field(GetPayrollRunEmployments(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPayrollRunEmployments] = GetPayrollRunEmployments()
 )-> dict:
     """
     Get payroll run employments.
@@ -5628,7 +5620,7 @@ def get_payroll_run_employee_by_id(
 
 @mcp.tool()
 def get_payroll_run_transactions(
-    filters: Optional[GetPayrollRunTransactions] = Field(GetPayrollRunTransactions(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPayrollRunTransactions] = GetPayrollRunTransactions()
 )-> dict:
     """
     Get payroll run transactions, optionally filtered by filter parameters.
@@ -5672,7 +5664,7 @@ def get_payroll_run_transaction_by_id(
 
 @mcp.tool()
 def get_payroll_run_transaction_account_collections(
-    filters: Optional[GetPayrollRunTransactions] = Field(GetPayrollRunTransactions(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPayrollRunTransactions] = GetPayrollRunTransactions()
 )-> dict:
     """
     Get payroll run transactions, optionally filtered by filter parameters.
@@ -5815,7 +5807,7 @@ def update_pension_and_insurance_setting_by_employee_id_post(
 
 @mcp.tool()
 def get_pension_and_insurance_settings(
-    filters: Optional[GetPensionAndInsuranceSettings] = Field(GetPensionAndInsuranceSettings(), description="Parameters to filter the search by all feilds optional")
+    filters: Optional[GetPensionAndInsuranceSettings] = GetPensionAndInsuranceSettings()
 )-> dict:
     """
     Get pension and insurance settings, optionally filtered by filter parameters.
@@ -5880,7 +5872,7 @@ def get_personal_schedule_by_id(
 
 @mcp.tool()
 def get_personal_schedules(
-    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
+    filters: GenericGetModel = GenericGetModel()
     )->dict:
     """"
     Get  personal schedules optionally filtered by filter parameters
@@ -6130,7 +6122,7 @@ def get_public_schedule_by_id(
 
 @mcp.tool()
 def get_public_schedules(
-    filters: GenericGetModel = Field(GenericGetModel(),description="filter parameters to filter the search by all feilds optional")
+    filters: GenericGetModel = GenericGetModel()
     )->dict:
     """"
     Get  public schedules optionally filtered by filter parameters
@@ -6716,7 +6708,7 @@ def get_role_by_id(
 
 @mcp.tool()
 def get_roles(
-    query: GetRoles = Field(GetRoles(), description="Parameters to filter the search by all feilds optional")
+    query: GetRoles = GetRoles()
     )->dict:
     """
     Get roles optionally filtered by filter parameters.

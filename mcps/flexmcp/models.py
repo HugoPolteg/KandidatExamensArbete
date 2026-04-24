@@ -1622,6 +1622,11 @@ class GetVehicleTypes(BaseModel):
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
+class GetInvocingBasisByBillingReleaseId(BaseModel):
+    page_params: PageModel = PageModel()
+    include_exported: Optional[bool] = Field(False, description="Whether to include exported invoicing basis in the result. Optional, defaults to false.", alias="includeExported")
+    include_all_accounts: Optional[bool] = Field(False, description="Whether to include invoicing basis for all accounts in the result. Optional, defaults to false.", alias="includeAllAccounts")
+    model_config = {"populate_by_name": True}
 
 class VehicleTypeRequestModel(BaseModel):
     average_fuel_price_from_month: Optional[int] = Field(None, alias="fromMonth", description="Average fuel price from month (1-12).")

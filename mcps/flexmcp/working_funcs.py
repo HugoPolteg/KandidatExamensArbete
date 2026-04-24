@@ -156,12 +156,19 @@ print("Works!")
 print("Testing get_account_distribution_by_company_number")
 print_test(server.get_account_distribution_by_company_number(GetAccountDistribution(company=company_nr)))
 
+print("Testing get_employment_period_by_id")
+print_test(server.get_employment_period_by_id(employment_period_id))
 
 print("Testing get_employment_periods")
 print_test(server.get_employment_periods())
 print("Testing get_employment_periods_by_employee")
 print_test(server.get_employment_periods_by_employee(employee_id=employee_id))
 
+print("Testing get_employment_public_schedule_by_id")
+print_test(server.get_employment_public_schedule_by_id(employment_public_schedule_id))
+
+print("Testing get_employment_public_schedules")
+print_test(server.get_employment_public_schedules())
 
 print("Testing get_company_account_approval_permissions")
 print_test(server.get_company_account_approval_permissions())
@@ -173,10 +180,48 @@ print_test(server.get_account_by_id(account_id))
 print("Testing get_company_account_approval_permissions")
 print_test(server.get_company_account_approval_permissions())
 
+print("Testing get_employment_rates")
+print(server.get_employment_rates())
+
+print("Testing get_employment_titles")
+print_test(server.get_employment_titles())
+
+print("Testing get_employment_title_by_id")
+print_test(server.get_employment_title_by_id(employment_title_id))
+
+print("Testing get_employment_rate_by_id")
+print_test(server.get_employment_rate_by_id(employment_rate_id))
 
 print("Testing get_account_distribution_part_approval_permissions_by_id")
 print_test(server.get_account_distribution_part_approval_permissions_by_id(id=account_approval_permission_id))
 
+print("Testing get_employment_vehicles")
+print_test(server.get_employment_vehicles())
+
+print("Testing get_employment_vehicle_by_id")
+print_test(server.get_employment_vehicle_by_id(employment_vehicle_id))
+
+print("Testing get_employment_vacations_quotas")
+print_test(server.get_employment_vacations_quotas())
+
+
+print("Testing get_hr_forms")
+print_test(server.get_hr_forms())
+
+
+print("Testing get_employment_vacations")
+print_test(server.get_employment_vacations())
+
+
+print("Testing get_employment_types")
+print_test(server.get_employment_types())
+
+
+print("Testing get_hr_form_by_id")
+print_test(server.get_hr_form_by_id(hr_form_id))
+
+print("Testing get_from_time_schedule_by_employee_and_date")
+print_test(server.get_from_time_schedule_by_employee_and_date(GetTimeScheduleByEmployeeAndDate(employeeId=employee_id, dateString="2026-04-23")))
 
 print("Testing get_accumulators")
 print_test(server.get_accumulators())
@@ -266,6 +311,22 @@ print_test(server.get_account_combination_by_account_id(account_id=account_id))
 print("Testing add_or_replace_employee_image")
 print_test(server.add_or_replace_employee_image(EmployeeImageModel(companyId=company_id, employeeId=employee_id, image=base64_img)))
 
+print("Testing get_imported_trips_by_employee_id")
+print_test(server.get_imported_trips_by_employee_id(employee_id))
+
+print("Testing get_imported_trip_by_id")
+print_test(server.get_imported_trip_by_id(imported_trip_id))
+print("Testing get_next_of_kin_by_id")
+print_test(server.get_next_of_kin_by_id(kin_id))
+
+print("Testing get_next_of_kin_relationship_by_id")
+print_test(server.get_next_of_kin_relationship_by_id(kin_relationship_id))
+
+print("Testing get_next_of_kin_relationships")
+print_test(server.get_next_of_kin_relationships())
+
+print("Testing get_next_of_kins")
+print_test(server.get_next_of_kins())
 
 print("Testing batch_create_imported_trip")
 print_test(server.batch_create_imported_trip([ImportedTripModel(employeeId=employee_id, fromDateTime=datetime(2025, 1, 1, 0, 0, 0), toDateTime=datetime(2025, 1, 1, 10, 0, 0), distance=100)]))
@@ -444,3 +505,11 @@ print_test(server.get_employeee_data_by_organizational_chart_node_id(org_node_id
 
 print("Testing get_employment_default_accounts")
 print_test(server.get_employment_default_accounts())
+
+
+print("Testing get_employment_empty_schedules")
+print_test(server.get_employment_empty_schedules())
+
+
+print("Testing get_employment_empty_schedule_by_id")
+print_test(server.get_employment_empty_schedule_by_id(empty_schedule_id))

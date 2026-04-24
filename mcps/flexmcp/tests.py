@@ -140,6 +140,17 @@ print_test(server.get_balance_report_by_balance_id_and_employee_id(balance_id))
 print("Testing get_company_information")
 print_test(server.get_company_information(start_range=1000, end_range=2000))
 
+print("Testing get_employment_type_by_id")
+print_test(server.get_employment_type_by_id(employment_type_id))
+
+
+print("Testing get_employment_vacation_by_id")
+print_test(server.get_employment_vacation_by_id(employment_vacation_id))
+
+
+print("Testing get_hr_form_document_template_by_id")
+print_test(server.get_hr_form_document_template_by_id(employment_doc_id))
+
 """
 
 
@@ -155,98 +166,23 @@ for account in account_distributions:
 
 
 
-print("Testing get_employment_empty_schedules")
-print_test(server.get_employment_empty_schedules())
 
-
-print("Testing get_employment_empty_schedule_by_id")
-print_test(server.get_employment_empty_schedule_by_id())
-
-print("Testing get_employment_period_by_id")
-print_test(server.get_employment_period_by_id())
-
-print("Testing get_employment_public_schedule_by_id")
-print_test(server.get_employment_public_schedule_by_id())
-
-print("Testing get_employment_public_schedules")
-print_test(server.get_employment_public_schedules())
-
-print("Testing get_employment_rate_by_id")
-print_test(server.get_employment_rate_by_id())
-
-print("Testing get_employment_rates")
-print_test(server.get_employment_rates())
-
-print("Testing get_employment_title_by_id")
-print_test(server.get_employment_title_by_id())
-
-print("Testing get_employment_titles")
-print_test(server.get_employment_titles())
-
-print("Testing get_employment_type_by_id")
-print_test(server.get_employment_type_by_id())
-
-print("Testing get_employment_types")
-print_test(server.get_employment_types())
-
-print("Testing get_employment_vacation_by_id")
-print_test(server.get_employment_vacation_by_id())
-
-print("Testing get_employment_vacations")
-print_test(server.get_employment_vacations())
-
-print("Testing get_employment_vacations_quotas")
-print_test(server.get_employment_vacations_quotas())
-
-print("Testing get_employment_vehciles")
-print_test(server.get_employment_vehciles())
-
-print("Testing get_employment_vehicle_by_id")
-print_test(server.get_employment_vehicle_by_id())
-
-print("Testing get_from_time_schedule_by_employee_and_date")
-print_test(server.get_from_time_schedule_by_employee_and_date())
-
-print("Testing get_hr_form_by_id")
-print_test(server.get_hr_form_by_id())
-
-print("Testing get_hr_form_document_template_by_id")
-print_test(server.get_hr_form_document_template_by_id())
-
-print("Testing get_hr_forms")
-print_test(server.get_hr_forms())
-
-print("Testing get_imported_trip_by_id")
-print_test(server.get_imported_trip_by_id())
-
-print("Testing get_imported_trips_by_employee_id")
-print_test(server.get_imported_trips_by_employee_id())
 
 print("Testing get_invocing_basis_by_billing_release_id")
-print_test(server.get_invocing_basis_by_billing_release_id())
+print_test(server.get_invoicing_basis_by_billing_release_id(billing_release_id))
 
-print("Testing get_next_of_kin_by_id")
-print_test(server.get_next_of_kin_by_id())
 
-print("Testing get_next_of_kin_relationship_by_id")
-print_test(server.get_next_of_kin_relationship_by_id())
-
-print("Testing get_next_of_kin_relationships")
-print_test(server.get_next_of_kin_relationships())
-
-print("Testing get_next_of_kins")
-print_test(server.get_next_of_kins())
-
+"""
 
 
 print("Testing get_organizational_chart_node_by_id")
 print_test(server.get_organizational_chart_node_by_id())
 
 print("Testing get_overtime_by_employee_id")
-print_test(server.get_overtime_by_employee_id())
+print_test(server.get_overtime_by_employee_id(employee_id))
 
 print("Testing get_overtime_by_user_id")
-print_test(server.get_overtime_by_user_id())
+print_test(server.get_overtime_by_user_id(user_id))
 
 print("Testing get_own_assessment_field_value_by_id")
 print_test(server.get_own_assessment_field_value_by_id())
@@ -443,7 +379,7 @@ print_test(server.get_users_by_company())
 print("Testing get_vehicle_type_by_id")
 print_test(server.get_vehicle_type_by_id())
 
-"""
+
 
 
 
