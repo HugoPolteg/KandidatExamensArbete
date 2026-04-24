@@ -1,5 +1,10 @@
 import json
+import os
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
+#
+# OBS ALL EXPECTED QUERY PARAMS AND REQUEST BODIES ARE PLACEHOLDERS
+# 
 # ============================================================
 # DIFFICULTY TAXONOMY (objective, API-complexity-based)
 # ============================================================
@@ -963,7 +968,8 @@ data = [
 ]
 
 output = json.dumps(data, ensure_ascii=False, indent=2)
-with open("/mnt/user-data/outputs/flex_hrm_mcp_testdata_v3.json", "w", encoding="utf-8") as f:
+OUTPUT_PATH = os.path.join(BASE_DIR, "prompts.json")
+with open(OUTPUT_PATH, "w", encoding="utf-8") as f:
     f.write(output)
 
 cats = {}
