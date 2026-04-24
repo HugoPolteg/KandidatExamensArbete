@@ -8,3 +8,6 @@
 __pycache__/
 
 zube_api_key.pem
+
+# Testing constants
+test_consts
