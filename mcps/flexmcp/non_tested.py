@@ -21,3 +21,4 @@ untested_functions = server_functions - tested_functions
 print("Funktioner som INTE testas:\n")
 for func in sorted(untested_functions):
     print(func)
+print(len(untested_functions))
