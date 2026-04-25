@@ -83,33 +83,12 @@ print(server.create_balance_adjustment_batch_by_company(balance["CompanyId"],
 
 
 
-print("Testing create_new_accounts")
-print(server.create_new_accounts(
-    account_distribution_id=account_distribution_id,
-    account_model=AccountModel(
-        billingStateEnum=2, travelBillingStateEnum=2,
-        code="0999", name="Atlantis", billing=AccountBillingModel(priceRows=[AccountBillingPriceRowModel(
-            accounts=[AccountBillingPriceRowAccountModel(
-                account_id=account_id, id="11111111-1111-1111-1111-111111111111"
-            )],
-            price=100,
-            unit=0
-        )]))
-))
 
 
 print("Testing begin_background_task_rollback_release")
 print_test(server.begin_background_task_rollback_release(RollbackReleaseModel()))
 
 
-
-print("Testing get_project_by_id")
-print(server.get_project_by_id(proj_id))
-
-
-
-print("Testing batch_post_project_by_account_distribution_id")
-print_test(server.batch_post_project_by_account_distribution_id(account_distribution_id=account_distribution_id, ProjectModel()))
 
 
 print("Testing begin_background_task_release_accounts_to_billing")
@@ -176,11 +155,20 @@ print_test(server.get_time())
 
 
 
-
-
-
-
 """
+print(server.create_new_accounts(
+    account_distribution_id=test_dist_id,
+    account_model=AccountModel(
+        billingStateEnum=2, travelBillingStateEnum=2,
+        code="0999", name="Atlantis", billing=AccountBillingModel(priceRows=[AccountBillingPriceRowModel(
+            accounts=[AccountBillingPriceRowAccountModel(
+                account_id=account_id, id="11111111-1111-1111-1111-111111111111"
+            )],
+            price=100,
+            unit=0
+        )]))
+))
+
 for account in account_distributions:
     print(account["Description"])
     print(account["Id"])
@@ -199,12 +187,21 @@ print(server.create_employee(EmployeeCreateParams(employmenttemplateId="a725a788
 )))
     """
 
+print("Testing get_employee_by_id")
+print(server.get_employee_by_id(employee_id))
+print("Testing get_stamping_by_userID")
+print(server.get_stamping_by_userID(query=GetStampingByUserId(user_id=test_user_id)))
+print("Testing update_stamping_by_employee_id")
+print_test(server.update_stamping_by_employee_id(query=UpdateStampingByEmployeeId(employee_id=test_employee_id, date_time=datetime(2026, 4, 25, 12)), body=[StampingAccountModel(
+    accountCode=account_nr, accountDistributionId=konto_acc_dist_id)]))
+
+print("Testing update_stamping_by_user_id")
+print_test(server.update_stamping_by_user_id(query=UpdateStampingByUserId(user_id=test_user_id), body=StampingAccountModel(
+    accountCode=account_nr, accountDistributionId=konto_acc_dist_id)))
 
 
 """
 
-print("Testing delete_account_by_id")
-print_test(server.delete_account_by_id())
 
 print("Testing update_role_collection_of_user_for_employee_post")
 print_test(server.update_role_collection_of_user_for_employee_post())
@@ -250,9 +247,6 @@ print_test(server.get_public_travel_claim_attachment_by_id())
 print("Testing get_reminders_by_user_id")
 print_test(server.get_reminders_by_user_id())
 
-print("Testing get_reported_hours_on_projects")
-print_test(server.get_reported_hours_on_projects())
-
 
 print("Testing get_salary_basis_by_salary_transfer_id")
 print_test(server.get_salary_basis_by_salary_transfer_id())
@@ -273,8 +267,6 @@ print("Testing get_settled_payslip_by_payroll_run_employee_id")
 print_test(server.get_settled_payslip_by_payroll_run_employee_id())
 
 
-print("Testing get_stamping_by_userID")
-print_test(server.get_stamping_by_userID())
 
 
 print("Testing get_time_registration_settings_by_company_id")
@@ -301,8 +293,6 @@ print("Testing get_user_account_part_approval_permission_by_id")
 print_test(server.get_user_account_part_approval_permission_by_id())
 
 
-print("Testing get_vehicle_type_by_id")
-print_test(server.get_vehicle_type_by_id())
 
 
 
@@ -325,9 +315,6 @@ print_test(server.create_employment_default_account_interval())
 print("Testing create_employment_default_accunt")
 print_test(server.create_employment_default_accunt())
 
-
-print("Testing create_employment_period")
-print_test(server.create_employment_period())
 
 
 print("Testing create_employment_public_schedule")
@@ -356,8 +343,6 @@ print_test(server.create_new_accounts())
 print("Testing create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id")
 print_test(server.create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id())
 
-print("Testing create_vehicle_type")
-print_test(server.create_vehicle_type())
 
 
 
@@ -382,8 +367,6 @@ print("Testing delete_employment_default_accunt_by_id_")
 print_test(server.delete_employment_default_accunt_by_id_())
 
 
-print("Testing delete_employment_period_by_id")
-print_test(server.delete_employment_period_by_id())
 
 print("Testing delete_employment_personal_schedule_by_id")
 print_test(server.delete_employment_personal_schedule_by_id())
@@ -406,21 +389,8 @@ print_test(server.delete_hr_form__by_id())
 
 
 
-print("Testing delete_project_by_id")
-print_test(server.delete_project_by_id())
-
 print("Testing delete_user_account_part_approval_permission_by_id")
 print_test(server.delete_user_account_part_approval_permission_by_id())
-
-print("Testing delete_vehicle_type")
-print_test(server.delete_vehicle_type())
-
-print("Testing field_serializer")
-print_test(server.field_serializer())
-
-print("Testing field_validator")
-print_test(server.field_validator())
-
 
 
 
@@ -429,8 +399,6 @@ print_test(server.field_validator())
 print("Testing import_company")
 print_test(server.import_company())
 
-print("Testing import_company_get_example_data")
-print_test(server.import_company_get_example_data())
 
 print("Testing insert_time_row")
 print_test(server.insert_time_row())
@@ -481,14 +449,7 @@ print("Testing update_employment_default_accunt_by_id_put")
 print_test(server.update_employment_default_accunt_by_id_put())
 
 
-print("Testing update_employment_period_by_employee_id")
-print_test(server.update_employment_period_by_employee_id())
 
-print("Testing update_employment_period_by_id_post")
-print_test(server.update_employment_period_by_id_post())
-
-print("Testing update_employment_period_by_id_put")
-print_test(server.update_employment_period_by_id_put())
 
 print("Testing update_employment_personal_schedule_by_id_post")
 print_test(server.update_employment_personal_schedule_by_id_post())
@@ -542,8 +503,6 @@ print_test(server.update_pension_and_insurance_setting_by_employee_id_post())
 print("Testing update_pension_and_insurance_setting_by_employee_id_put")
 print_test(server.update_pension_and_insurance_setting_by_employee_id_put())
 
-print("Testing update_project_by_id")
-print_test(server.update_project_by_id())
 
 print("Testing update_resignation_cause_by_id_post")
 print_test(server.update_resignation_cause_by_id_post())
@@ -557,17 +516,9 @@ print_test(server.update_salary_statistic_by_employment_period_id_post())
 print("Testing update_salary_statistic_by_employment_period_id_put")
 print_test(server.update_salary_statistic_by_employment_period_id_put())
 
-print("Testing update_stamping_by_employee_id")
-print_test(server.update_stamping_by_employee_id())
-
-print("Testing update_stamping_by_user_id")
-print_test(server.update_stamping_by_user_id())
-
 print("Testing update_user_account_part_approval_permission_by_id")
 print_test(server.update_user_account_part_approval_permission_by_id())
 
 
 
-
-print("Testing update_vehicle_type")
-print_test(server.update_vehicle_type())"""
+"""

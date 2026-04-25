@@ -141,6 +141,74 @@ print_test(server.get_vehicle_types())
 print("Testing get_public_schedules")
 print_test(server.get_public_schedules())
 
+print("Testing update_vehicle_type")
+print_test(server.update_vehicle_type(vehicle_type_id, VehicleTypeRequestModel(
+    company_id=company_id,
+    
+    # Bränsleprisperiod
+    average_fuel_price_from_month=10,
+    average_fuel_price_from_year=2025,
+    average_fuel_price_to_month=12,
+    average_fuel_price_to_year=2025,
+    average_fuel_price=20,  # SEK per liter (rimligt spann)
+    
+    # Fordonstyp
+    name="Privat bil",
+    type=0,  # 0 = Private
+    
+    # Förbrukning
+    consumption_unit_type=0,  # 0 = L/100km
+    
+    # Ersättningar (vanliga svenska nivåer approx)
+    tax_free_allowance_amount=25.0,   # skattefri milersättning (SEK/mil-ish beroende system)
+    taxed_allowance_amount=10.0,      # ev. beskattad del
+    
+    # Inställningar
+    default_private_vehicle=True,
+    use_with_allowances=True,
+    use_with_benefit=False,
+    
+    # Paycodes (dummy UUIDs)
+    
+)))
+
+
+print("Testing delete_vehicle_type")
+print_test(server.delete_vehicle_type(vehicle_type_id))
+print("Testing create_vehicle_type")
+print_test(server.create_vehicle_type(VehicleTypeRequestModel(
+    company_id=company_id,
+    
+    # Bränsleprisperiod
+    average_fuel_price_from_month=1,
+    average_fuel_price_from_year=2025,
+    average_fuel_price_to_month=12,
+    average_fuel_price_to_year=2025,
+    average_fuel_price=18.5,  # SEK per liter (rimligt spann)
+    
+    # Fordonstyp
+    name="Privat bil",
+    type=0,  # 0 = Private
+    
+    # Förbrukning
+    consumption_unit_type=0,  # 0 = L/100km
+    
+    # Ersättningar (vanliga svenska nivåer approx)
+    tax_free_allowance_amount=25.0,   # skattefri milersättning (SEK/mil-ish beroende system)
+    taxed_allowance_amount=10.0,      # ev. beskattad del
+    
+    # Inställningar
+    default_private_vehicle=True,
+    use_with_allowances=True,
+    use_with_benefit=False,
+    
+    # Paycodes (dummy UUIDs)
+    
+)))
+
+
+print("Testing get_vehicle_type_by_id")
+print_test(server.get_vehicle_type_by_id(vehicle_type_id))
 print("Testing get_public_schedule_by_id")
 print_test(server.get_public_schedule_by_id(public_schedule_id))
 
@@ -206,7 +274,193 @@ print(server.create_time_report(alt_employee, datetime(2026, 4, 9, 0, 0, 0),
         )
     ]
 )))
+print("Testing update_project_by_id")
+print_test(server.update_project_by_id(proj_id, ProjectModel(
+    code="PROJ-001",
+    name="Gammalt affärssystem",
+    comment="Internt utvecklingsprojekt",
+    status_enum=0,
+    billing_model_enum=1,
+    billing_state_enum=2,
+    travel_billing_state_enum=0,
+    budgeting_time_unit=2,
+    budgeted_hours=1500.0,
+    budgeted_amount=1200000.0,
+    starting_value_reported_time_hours=100.0,
+    start_date=datetime(2026, 1, 1),
+    end_date=datetime(2026, 12, 31),
+    active_from_date=datetime(2026, 1, 1),
+    active_to_date=datetime(2026, 12, 31),
+    tidkod="ARB",
+    all_employees_are_participants=True,
+    inherit_participants=False,
+    inherit_color=True,
+    inherit_competence=False,
+    external_comment_must_be_stated_about_billable_time=True,
+    participants=None,  # eller lista av Participant
+    inherited_participants=None,
+    project_accounts=None,  # eller lista av ProjectAccount
+    account_locations=None,  # eller lista av AccountLocationModel
+    billing=None,  # eller AccountBillingModel
+    project_time_report_controls=None,  # eller lista av ProjectTimeReportControl
+    work_place=None  # eller WorkplaceModel
+)))
+print("Testing get_project_by_id")
+print_test(server.get_project_by_id(proj_id))
+print("Testing batch_post_project_by_account_distribution_id")
+print(server.batch_post_project_by_account_distribution_id(account_distribution_id=test_dist_id, projects=[ProjectModel(
+    code="PROJ-001",
+    name="Nytt affärssystem",
+    comment="Internt utvecklingsprojekt",
+    status_enum=0,
+    billing_model_enum=1,
+    billing_state_enum=2,
+    travel_billing_state_enum=0,
+    budgeting_time_unit=2,
+    budgeted_hours=1500.0,
+    budgeted_amount=1200000.0,
+    starting_value_reported_time_hours=100.0,
+    start_date=datetime(2026, 1, 1),
+    end_date=datetime(2026, 12, 31),
+    active_from_date=datetime(2026, 1, 1),
+    active_to_date=datetime(2026, 12, 31),
+    tidkod="ARB",
+    all_employees_are_participants=True,
+    inherit_participants=False,
+    inherit_color=True,
+    inherit_competence=False,
+    external_comment_must_be_stated_about_billable_time=True,
+    participants=None,  # eller lista av Participant
+    inherited_participants=None,
+    project_accounts=None,  # eller lista av ProjectAccount
+    account_locations=None,  # eller lista av AccountLocationModel
+    billing=None,  # eller AccountBillingModel
+    project_time_report_controls=None,  # eller lista av ProjectTimeReportControl
+    work_place=None  # eller WorkplaceModel
+)]))
+print("Testing get_employment_periods_by_employee")
+print(server.get_employment_periods_by_employee(employee_id=employee_id))
 
+print("Testing update_employment_period_by_id_post")
+print_test(server.update_employment_period_by_id_post(id="cde1cad9-d99b-4345-98d9-b1c6008861b7", delete_timereports_after_employee_termination_date=False,
+    query=EmploymentPeriodModel(
+    company_id=company_id,
+    employee_id=employee_id,
+
+    # Period
+    from_date=datetime(2024, 1, 1),
+    to_date=datetime(2025, 1, 1),  # pågående anställning
+
+    # Lön & typ
+    salary_type=0,  # Monthly
+    create_payroll_transactions=True,
+
+    # Status
+    has_final_salary=False,
+
+    # Organisation / metadata
+
+    # Avslut (ej satt eftersom aktiv)
+    resignation_cause_id=None,
+
+    # Övrigt
+    travel_rule_set=TravelRuleSetModel(allowanceRuleSetId="c11626d0-0d22-4137-83bf-9e14e2559ba6")  # eller TravelRuleSetModel(...)
+)))
+
+print("Testing update_employment_period_by_id_put")
+print_test(server.update_employment_period_by_id_put(id="cde1cad9-d99b-4345-98d9-b1c6008861b7", delete_timereports_after_employee_termination_date=False, query=EmploymentPeriodModel(
+    company_id=company_id,
+    employee_id=employee_id,
+
+    # Period
+    from_date=datetime(2024, 1, 1),
+    to_date=datetime(2025, 1, 1),  # pågående anställning
+
+    # Lön & typ
+    salary_type=1,  # Monthly
+    create_payroll_transactions=True,
+
+    # Status
+    has_final_salary=False,
+
+    # Organisation / metadata
+
+    # Avslut (ej satt eftersom aktiv)
+    resignation_cause_id=None,
+
+    # Övrigt
+    travel_rule_set=TravelRuleSetModel(allowanceRuleSetId="c11626d0-0d22-4137-83bf-9e14e2559ba6")  # eller TravelRuleSetModel(...)
+)))
+print("Testing delete_employment_period_by_id")
+#print_test(server.delete_employment_period_by_id("cde1cad9-d99b-4345-98d9-b1c6008861b7"))
+
+
+
+print("Testing update_employment_periods_by_employee_id")
+print_test(server.update_employment_periods_by_employee_id(employee_id, delete_timereports_after_employee_termination_date=False, query=[EmploymentPeriodModel(
+    company_id=company_id,
+    employee_id=employee_id,
+
+    # Period
+    from_date=datetime(2024, 1, 1),
+    to_date=datetime(2025, 1, 1),  # pågående anställning
+
+    # Lön & typ
+    salary_type=1,  # Monthly
+    create_payroll_transactions=True,
+
+    # Status
+    has_final_salary=False,
+
+    # Organisation / metadata
+
+    # Avslut (ej satt eftersom aktiv)
+    resignation_cause_id=None,
+
+    # Övrigt
+    travel_rule_set=TravelRuleSetModel(allowanceRuleSetId="c11626d0-0d22-4137-83bf-9e14e2559ba6")  # eller TravelRuleSetModel(...)
+)]))
+print("Testing create_employment_period")
+print_test(server.create_employment_period(query=EmploymentPeriodModel(
+    company_id=company_id,
+    employee_id=employee_id,
+
+    # Period
+    from_date=datetime(2025, 5, 1),
+    to_date=datetime(2025, 10, 1),  # pågående anställning
+
+    # Lön & typ
+    salary_type=0,  # Monthly
+    create_payroll_transactions=True,
+
+    # Status
+    has_final_salary=False,
+
+    # Organisation / metadata
+
+    # Avslut (ej satt eftersom aktiv)
+    resignation_cause_id=None,
+
+    # Övrigt
+    travel_rule_set=TravelRuleSetModel(allowanceRuleSetId="c11626d0-0d22-4137-83bf-9e14e2559ba6")  # eller TravelRuleSetModel(...)
+)))
+print("Testing delete_employment_period_by_id")
+print_test(server.delete_employment_period_by_id("cde1cad9-d99b-4345-98d9-b1c6008861b7"))
+
+print("Testing import_company_get_example_data")
+print_test(server.import_company_get_example_data())
+
+
+print("Testing delete_account_by_id")
+print_test(server.delete_account_by_id("2d852f66-d09b-4be6-b434-b437010c30e6"))
+print("Testing create_new_accounts")
+print(server.create_new_accounts(
+    account_distribution_id=konto_acc_dist_id,
+    query=[AccountModel(
+        billingStateEnum=0, travelBillingStateEnum=0, budgetingTimeUnit=5,
+        externalCommentMustBeStatedAboutBillableTime=False,
+        code="0999", name="Test")])
+)
 print("Testing get_schedule_days_by_employee_id")
 print("Works!")
 #print(server.get_schedule_days_by_employee_id(GetScheduleDaysByEmployee(employee_id=alt_employee, from_date=datetime(2024, 11, 10, 0, 0, 0),
@@ -437,11 +691,13 @@ print_test(server.update_employee_by_id_put(employee_id=employee_id, query=Emplo
     name="Koll Test",
     national_identification_number="19600705-6341"
 )))
-"""
 
 print("Testing get_employment_personal_schedule_by_id")
 print_test(server.get_employment_personal_schedule_by_id(employment_personal_schedule["Id"]))
 
+
+print("Testing delete_project_by_id")
+print_test(server.delete_project_by_id(proj_id))
 print("Testing get_employment_templates_by_company_id")
 print_test(server.get_employment_templates_by_company_id(company_id=company_id))
 print("Testing create_employee")

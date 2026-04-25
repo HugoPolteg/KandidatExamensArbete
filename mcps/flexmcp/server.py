@@ -288,7 +288,7 @@ def get_absence_type_by_id(
 @mcp.tool()
 def create_new_accounts(
     account_distribution_id: UUID = Field(..., description="The id of the account distribution that the accounts is created in."),
-    account_model: AccountModel = Field(description="All relevant information surrounding the account. Account name and code are required")    
+    query: list[AccountModel] = Field(description="All relevant information surrounding the account. Account name and code are required")    
 )->dict:
     """
     Creates new accounts
@@ -297,7 +297,13 @@ def create_new_accounts(
         API response as a JSON dict
     """
     url = f"{consts.API_ENDPOINT}/accountdistributions/{str(account_distribution_id)}/accounts"
-    payload = account_model.model_dump(by_alias=True, exclude_none=True, mode="json")
+    
+    account_models = [
+        BalanceAdjustmentModel(**account_model) if isinstance(account_model, dict) else account_model
+        for account_model in query
+    ]
+
+    payload = [account_model.model_dump(mode="json", by_alias=True, exclude_none=True) for account_model in account_models]
     print(payload)
     try:
         response = s.post(
@@ -2983,7 +2989,7 @@ def update_employment_period_by_id_put(
 @mcp.tool()
 def update_employment_period_by_id_post(
     id: UUID = Field(..., description="UUID of the employment period"),
-    delete_timereports_after_employee_termination_date: Optional[bool] = Field(False,
+    delete_timereports_after_employee_termination_date: bool = Field(False,
         alias="deleteTimereportsAfterEmployeeTerminationDate",
         description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed. Default false"),
     query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
@@ -3039,12 +3045,12 @@ def delete_employment_period_by_id(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def update_employment_period_by_employee_id(
+def update_employment_periods_by_employee_id(
     employee_id: UUID = Field(..., description="UUID of the employee"),
     delete_timereports_after_employee_termination_date: bool = Field(False,
         alias="deleteTimereportsAfterEmployeeTerminationDate",
         description="Remove time reports if the update sets the to date of the employment and no employment exists in the future. No time report will be deleted if the time report is transferred to salary or if the time report is reviewed."),
-    query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
+    query: list[EmploymentPeriodModel] = Field(...,description="Query object: companyId, employeeId and instanceId are requiered") 
     )->dict:
     """"
     Update the employment period for an employee given by employee id
@@ -3052,12 +3058,18 @@ def update_employment_period_by_employee_id(
     Returns: 
         API response as a JSON dict
     """
-    url = f"{consts.API_ENDPOINT}/employmentperiods/{employee_id}"
+    url = f"{consts.API_ENDPOINT}/employees/{employee_id}/employmentperiods"
     params = {
         "deleteTimereportsAfterEmployeeTerminationDate": delete_timereports_after_employee_termination_date
     }
-    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
+    
+    employment_periods = [
+        EmploymentPeriodModel(**employment_period) if isinstance(employment_period, dict) else employment_period
+        for employment_period in query
+    ]
+
+    payload = [employment_period.model_dump(mode="json", by_alias=True, exclude_none=True) for employment_period in employment_periods]
     try:
         response = s.put(
             url,
@@ -3100,7 +3112,7 @@ def get_employment_periods(
 
 @mcp.tool()
 def create_employment_period(
-    template: CreateEmploymentPeriod = Field(None, description="Whether or not to use template"),
+    template: CreateEmploymentPeriod = CreateEmploymentPeriod(),
     query: EmploymentPeriodModel = Field(...,description="Query object: companyId, employeeId and instanceId are required") 
     )->dict:
     """"
@@ -3114,7 +3126,7 @@ def create_employment_period(
     payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
 
     try:
-        response = s.put(
+        response = s.post(
             url,
             params=params,
             json=payload,
@@ -6184,7 +6196,7 @@ def get_reported_hours_on_projects(
     query: GetReportedHoursOnProjects = Field(..., description="Full query object. accountdistributionid, status, fromDate and toDate are required. All other fields are optional")
     )->dict:
     """
-    Get reported hours on projects for a given account distribution id, status and date range. optionally fitltered by additional filter parameters.
+    Get reported hours on projects for a given account distribution id, status and date range. optionally filtered by additional filter parameters.
 
     Returns:
         API response as a JSON dict.
@@ -6257,7 +6269,7 @@ def batch_post_project_by_account_distribution_id(
     payload = [project.model_dump(mode="json", by_alias=True, exclude_none=True) for project in projects]
  
     try:
-        response = s.put(
+        response = s.post(
             url,
             json=payload,
             headers={"Content-Type": "application/json"},
@@ -7447,8 +7459,8 @@ def update_stamping_by_user_id  (
 
 @mcp.tool()
 def update_stamping_by_employee_id(
-    query: UpdateStampingByUserId = Field(..., description="Query object user_id required all other fields optional"),
-    body: StampingAccountModel = Field(..., description="Request body object all fields requiered"),
+    query: UpdateStampingByEmployeeId = Field(..., description="Query object employee_id required all other fields optional"),
+    body: list[StampingAccountModel] = Field(..., description="Request body object all fields requiered"),
     )-> dict:
     """
     Stamps in or out for an employee by their ID
@@ -7459,7 +7471,13 @@ def update_stamping_by_employee_id(
     """
     url = f"{consts.API_ENDPOINT}/employees/{query.employee_id}/inOut"
     params = query.model_dump(by_alias=True, exclude_none = True, mode="json", exclude={"employee_id"})
-    payload = body.model_dump(by_alias=True, exclude_none=True, mode="json")
+    account_models = [
+        BalanceAdjustmentModel(**account_model) if isinstance(account_model, dict) else account_model
+        for account_model in body
+    ]
+
+    payload = [account_model.model_dump(mode="json", by_alias=True, exclude_none=True) for account_model in account_models]
+    print(payload)
     try:
         response = s.post(
             url, 

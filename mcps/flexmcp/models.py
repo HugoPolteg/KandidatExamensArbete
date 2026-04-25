@@ -665,19 +665,19 @@ class EmploymentPeriodModel(BaseModel):
     from_date: Optional[datetime] = Field(None, alias="fromDate", description="Start date of the employment period. Nullable.")
     has_final_salary: Optional[bool] = Field(None, alias="hasFinalSalary", description="Whether the employment period has a final salary.")
     id: Optional[UUID] = Field(None, description="UUID of the employment period record.")
-    instance_id: UUID = Field(..., alias="instanceId", description="UUID of the instance.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance.")
     payment_group_id: Optional[UUID] = Field(None, alias="paymentGroupId", description="UUID of the payment group. Nullable.")
     resignation_cause_id: Optional[UUID] = Field(None, alias="resignationCauseId", description="UUID of the resignation cause. Nullable.")
     salary_type: Optional[int] = Field(None, alias="salaryType", description="Salary type. 0 = Monthly, 1 = Hourly, 2 = Yearly.")
     staff_category_id: Optional[UUID] = Field(None, alias="staffCategoryId", description="UUID of the staff category. Nullable.")
     title_id: Optional[UUID] = Field(None, alias="titleId", description="UUID of the employee's title. Nullable.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the employment period. Nullable.")
-    travel_rule_set: Optional[TravelRuleSetModel] = Field(None, alias="travelRuleSet", description="Travel rule set settings for this employment period.")
+    travel_rule_set: TravelRuleSetModel = Field(..., alias="travelRuleSet", description="Travel rule set settings for this employment period.")
     model_config = {"populate_by_name": True}
 
 class CreateEmploymentPeriod(BaseModel):
-    employementtemplate_id: UUID = Field(None,alias="employementtemplateId",description="Create employment period with use of employment template. If left empty then no template will be used.")
-    prioritize_employment_template: bool = Field(False,alias="prioritizeEmploymenttemplate",description="Default false. Determines whether values from template or model will be prioritized. False - will ensure all values from model overrite template values.")
+    employementtemplate_id: Optional[UUID] = Field(None,alias="employementtemplateId",description="Create employment period with use of employment template. If left empty then no template will be used.")
+    prioritize_employment_template: Optional[bool] = Field(False,alias="prioritizeEmploymenttemplate",description="Default false. Determines whether values from template or model will be prioritized. False - will ensure all values from model overrite template values.")
     model_config = {"populate_by_name": True}
 
 class EmploymentPersonalScheduleModel(BaseModel):
@@ -1169,7 +1169,7 @@ class GetReportedHoursOnProjects(BaseModel):
     account_distribution_id: UUID = Field(..., alias="accountDistributionId", description="Reported hours will be fetched for projects under selected AccountDistribution")
     status: int = Field(..., description="Will report hours of projects with selected Projectstatus. 0 = Ongoing, 1 = Frozen, 2 = Ended")
     from_date: datetime = Field(None, alias="fromDate", description="Filter for reported hours from this date (inclusive).")
-    to_date: datetime = Field(None, alias="toDate", description="Filter for reported hours to this date (inclusive).")
+    to_date: datetime = Field(None, alias="tomDate", description="Filter for reported hours to this date (inclusive).")
     project_id: Optional[UUID] = Field(None, alias="projectId", description="Filter for reported hours on a specific project. Nullable. If not set, all projects will be calculated")
     include_employments: Optional[bool] = Field(False, alias="includeEmployments", description="If set to true then summary will include ReportedProjectEmployments. Default value is false.")
     include_allowances: Optional[bool] = Field(False, alias="includeAllowances", description="If set to true then summary will include allowances (of type timecode). Will increase response time considerably. Default value is false.")
@@ -1369,11 +1369,10 @@ class StampingAccountModel(BaseModel):
     model_config = {"populate_by_name": True}
     model_config = {"populate_by_name": True}
 
-class UpdateStampingByUserId(BaseModel):
-    employee_id: UUID = Field(..., alias="userId", description="Employee ID (UUID).")
+class UpdateStampingByEmployeeId(BaseModel):
+    employee_id: UUID = Field(..., alias="employeeId", description="Employee ID (UUID).")
     internal_comment: Optional[str] = Field(None, max_length=2000, description="Internal comment for the stamping. Nullable.")
     date_time: Optional[datetime] = Field(None, description="Date and time of the stamping in ISO format.")
-    model_config = {"populate_by_name": True}
     model_config = {"populate_by_name": True}
 
 class GetStampingByUserId(BaseModel):

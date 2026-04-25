@@ -58,6 +58,9 @@ print_test(server.get_invoicing_basis_by_billing_release_id(billing_release_id))
 
 
 
+print("Testing get_reported_hours_on_projects")
+print_test(server.get_reported_hours_on_projects(GetReportedHoursOnProjects(accountDistributionId=test_dist_id, status=2, fromDate=datetime(2024, 1, 1), tomDate=datetime(2026, 1, 1))))
+
 
 print("Testing get_payroll_run_transactions")
 print_test(server.get_payroll_run_transactions())
