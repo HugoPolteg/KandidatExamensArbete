@@ -57,3 +57,10 @@ print("Testing get_invocing_basis_by_billing_release_id")
 print_test(server.get_invoicing_basis_by_billing_release_id(billing_release_id))
 
 
+
+
+print("Testing get_payroll_run_transactions")
+print_test(server.get_payroll_run_transactions())
+
+print("Testing get_payroll_runs")
+print_test(server.get_payroll_runs())

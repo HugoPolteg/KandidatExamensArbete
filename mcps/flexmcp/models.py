@@ -476,7 +476,7 @@ class EmploymentModel(BaseModel):
     employment_adjustments_percent: Optional[float] = Field(None, alias="employmentAdjustmentsPercent", description="Employment salary adjustment percentage. Nullable.")
     employment_adjustments_to_amount: Optional[float] = Field(None, alias="employmentAdjustmentsToAmount", description="Target amount for employment salary adjustments. Nullable.")
     employment_adjustments_to_date: Optional[datetime] = Field(None, alias="employmentAdjustmentsToDate", description="End date for employment salary adjustments. Nullable.")
-    employment_number: Optional[str] = Field(None, alias="employmentNumber", description="Employment number. Nullable.")
+    employment_number: str = Field(..., alias="employmentNumber", description="Employment number. Mandatory.")
     employment_number_in_salary_system: Optional[str] = Field(None, alias="employmentNumberInSalarySystem", description="Employment number as registered in the salary system. Nullable.")
     fixed_balance_adjustment_value: Optional[float] = Field(None, alias="fixedBalanceAdjustmentValue", description="Fixed balance adjustment value. Nullable.")
     has_mobile_license: Optional[bool] = Field(None, alias="hasMobileLicense", description="Whether the employee has a mobile license.")
@@ -500,22 +500,17 @@ class EmployeeModel(BaseModel):
     address_row1: Optional[str] = Field(None, alias="addressRow1", description="First row of the employee's address. Nullable.")
     address_row2: Optional[str] = Field(None, alias="addressRow2", description="Second row of the employee's address. Nullable.")
     city: Optional[str] = Field(None, description="City of the employee's address. Nullable.")
-    company_id: Optional[UUID] = Field(None, alias="companyId", description="UUID of the company the employee belongs to.")
     country: Optional[str] = Field(None, description="Country of the employee's address. Nullable.")
     date_of_birth: Optional[datetime] = Field(None, alias="dateOfBirth", description="Employee's date of birth. Nullable.")
     email_private: Optional[str] = Field(None, alias="emailPrivate", description="Employee's private email address. Nullable.")
     email_work: Optional[str] = Field(None, alias="emailWork", description="Employee's work email address. Nullable.")
-    employment: Optional[list[EmploymentModel]] = Field(None, description="List of employment records for the employee. Nullable.")
-    first_name: Optional[str] = Field(None, alias="firstName", description="Employee's first name. Nullable.")
     gender: Optional[int] = Field(None, description="Employee's gender. 0 = Unknown, 1 = Man, 2 = Woman.")
     id: Optional[UUID] = Field(None, description="UUID of the employee record.")
     immediate_manager_employee_id: Optional[UUID] = Field(None, alias="immediateManagerEmployeeId", description="UUID of the employee's immediate manager. Nullable.")
-    instance_id: Optional[UUID] = Field(None, alias="instanceId", description="UUID of the instance this employee belongs to.")
+    instance_id: Optional[UUID] = Field(INSTANCE, alias="instanceId", description="UUID of the instance this employee belongs to.")
     is_in_audit_process: Optional[bool] = Field(None, alias="isInAuditProcess", description="Whether the employee is currently in an audit process.")
-    last_name: Optional[str] = Field(None, alias="lastName", description="Employee's last name. Nullable.")
     mailing_email_private: Optional[bool] = Field(None, alias="mailingEmailPrivate", description="Whether to use private email for mailing. Nullable.")
     mailing_email_work: Optional[bool] = Field(None, alias="mailingEmailWork", description="Whether to use work email for mailing. Nullable.")
-    name: Optional[str] = Field(None, description="Employee's full name. Nullable.")
     national_identification_number: Optional[str] = Field(None, alias="nationalIdentificationNumber", description="Employee's national identification number. Nullable.")
     nationality: Optional[str] = Field(None, description="Employee's nationality. Nullable.")
     phone1: Optional[str] = Field(None, description="Employee's primary phone number. Nullable.")
@@ -525,7 +520,22 @@ class EmployeeModel(BaseModel):
     postal_code: Optional[str] = Field(None, alias="postalCode", description="Postal code of the employee's address. Nullable.")
     salary_revision_year: Optional[int] = Field(None, alias="salaryRevisionYear", description="Year of the employee's last salary revision. Nullable.")
     union_id: Optional[UUID] = Field(None, alias="unionId", description="UUID of the union the employee belongs to. Nullable.")
+    employment: EmploymentModel = Field(..., description="List of employment info. Should only contain one employmentmodel.")
+    company_id: UUID = Field(..., alias="companyId", description="UUID of the company the employee belongs to. Mandatory")
+    name: str = Field(..., description="Employee's full name. Mandatory")
+    first_name: str = Field(..., alias="firstName", description="Employee's first name. Mandatory.")
+    last_name: str = Field(..., alias="lastName", description="Employee's last name. Mandatory.")
+    email_visma_connect: Optional[str] = Field(None, alias="emailVismaConnect", description="Employee's Visma Connect email address used for system authentication. Nullable.")
+    @field_serializer("date_of_birth")
+    def serialize_datetime(self, value: datetime):
+        return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
     model_config = {"populate_by_name": True}
+    @field_validator("employment", mode="after")
+    @classmethod
+    def ensure_list(cls, v):
+        if isinstance(v, EmploymentModel):
+            return [v]
+        return v
 
 class GetEmployees(BaseModel):
     instance: Optional[str] = Field(DOMAIN, description="Domain name.")
@@ -551,9 +561,6 @@ class EmployeeCreateParams(BaseModel):
             return value
         return value.strftime("%Y-%m-%d")
 
-class EmployeeCreateModel(EmployeeModel):
-    email_visma_connect: Optional[str] = Field(None, alias="emailVismaConnect", description="Employee's Visma Connect email address used for system authentication. Nullable.")
-    model_config = {"populate_by_name": True}
 
 class EmployeeImageModel(BaseModel):
     company_id: UUID = Field(..., alias="companyId", description="UUID of the company the employee belongs to.")
@@ -629,6 +636,9 @@ class EmptyScheduleModel(BaseModel):
     id: Optional[UUID] = Field(None, description="UUID of the empty schedule record.")
     time_group_id: UUID = Field(..., alias="timeGroupId", description="UUID of the time group associated with the empty schedule.")
     to_date: Optional[datetime] = Field(None, alias="toDate", description="End date of the empty schedule period. Nullable.")
+    @field_serializer("from_date", "to_date")
+    def serialize_datetime(self, value: datetime):
+        return value.replace(tzinfo=None).isoformat(timespec="milliseconds") + "Z"
     model_config = {"populate_by_name": True}
 
 class GetEmploymentEmptySchedules(BaseModel):
@@ -1212,11 +1222,11 @@ class ResignationCauseModel(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetResignationCauses(BaseModel):
-    company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
+    company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
 
-class UpdateRoleCollecitonOfUserForCompany(BaseModel):
+class UpdateRoleCollectionOfUserForCompany(BaseModel):
     user_id: UUID = Field(..., alias="userId", description="User ID (UUID).")
     company_id: UUID = Field(..., alias="companyId", description="Company ID (UUID).")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
@@ -1265,7 +1275,7 @@ class GetAllRolesOfAccount(BaseModel):
     model_config = {"populate_by_name": True}
 
 class GetRoles(BaseModel):
-    instance: Optional[str] = Field(INSTANCE, description="Domain name.")
+    instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     name: Optional[str] = Field(None, description="Name of the role to filter by.")
     page_params: Optional[PageModel] = Field(PageModel(), description="Page parameters")
     model_config = {"populate_by_name": True}
@@ -1593,7 +1603,7 @@ class UserModel(BaseModel):
     extern_ref: Optional[str] = Field(None, alias="externRef", description="External reference for the user. Nullable.")
     id: Optional[UUID] = Field(None, description="UUID of the user record.")
     is_dagredovisare: Optional[bool] = Field(None, alias="isDagredovisare", description="Whether the user is a day reporter.")
-    kundinstans_id: UUID = Field(..., alias="kundinstansId", description="UUID of the customer instance this user belongs to.")
+    kundinstans_id: Optional[UUID] = Field(INSTANCE, alias="kundinstansId", description="UUID of the customer instance this user belongs to.")
     language: Optional[str] = Field(None, description="Language preference of the user. Nullable.")
     last_logon: Optional[datetime] = Field(None, alias="lastLogon", description="Date and time of the user's last login. Nullable.")
     require_enforced_two_step_verification: Optional[bool] = Field(None, alias="requireEnforcedTwoStepVerification", description="Whether two-step verification is enforced for this user. Nullable.")

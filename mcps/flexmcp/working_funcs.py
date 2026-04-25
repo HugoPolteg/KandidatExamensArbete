@@ -78,8 +78,6 @@ print_test(server.get_account_distribution_by_company_id(company_id=company_id))
 print("Testing get_salary_by_id")
 print_test(server.get_salary_by_id(salary_id))
 
-print("Testing get_employee_by_id")
-print_test(server.get_employee_by_id("640ca4b1-bf59-4740-9fc6-b1c6008861a0"))
 
 prev_salary = server.get_salary_by_id(salary_id)['FullTimeSalary']
 print(prev_salary)
@@ -101,10 +99,50 @@ print_test(server.batch_update_salaries_by_employee_id(employee_id, [SalaryModel
 print("Testing get_companies")
 print_test(server.get_companies())
 
+print("Testing get_role_by_id")
+print_test(server.get_role_by_id(role_id))
+
+
+print("Testing create_user")
+print_test(server.create_user(
+    UserModel(
+        terminated_employment_number_of_days_to_inactivate_user=30,
+        username="test2"
+    )
+))
+
+
+print("Testing get_personal_schedules")
+print_test(server.get_personal_schedules())
+print("Testing get_personal_schedule_by_id")
+print_test(server.get_personal_schedule_by_id(personal_schedule_id))
+
+print("Testing update_user_by_id_post")
+print_test(server.update_user_by_id_post(user_id=test_user_id, body=UserModel(
+        terminated_employment_number_of_days_to_inactivate_user=30,
+        username="bot2"
+    )))
+
+print("Testing update_user_by_id_put")
+print_test(server.update_user_by_id_put(user_id=test_user_id, body=UserModel(
+        terminated_employment_number_of_days_to_inactivate_user=30,
+        username="bot3"
+    )))
+print("Testing recover_password_on_user_by_user_id")
+print_test(server.recover_password_on_user_by_user_id(test_user_id))
+print("Testing get_roles_by_user")
+print_test(server.get_roles_by_user(GetRolesByUser(userId=alt_user_id)))
+print("Testing get_roles")
+print_test(server.get_roles())
 print("Testing get_users")
 print_test(server.get_users())
 print("Testing get_vehicle_types")
 print_test(server.get_vehicle_types())
+print("Testing get_public_schedules")
+print_test(server.get_public_schedules())
+
+print("Testing get_public_schedule_by_id")
+print_test(server.get_public_schedule_by_id(public_schedule_id))
 
 print("Testing get_company_by_id")
 print_test(server.get_company_by_id(company_id))
@@ -112,7 +150,32 @@ print_test(server.get_company_by_id(company_id))
 print("Testing get_all_salaries")
 print_test(server.get_salaries())
 
+print("Testing get_time_group_by_id")
+print_test(server.get_time_group_by_id(time_group_id))
 
+print("Testing get_time_groups")
+print_test(server.get_time_groups())
+
+print("Testing get_user_by_id")
+print_test(server.get_user_by_id(user_id))
+
+print("Testing get_users_by_company")
+print_test(server.get_users_by_company(company_id))
+
+print("Testing get_user_by_employee_id")
+print_test(server.get_user_by_employee_id(employee_id))
+
+print("Testing get_resignation_cause_by_id")
+print_test(server.get_resignation_cause_by_id(resignation_cause_id))
+
+print("Testing get_resignation_causes")
+print_test(server.get_resignation_causes(GetResignationCauses(companyId=company_id)))
+
+print("Testing get_staff_categories")
+print_test(server.get_staff_categories())
+
+print("Testing get_staff_category_by_id")
+print_test(server.get_staff_category_by_id(staff_category_id))
 print("Testing create_salary")
 id = print_test(server.create_salary(SalaryModel(
     employeeId=employee_id, companyId=company_id,
@@ -342,10 +405,56 @@ print_test(server.create_account_budget_for_account_id(account_id=proj_id, query
 print("Testing create_company")
 print_test(server.create_company(company_id_to_copy_from=company_id, copy_settings=0, query=CompanyPostRequestModel(companyNumber=8080, countryCode="SWE", currencyCode="SEK", name="Test AB")))
 
+print("Testing update_company_by_id_post")
+print_test(server.update_company_by_id_post("649fe8d1-139c-421e-8ac5-b9fb498beb0d", CompanyPostRequestModel(companyNumber=8090, countryCode="SWE", currencyCode="SEK", name="Test AB3")))
+
+print("Testing update_company_by_id_put")
+print_test(server.update_company_by_id_put("649fe8d1-139c-421e-8ac5-b9fb498beb0d", CompanyModel(companyNumber=8090, countryCode="SWE", currencyCode="SEK", name="Test AB4")))
+
+print("Testing get_employee_by_id")
+print(server.get_employee_by_id(employee_id))
+
+print("Testing update_employee_by_id_post")
+print_test(server.update_employee_by_id_post(employee_id=employee_id, query=EmployeeModel(
+    companyId=company_id,
+    nationality="SE - Sverige",
+    date_of_birth=datetime(1960, 7, 5),
+    employment=EmploymentModel(employmentNumber="404"),
+    firstName="Koll",
+    lastName="Test",
+    name="Koll Test",
+    national_identification_number="19600705-6341"
+)))
+
+print("Testing update_employee_by_id_put")
+print_test(server.update_employee_by_id_put(employee_id=employee_id, query=EmployeeModel(
+    companyId=company_id,
+    nationality="SE - Sverige",
+    date_of_birth=datetime(1960, 7, 5),
+    employment=EmploymentModel(employmentNumber="404"),
+    firstName="Koll",
+    lastName="Test",
+    name="Koll Test",
+    national_identification_number="19600705-6341"
+)))
+"""
+
+print("Testing get_employment_personal_schedule_by_id")
+print_test(server.get_employment_personal_schedule_by_id(employment_personal_schedule["Id"]))
 
 print("Testing get_employment_templates_by_company_id")
 print_test(server.get_employment_templates_by_company_id(company_id=company_id))
-
+print("Testing create_employee")
+print(server.create_employee(EmployeeCreateParams(employmenttemplateId="a725a788-6d67-4a75-b3e9-b0e700fa3882"), EmployeeModel(
+    company_id=company_id,
+    #nationality="SE - Sverige",
+    #date_of_birth=datetime(1960, 7, 5),
+    employment=[EmploymentModel(employmentNumber="1")],
+    first_name="Test",
+    lastName="Testsson",
+    name="Test Testsson",
+    #national_identification_number="19600705-6341"
+)))
 
 print("Testing get_employee_images")
 print_test(server.get_employee_images())
@@ -515,9 +624,21 @@ print("Testing get_employment_empty_schedule_by_id")
 print_test(server.get_employment_empty_schedule_by_id(empty_schedule_id))
 
 
+print("Testing delete_employment_empty_schedule_by_id")
+print_test(server.delete_employment_empty_schedule_by_id(empty_schedule_id))
+
+print("Testing get_project_by_account_distribution_id")
+print_test(server.get_project_by_account_distribution_id())
+
+print("Testing create_employment_empty_schedule")
+print(server.create_employment_empty_schedule(query=EmptyScheduleModel(companyId=company_id, employeeId=employee_id, timeGroupId=empty_schedule_time_group_id, 
+    fromDate=datetime(2026, 1, 1, 0, 0, 0), toDate=datetime(2026, 1, 2, 0, 0, 0))))
 print("Testing get_overtime_by_employee_id")
 print_test(server.get_overtime_by_employee_id(employee_id))
 
+print("Testing update_employment_empty_schedule_by_id")
+print_test(server.update_employment_empty_schedule_by_id(id=empty_schedule_id, query=EmptyScheduleModel(companyId=company_id, employeeId=employee_id, timeGroupId=empty_schedule_time_group_id, 
+    fromDate=datetime(2026, 1, 2, 0, 0, 0), toDate=datetime(2026, 1, 3, 0, 0, 0))))
 
 print("Testing get_overtime_by_user_id")
 print_test(server.get_overtime_by_user_id(user_id))
@@ -538,6 +659,14 @@ print_test(server.get_own_assessment_field_values())
 print("Testing create_next_of_kin")
 print_test(server.create_next_of_kin(NextOfKinModel(companyId=company_id, employeeId=employee_id, relation="Father")))
 
+print("Testing update_next_of_kin_by_id_post")
+print_test(server.update_next_of_kin_by_id_post(kin_id, NextOfKinModel(companyId=company_id, employeeId=employee_id, relation="Father")))
+
+print("Testing update_next_of_kin_by_id_put")
+print_test(server.update_next_of_kin_by_id_put(kin_id, NextOfKinModel(companyId=company_id, employeeId=employee_id, relation="Mother")))
+
+print("Testing delete_next_of_kin_by_id")
+print_test(server.delete_next_of_kin_by_id(kin_id))
 
 print("Testing get_own_text_fields")
 print_test(server.get_own_text_fields())
@@ -572,6 +701,11 @@ print_test(server.delete_own_numerical_field_value_by_id(own_numerical_field_val
 print("Testing delete_own_text_field_value_by_id")
 print_test(server.delete_own_text_field_value_by_id(own_text_field_value_id))
 
+print("Testing get_payment_groups")
+print_test(server.get_payment_groups())
+
+print("Testing get_payment_group_by_id")
+print_test(server.get_payment_group_by_id(payment_group_id))
 
 print("Testing get_paycode_by_id")
 print_test(server.get_paycode_by_id(paycode_id))
@@ -586,6 +720,8 @@ print_test(server.create_own_text_field_value(OwnTextFieldValueModel(companyId=c
 print("Testing get_own_text_field_values")
 print_test(server.get_own_text_field_values())
 
+print("Testing get_permissions_to_companies_by_user_id")
+print_test(server.get_permissions_to_companies_by_user_id(alt_user_id))
 
 print("Testing get_own_numerical_field_values")
 print_test(server.get_own_numerical_field_values())

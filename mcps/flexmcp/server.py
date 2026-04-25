@@ -53,7 +53,7 @@ def get_all_employees() -> dict:
         response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
     return response.json()
 
 
@@ -1968,7 +1968,7 @@ def get_employee_by_id(
         response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
 
     return response.json()
 
@@ -2002,7 +2002,7 @@ def update_employee_by_id_put(
 @mcp.tool()
 def update_employee_by_id_post(
     employee_id: UUID = Field(..., description="Employee ID"),
-    query: EmployeeModel = Field(...,description="Full query object all fields optional")
+    query: EmployeeModel = Field(...,description="Full query object, all fields optional")
     )->dict:
     """
     Update employee by employee id (put)
@@ -2012,7 +2012,7 @@ def update_employee_by_id_post(
     """
     url = f"{consts.API_ENDPOINT}/employees/{employee_id}"
     payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
-
+    print(payload)
     try:
         response = s.post(
             url,
@@ -2055,8 +2055,8 @@ def get_employees(
 
 @mcp.tool()
 def create_employee(
-    parameters: EmployeeCreateParams = Field(...,description="Params object all fields optional"),
-    query: EmployeeCreateModel = EmployeeCreateModel()
+    parameters: EmployeeCreateParams = EmployeeCreateParams(),
+    query: EmployeeModel = Field(..., description="Employee model. company_id, employment, first_name, last_name and name are mandatory.")
     )->dict:
     """
     Create a new employee
@@ -2729,7 +2729,7 @@ def create_employment_document(
             )
         response.raise_for_status()
     except FileNotFoundError:
-        raise RuntimeError(f"File not found: {file_path}")
+        return f"File not found: {file_path}"
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
@@ -2790,9 +2790,7 @@ def get_employment_empty_schedule_by_id(
 @mcp.tool()
 def update_employment_empty_schedule_by_id(
     id: UUID = Field(..., description="UUID of the employment empty schedule"),
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
-        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
-        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: str = "false",
     query: EmptyScheduleModel = Field(...,description="Query object: companyId, employeeId and timeGroupId are requiered") 
     )->dict:
     """
@@ -2873,9 +2871,7 @@ def get_employment_empty_schedules(
 
 @mcp.tool()
 def create_employment_empty_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
-        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
-        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: str = "false",
     query: EmptyScheduleModel = Field(...,description="Query object: companyId, employeeId and timeGroupId are requiered") 
     )->dict:
     """
@@ -2889,9 +2885,9 @@ def create_employment_empty_schedule(
         "allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays": allow_change_if_schedule_is_used_on_reviewed_or_transferred_days
     }
     payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
-
+    print(payload)
     try:
-        response = s.put(
+        response = s.post(
             url,
             params=params,
             json=payload,
@@ -3150,7 +3146,10 @@ def get_employment_personal_schedule_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_personal_schedule_by_id_put(
@@ -3173,7 +3172,10 @@ def update_employment_personal_schedule_by_id_put(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_personal_schedule_by_id_post(
@@ -3196,7 +3198,10 @@ def update_employment_personal_schedule_by_id_post(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 
 @mcp.tool()
@@ -3218,7 +3223,10 @@ def delete_employment_personal_schedule_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_personal_schedules(
@@ -3241,13 +3249,14 @@ def get_employment_personal_schedules(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def create_employment_personal_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
-        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
-        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: str = "false",
     query: EmploymentPersonalScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId personalScheduleId and timeGroupId are requiered"),
     )->dict:
     """"
@@ -3271,7 +3280,10 @@ def create_employment_personal_schedule(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_public_schedule_by_id(
@@ -3291,7 +3303,10 @@ def get_employment_public_schedule_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_public_schedule_by_id_put(
@@ -3314,7 +3329,10 @@ def update_employment_public_schedule_by_id_put(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_public_schedule_by_id_post(
@@ -3337,7 +3355,10 @@ def update_employment_public_schedule_by_id_post(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def delete_employment_public_schedule_by_id(
@@ -3357,7 +3378,10 @@ def delete_employment_public_schedule_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_public_schedules(
@@ -3380,13 +3404,14 @@ def get_employment_public_schedules(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def create_employment_public_schedule(
-    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: Optional[bool] = Field(False,
-        alias="allowChangeIfScheduleIsUsedOnReviewedOrTransferredDays",
-        description="Whether or not to allow change if schedule is used on reviewed or transferred days. Default False"),
+    allow_change_if_schedule_is_used_on_reviewed_or_transferred_days: str = "false",
     query: EmploymentPublicScheduleModel = Field(..., description="Query Object, companyId, employeeId, instanceId publicScheduleId and timeGroupId are requiered"),
     )->dict:
     """"
@@ -3410,7 +3435,10 @@ def create_employment_public_schedule(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_rate_by_id(
@@ -3431,7 +3459,10 @@ def get_employment_rate_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_rate_by_id_put(
@@ -3454,7 +3485,10 @@ def update_employment_rate_by_id_put(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_rate_by_id_post(
@@ -3477,7 +3511,10 @@ def update_employment_rate_by_id_post(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def delete_employment_rate_by_id(
@@ -3498,7 +3535,10 @@ def delete_employment_rate_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def batch_update_employment_rate_by_employee_id(
@@ -3528,7 +3568,10 @@ def batch_update_employment_rate_by_employee_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_rates(
@@ -3551,7 +3594,10 @@ def get_employment_rates(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def create_employment_rate(
@@ -3573,7 +3619,10 @@ def create_employment_rate(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_templates_by_company_id(
@@ -3596,7 +3645,10 @@ def get_employment_templates_by_company_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_title_by_id(
@@ -3617,7 +3669,10 @@ def get_employment_title_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_title_by_id_put(
@@ -3640,7 +3695,10 @@ def update_employment_title_by_id_put(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_title_by_id_post(
@@ -3663,7 +3721,10 @@ def update_employment_title_by_id_post(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def delete_employment_title_by_id(
@@ -3684,7 +3745,10 @@ def delete_employment_title_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_titles(
@@ -3707,7 +3771,10 @@ def get_employment_titles(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def create_employment_title(
@@ -3729,7 +3796,10 @@ def create_employment_title(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_type_by_id(
@@ -3750,7 +3820,10 @@ def get_employment_type_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 
 @mcp.tool()
@@ -3774,7 +3847,10 @@ def get_employment_types(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_vacation_by_id(
@@ -3795,7 +3871,10 @@ def get_employment_vacation_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_vaction_by_id_put(
@@ -3818,7 +3897,10 @@ def update_employment_vaction_by_id_put(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_vaction_by_id_post(
@@ -3841,7 +3923,10 @@ def update_employment_vaction_by_id_post(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_vacations(   
@@ -3917,7 +4002,10 @@ def get_employment_vehicle_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_employment_vehicle_by_id(
@@ -3940,7 +4028,10 @@ def update_employment_vehicle_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def delete_employment_vehicle_by_id(
@@ -3961,7 +4052,10 @@ def delete_employment_vehicle_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employment_vehicles(   
@@ -4011,7 +4105,10 @@ def create_employment_vehicle(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_company_information(
@@ -4065,7 +4162,10 @@ def get_hr_form_document_template_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def delete_hr_form__by_id(
@@ -4086,7 +4186,10 @@ def delete_hr_form__by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_hr_form_by_id(
@@ -4113,7 +4216,7 @@ def update_hr_form_by_id(
         file = open(file_path, "rb")
         multipart_data["file"] = (file_path, file, "application/octet-stream")
     except FileNotFoundError:
-        raise RuntimeError(f"File not found: {file_path}")
+        return f"File not found: {file_path}"
 
     try:
         response = s.put(
@@ -4123,7 +4226,7 @@ def update_hr_form_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
     try:
         file.close()
     except:
@@ -4149,7 +4252,10 @@ def get_hr_form_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def create_hr_form(
@@ -4175,7 +4281,7 @@ def create_hr_form(
         file = open(file_path, "rb")
         multipart_data["file"] = (file_path, file, "application/octet-stream")
     except FileNotFoundError:
-        raise RuntimeError(f"File not found: {file_path}")
+        return f"File not found: {file_path}"
 
     try:
         response = s.post(
@@ -4185,7 +4291,7 @@ def create_hr_form(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
     try:
         file.close()
     except:
@@ -4297,7 +4403,10 @@ def get_imported_trip_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_imported_trips_by_employee_id(
@@ -4319,7 +4428,10 @@ def get_imported_trips_by_employee_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def create_imported_trip(
@@ -4341,7 +4453,10 @@ def create_imported_trip(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def batch_create_imported_trip(
@@ -4370,7 +4485,10 @@ def batch_create_imported_trip(
         )
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_invoicing_basis_by_billing_release_id(
@@ -4394,7 +4512,10 @@ def get_invoicing_basis_by_billing_release_id(
         )
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_next_of_kin_by_id(
@@ -4415,7 +4536,10 @@ def get_next_of_kin_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_next_of_kin_by_id_put(
@@ -4492,7 +4616,10 @@ def delete_next_of_kin_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_next_of_kins(
@@ -4567,7 +4694,10 @@ def get_next_of_kin_relationship_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_next_of_kin_relationships(
@@ -4590,7 +4720,10 @@ def get_next_of_kin_relationships(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_organizational_chart_node_by_id(
@@ -4614,7 +4747,10 @@ def get_organizational_chart_node_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_organizational_chart_accountings_by_company_id(
@@ -4638,7 +4774,10 @@ def get_organizational_chart_accountings_by_company_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_organizational_chart_employee_data_by_company_id(
@@ -4662,7 +4801,10 @@ def get_organizational_chart_employee_data_by_company_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employeee_data_by_organizational_chart_node_id(
@@ -4686,7 +4828,10 @@ def get_employeee_data_by_organizational_chart_node_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
     
 @mcp.tool()
 def get_overtime_by_user_id(
@@ -4716,7 +4861,10 @@ def get_overtime_by_user_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_overtime_by_employee_id(
@@ -4746,7 +4894,10 @@ def get_overtime_by_employee_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_own_assessment_fields(
@@ -4771,7 +4922,8 @@ def get_own_assessment_fields(
         return f"API request failed: {e}\n{response.text}"
     if response.headers.get("Content-Type", "").startswith("application/json"):
         return response.json()
-    
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 @mcp.tool()
 def get_own_assessment_field_value_by_id(
     id: UUID = Field(..., description="UUID of the own assessment field value"),
@@ -5847,7 +5999,7 @@ def get_pension_and_insurance_settings(
         return response.json()
     
 @mcp.tool()
-def get_permissions_to_commpanies_by_user_id(
+def get_permissions_to_companies_by_user_id(
     user_id: UUID = Field(..., alias="userId", description="UUID of the user")
     )-> dict:
     """
@@ -5887,7 +6039,10 @@ def get_personal_schedule_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_personal_schedules(
@@ -5910,7 +6065,10 @@ def get_personal_schedules(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_employee_presence_by_company(
@@ -5933,7 +6091,10 @@ def get_employee_presence_by_company(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_project_by_id(
@@ -5952,7 +6113,10 @@ def get_project_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_project_by_id(
@@ -5987,8 +6151,11 @@ def update_project_by_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for project {project_id}: {e}")
-    return response.json() if response.content else {"status": "ok"}
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}" if response.content else {"status": "ok"}
 
 @mcp.tool()
 def delete_project_by_id(
@@ -6007,7 +6174,10 @@ def delete_project_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_reported_hours_on_projects(
@@ -6030,7 +6200,10 @@ def get_reported_hours_on_projects(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_project_by_account_distribution_id(
@@ -6049,7 +6222,10 @@ def get_project_by_account_distribution_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def batch_post_project_by_account_distribution_id(
@@ -6089,8 +6265,11 @@ def batch_post_project_by_account_distribution_id(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed {e}\n{response.text}")
-    return response.json() if response.content else {"status": "ok"}
+        return f"API request failed: {e}\n{response.text}"
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}" if response.content else {"status": "ok"}
 
 @mcp.tool()
 def get_projects(
@@ -6116,7 +6295,10 @@ def get_projects(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_public_schedule_by_id(
@@ -6137,7 +6319,10 @@ def get_public_schedule_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_public_schedules(
@@ -6160,7 +6345,10 @@ def get_public_schedules(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_public_travel_claims(
@@ -6319,7 +6507,10 @@ def get_reminders_by_user_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_resignation_cause_by_id(
@@ -6340,7 +6531,10 @@ def get_resignation_cause_by_id(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_resignation_cause_by_id_put(
@@ -6364,7 +6558,10 @@ def update_resignation_cause_by_id_put(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def update_resignation_cause_by_id_post(
@@ -6388,14 +6585,17 @@ def update_resignation_cause_by_id_post(
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
-    return response.json()
+    if response.headers.get("Content-Type", "").startswith("application/json"):
+        return response.json()
+    else:
+        return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
 def get_resignation_causes(
-    filters: GetResignationCauses = GetResignationCauses()
+    filters: GetResignationCauses = Field(..., description="company id mandatory")
     )->dict:
     """
-    Gets resignation causes optionally filtered by filter parameters.
+    Gets resignation causes by company id, optionally filtered by filter parameters.
 
     Returns:
         A JSON dict containing the list of resignation causes.
@@ -6417,7 +6617,7 @@ def get_resignation_causes(
 
 @mcp.tool()
 def update_role_collection_of_user_for_comapany_put(
-    query: UpdateRoleCollecitonOfUserForCompany = Field(..., description="List of query objects. company_id and user_id are required for each. All other fields are optional and only sent if explicitly provided."),
+    query: UpdateRoleCollectionOfUserForCompany = Field(..., description="List of query objects. company_id and user_id are required for each. All other fields are optional and only sent if explicitly provided."),
     Body: List[RoleModel] = Field(..., description="List of role objects to update id and name are required."),
     )->dict:
     """
@@ -6450,9 +6650,9 @@ def update_role_collection_of_user_for_comapany_put(
         return f"Status: {response.status_code}\n{response.text}"
     
 @mcp.tool()
-def update_role_collection_of_user_for_comapany_post(
-    query: UpdateRoleCollecitonOfUserForCompany = Field(..., description="List of query objects. company_id and user_id are required for each. All other fields are optional and only sent if explicitly provided."),
-    Body: List[RoleModel] = Field(..., description="List of role objects to update id and name are required."),
+def update_role_collection_of_user_for_company_post(
+    query: UpdateRoleCollectionOfUserForCompany = Field(..., description="List of query objects. company_id and user_id are required for each. All other fields are optional and only sent if explicitly provided."),
+    body: List[RoleModel] = Field(..., description="List of role objects to update id and name are required."),
     )->dict:
     """
     Update the role collection a user have on a company (post).
@@ -6464,7 +6664,7 @@ def update_role_collection_of_user_for_comapany_post(
     params = query.model_dump(by_alias=True, exclude_none=True, exclude={"company_id", "user_id"})
     roles = [
         RoleModel(**role) if isinstance(role, dict) else role
-        for role in Body
+        for role in body
     ]
     payload = [role.model_dump(mode="json", by_alias=True, exclude_none=True) for role in roles]
     try:
@@ -6516,7 +6716,7 @@ def update_role_collection_of_user_for_employee_put(
     Body: List[RoleModel] = Field(..., description="List of role objects to update id and name are required."),
     )->dict:
     """
-    Update the role collection a user have on am employee (put).
+    Update the role collection a user has on an employee (put).
 
     Returns:
         API response as a JSON dict.
@@ -6550,7 +6750,7 @@ def update_role_collection_of_user_for_employee_post(
     Body: List[RoleModel] = Field(..., description="List of role objects to update id and name are required."),
     )->dict:
     """
-    Update the role collection a user have on am employee (post).
+    Update the role collection a user has on an employee (post).
 
     Returns:
         API response as a JSON dict.
@@ -6993,7 +7193,7 @@ def get_salary_basis_by_salary_transfer_id(
 @mcp.tool()
 def get_salary_basis_by_travel_salary_transfer_id(
     travel_salary_transfer_id: UUID = Field(..., description="UUID of the salary transfer."),
-    page_params: Optional[PageModel] = Field(PageModel(), description="Pagination parameters"),
+    page_params: PageModel = PageModel()
     )->dict:
     """
     Get salarybasis from a travelsalary transfer id.
@@ -7048,7 +7248,7 @@ def get_salary_statistic_by_employment_period_id(
 @mcp.tool()
 def update_salary_statistic_by_employment_period_id_put(
     employment_period_id: UUID = Field(..., description="UUID of the employment period."),
-    body: Optional[SalaryStatisticModel] = SalaryStatisticModel()
+    body: SalaryStatisticModel = SalaryStatisticModel()
     )->dict:
     """
     Get a specific employmentperiods salary statistics (put).
@@ -7187,12 +7387,12 @@ def get_staff_category_by_id(
         response = s.get(url, timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for staff category {id}: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
     return response.json()
 
 @mcp.tool()
 def get_staff_categories(
-    query: Optional[GetStaffCategories] = Field(GetStaffCategories(),description="Query object all parameters optional")
+    query: GetStaffCategories = GetStaffCategories()
     ) -> dict:
     """
     Gets staff categories optionally filtered by filter parameters.
@@ -7210,7 +7410,7 @@ def get_staff_categories(
             timeout=consts.API_TIMEOUT)
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for staff category {id}: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
     return response.json()
 
 @mcp.tool()
@@ -7587,7 +7787,7 @@ def insert_time_row(
         )
         response.raise_for_status()
     except requests.RequestException as e:
-        raise RuntimeError(f"API request failed for employee {employee_id} on {row_date}: {e}")
+        return f"Status: {response.status_code}\n{response.text}"
  
     return response.json() if response.content else {"status": "ok"}
 
@@ -7804,7 +8004,7 @@ def create_user(
 @mcp.tool()
 def get_users_by_company(
     company_id: UUID = Field(..., description="UUID of the company"),
-    page_params: Optional[PageModel] = Field(PageModel(), description="Pagination parameters"),
+    page_params: PageModel = PageModel()
     )->dict:
     """
     Get users that have any rights in given company
