@@ -2,6 +2,7 @@ import json
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOMAIN = os.getenv("DOMAIN")
+INSTANCE = os.getenv("INSTANCE")
 from test_consts import *
 import datetime
 
@@ -13,7 +14,7 @@ import datetime
 # ============================================================
 # D1: A single tool call, with query parameters and optionally a request body.
 #
-# D2: Multiple independent tool calls, each with query parameters and
+# D2: Multiple independent tool calls or a batch tool call, each with query parameters and
 #     optionally a request body. No call depends on the output of another,
 #     so the calls can be executed in any order.
 #
@@ -226,24 +227,119 @@ data = [
 
     # --- Difficulty 2: Multiple independent tool calls ---
     {
-        "id": "A-007",
+        "id": "A-005",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
         "difficulty_rationale": "Two independent tool calls — results do not depend on each other, order does not matter",
         "domain": "Personal & Roller",
-        "prompt": "Visa alla anställda på företag 100 och alla roller i instansen flexhrm.",
+        "prompt": f"Visa alla anställda på företaget id: {company_id} och alla roller.",
         "tool_chain": [
             {
                 "step": 1,
                 "tool": "get_employees",
-                "query_params": {"company_id": 100},
-                "request_body": None,
+                "query_params": {
+                    "instance": DOMAIN,
+                    "companyId": company_id,
+                    "companyNumber": None,
+                    "employmentnumber": None,
+                    "Email": None,
+                    "modifiedSince": None,
+                    "nationalIdentificationNumber": None,
+                    "isInAuditProcess": True,
+                    "employmentType": None,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                },
+                "request_body": None,   
             },
             {
                 "step": 2,
                 "tool": "get_roles",
-                "query_params": {"instance": "flexhrm"},
+                "query_params": None,
+                "request_body": None,
+            },
+        ],
+        "clarification_needed": None,
+        "risk": None,
+    },
+    {
+        "id": "A-006",
+        "category": "A",
+        "expected_outcome": "tool_invocation",
+        "difficulty": 2,
+        "difficulty_rationale": "Two independent tool calls — results do not depend on each other, order does not matter",
+        "domain": "Kontodistributioner & Frånvarosaldo",
+        "prompt": f"Hämta alla kontodistributioner för företaget med id: {company_id} och visa semestersaldon för anställd med id {employee_id}.",
+        "tool_chain": [
+            {
+                "step": 1,
+                "tool": "get_account_distribution_by_comapny_id",
+                "query_params": {
+                    "company_id": company_id,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                    },
+                "request_body": None,
+            },
+            {
+                "step": 2,
+                "tool": "get_employment_vacation_quotas",
+                "query_params": {
+                    "employeeId": employee_id,
+                    "employmentNumber": None,
+                    "compnayId": None,
+                    "companyNumber": None,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                    },
+                "request_body": None,
+            },
+        ],
+        "clarification_needed": None,
+        "risk": None,
+    },
+    {
+        "id": "A-007",
+        "category": "A",
+        "expected_outcome": "tool_invocation",
+        "difficulty": 2,
+        "difficulty_rationale": "Three independent tool calls — none depend on each other, order does not matter",
+        "domain": "Personal & Schema & Dokument",
+        "prompt": f"Visa information om anställd {employee_id} , hämta deras publika schema och deras anhöriga.",
+        "tool_chain": [
+            {
+                "step": 1,
+                "tool": "get_employee_by_id",
+                "query_params": {"employee_id": employee_id},
+                "request_body": None,
+            },
+            {
+                "step": 2,
+                "tool": "get_employment_public_schedules",
+                "query_params": {
+                    "instance": None,
+                    "company_id": None,
+                    "company_number": None,
+                    "employee_id": employee_id,
+                    "employment_number": None,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                    "IncludeEmptySchedules": True
+                    },
+                "request_body": None,
+            },
+            {
+                "step": 3,
+                "tool": "get_next_of_kins",
+                "query_params": {
+                    "instance": None,
+                    "company_id": None,
+                    "company_number": None,
+                    "employee_id": employee_id,
+                    "employment_number": None,
+                    "pageIndex": 0,
+                    },
                 "request_body": None,
             },
         ],
@@ -255,21 +351,43 @@ data = [
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
-        "difficulty_rationale": "Two independent tool calls — results do not depend on each other, order does not matter",
-        "domain": "Lönekörning & Frånvaro",
-        "prompt": "Hämta alla lönekörningar för företag 100 och visa semestersaldon för anställd 1042.",
+        "difficulty_rationale": "A batch tool call with complex request bodies — results do not depend on each other",
+        "domain": "Resa",
+        "prompt": f"Registrera en tjänsteresa för anställd {employee_id} (167 km) och en för anställd {alt_employee} (87 km), båda från 2026-04-16 till 2026-04-16.",
         "tool_chain": [
             {
                 "step": 1,
-                "tool": "get_payroll_runs",
-                "query_params": {"company_id": 100},
-                "request_body": None,
-            },
-            {
-                "step": 2,
-                "tool": "get_employment_vacation_by_employee_id",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
+                "tool": "batch_create_imported_trip",
+                "query_params": None,
+                "request_body": [
+                    {
+                    "comment": None,
+                    "distance": 167,
+                    "employeeId": employee_id,
+                    "fromDateTime": datetime(2026, 4, 16, 0, 0, 0),
+                    "fromMileage": None,
+                    "fromStreet": None,
+                    "id": None,
+                    "licensePlate": None,
+                    "toDateTime": datetime(2026, 4, 17, 0, 0, 0),
+                    "toMileage": None,
+                    "toStreet": None,
+                    },
+                    {
+                    "comment": None,
+                    "distance": 143,
+                    "employeeId": alt_employee,
+                    "fromDateTime": datetime(2026, 4, 16, 0, 0, 0),
+                    "fromMileage": None,
+                    "fromStreet": None,
+                    "id": None,
+                    "licensePlate": None,
+                    "toDateTime": datetime(2026, 4, 17, 0, 0, 0),
+                    "toMileage": None,
+                    "toStreet": None, 
+                    },
+                ],
+                
             },
         ],
         "clarification_needed": None,
@@ -280,82 +398,38 @@ data = [
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
-        "difficulty_rationale": "Three independent tool calls — none depend on each other, order does not matter",
-        "domain": "Personal & Schema & Dokument",
-        "prompt": "Visa information om anställd 1042, hämta deras publika schema och lista deras anställningsdokument.",
-        "tool_chain": [
-            {
-                "step": 1,
-                "tool": "get_employee_by_id",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
-            },
-            {
-                "step": 2,
-                "tool": "get_employment_public_schedules",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
-            },
-            {
-                "step": 3,
-                "tool": "get_employment_documents_collection_by_company",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
-            },
-        ],
-        "clarification_needed": None,
-        "risk": None,
-    },
-    {
-        "id": "A-010",
-        "category": "A",
-        "expected_outcome": "tool_invocation",
-        "difficulty": 2,
-        "difficulty_rationale": "Two independent tool calls with complex request bodies — results do not depend on each other",
-        "domain": "Resa",
-        "prompt": "Registrera en tjänsteresa för anställd 880 (143 km, projekt 4450) och en för anställd 990 (87 km, projekt 4451), båda den 2024-08-15.",
-        "tool_chain": [
-            {
-                "step": 1,
-                "tool": "create_imported_trip",
-                "query_params": {"employee_id": 880},
-                "request_body": {"date": "2024-08-15", "vehicle_type_id": 2, "distance_km": 143, "project_id": 4450},
-            },
-            {
-                "step": 2,
-                "tool": "create_imported_trip",
-                "query_params": {"employee_id": 990},
-                "request_body": {"date": "2024-08-15", "vehicle_type_id": 2, "distance_km": 87, "project_id": 4451},
-            },
-        ],
-        "clarification_needed": None,
-        "risk": None,
-    },
-    {
-        "id": "A-011",
-        "category": "A",
-        "expected_outcome": "tool_invocation",
-        "difficulty": 2,
         "difficulty_rationale": "Three independent tool calls with query parameters — none depend on each other",
         "domain": "Tidrapport & Närvaro & Lönekörning",
-        "prompt": "Visa tidrapporterna för anställd 1042, stämplingshistoriken för användare 509 och lönekörningarna för företag 100.",
+        "prompt": f"Visa tidrapporterna för anställd {employee_id} för April månad 2026, {user_id} övertidsmarkörer för 15 april, och alla frånvaro-ansökningar för företag {company_id}.",
         "tool_chain": [
             {
                 "step": 1,
                 "tool": "get_time_reports_by_employee_id",
-                "query_params": {"employee_id": 1042},
+                "query_params": {
+                    "employee_id": employee_id,
+                    "from": datetime(2026, 4, 0, 0, 0, 0),
+                    "tom": datetime(2026, 4, 30, 0, 0, 0),
+                    },
                 "request_body": None,
             },
             {
                 "step": 2,
-                "tool": "get_stamping_by_userID",
-                "query_params": {"user_id": 509},
+                "tool": "get_overtime_by_user_id",
+                "query_params": {
+                    "user_id": user_id,
+                    "instans": INSTANCE,
+                    "date": datetime(2026, 4, 15, 0, 0, 0),
+                },
                 "request_body": None,
             },
             {
                 "step": 3,
-                "tool": "get_payroll_runs",
-                "query_params": {"company_id": 100},
+                "tool": "get_absence_applications_by_company_id",
+                "query_params": {
+                    "company_id": company_id,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                    },
                 "request_body": None,
             },
         ],
@@ -367,7 +441,7 @@ data = [
 
 
       {
-        "id": "A-012",
+        "id": "A-010",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 3,
@@ -411,7 +485,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-013",
+        "id": "A-011",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 3,
@@ -436,7 +510,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-014",
+        "id": "A-012",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 3,
@@ -461,7 +535,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-015",
+        "id": "A-013",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 3,
@@ -486,7 +560,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-016",
+        "id": "A-014",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 3,
@@ -517,7 +591,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-017",
+        "id": "A-015",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 3,
@@ -560,7 +634,7 @@ data = [
 
     # --- Difficulty 4: Results from multiple dependent chains combined ---
     {
-        "id": "A-018",
+        "id": "A-016",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 4,
@@ -609,7 +683,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-019",
+        "id": "A-017",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 4,
@@ -657,7 +731,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-020",
+        "id": "A-018",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 4,
@@ -712,7 +786,7 @@ data = [
 
     # --- Difficulty 5: Result of multiple D4 tasks needed for a final task ---
     {
-        "id": "A-021",
+        "id": "A-019",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 5,
@@ -793,7 +867,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-022",
+        "id": "A-020",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 5,

@@ -1395,7 +1395,6 @@ class GetTimeReportByEmployee(BaseModel):
 
 class GetTimeReportsByEmployee(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="employee id")
-    date_: Optional[datetime] = Field(None, description="Time reports reported after this date", alias="date")
     from_date: date = Field(..., description="Start of the date range (YYYY-MM-DD). Inclusive.", alias="from")
     tom_date: date = Field(..., description="End of the date range (YYYY-MM-DD). Inclusive.", alias="tom")
     generated: Optional[bool] = Field(True, description="Include generated time rows")
