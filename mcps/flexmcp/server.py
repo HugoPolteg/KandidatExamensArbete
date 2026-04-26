@@ -1881,7 +1881,7 @@ def get_customers_by_account_distribution_id(
 @mcp.tool()
 def post_customers_by_account_distribution_id(
     account_distirbution_id: UUID = Field(..., description="UUID of the account distribution."),
-    query: CustomerModel = Field(..., description="Fully query object")
+    query: list[CustomerModel] = Field(..., description="List of customers to add.")
     )->dict:
     """
     Posts customers by account distribution id
@@ -1890,8 +1890,12 @@ def post_customers_by_account_distribution_id(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/accountdistributions/{account_distirbution_id}/customers"
-    payload = query.model_dump(by_alias=True,exclude_none=True, mode="json")
+    employment_periods = [
+        CustomerModel(**employment_period) if isinstance(employment_period, dict) else employment_period
+        for employment_period in query
+    ]
 
+    payload = [employment_period.model_dump(mode="json", by_alias=True, exclude_none=True) for employment_period in employment_periods]
     try:
         response = s.post(
             url,
@@ -3227,7 +3231,6 @@ def delete_employment_personal_schedule_by_id(
         API response as a JSON dict.
     """
     url = f"{consts.API_ENDPOINT}/employmentpersonalschedules/{id}"
-    
     try:
         response = s.delete(
             url,
@@ -3359,6 +3362,7 @@ def update_employment_public_schedule_by_id_post(
     """
     url = f"{consts.API_ENDPOINT}/employmentpublicschedules/{id}"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
+    print(payload)
     try:
         response = s.post(
             url,
@@ -3487,7 +3491,7 @@ def update_employment_rate_by_id_put(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentrate/{id}"
+    url = f"{consts.API_ENDPOINT}/employmentrates/{id}"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.put(
@@ -3513,7 +3517,7 @@ def update_employment_rate_by_id_post(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentrate/{id}"
+    url = f"{consts.API_ENDPOINT}/employmentrates/{id}"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.post(
@@ -3621,7 +3625,7 @@ def create_employment_rate(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentrate"
+    url = f"{consts.API_ENDPOINT}/employmentrates"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.post(
@@ -3697,7 +3701,7 @@ def update_employment_title_by_id_put(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentitle/{id}"
+    url = f"{consts.API_ENDPOINT}/employmenttitles/{id}"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.put(
@@ -3723,7 +3727,7 @@ def update_employment_title_by_id_post(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentitle/{id}"
+    url = f"{consts.API_ENDPOINT}/employmenttitles/{id}"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.post(
@@ -3798,7 +3802,7 @@ def create_employment_title(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentitle"
+    url = f"{consts.API_ENDPOINT}/employmenttitles"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.post(
@@ -4022,7 +4026,7 @@ def get_employment_vehicle_by_id(
 @mcp.tool()
 def update_employment_vehicle_by_id(
     id: UUID = Field(..., description="UUID of the employment vehicle"),
-    query: Optional[EmploymentVehicleModel] = Field(..., description="CompanyID and EmployeeID are required, all other feilds optional"),
+    query: EmploymentVehicleModel = Field(..., description="CompanyID and EmployeeID are required, all other fields optional"),
     )->dict:
     """
     Update employment vehicle by id 
@@ -4107,7 +4111,7 @@ def create_employment_vehicle(
     Returns:
         API response as a JSON dict.
     """
-    url = f"{consts.API_ENDPOINT}/employmentvechicle"
+    url = f"{consts.API_ENDPOINT}/employmentvehicle"
     payload = query.model_dump(mode="json",by_alias=True,exclude_none=True)
     try:
         response = s.post(
@@ -6398,7 +6402,7 @@ def get_public_travel_claim_attachment_by_id(
     Returns:
          A dict containing the filename and base64 encoded file content.
     """
-    url = f"{consts.API_ENDPOINT}/travelclaim/attachment/{id}"
+    url = f"{consts.API_ENDPOINT}/travelclaimattachments/{id}"
     try:
         response = s.get(
             url,
@@ -6551,7 +6555,7 @@ def get_resignation_cause_by_id(
 @mcp.tool()
 def update_resignation_cause_by_id_put(
     id: UUID = Field(..., description="UUID of the resignation cause."),
-    query: ResignationCauseModel = Field(ResignationCauseModel(), description="Full query object to update the resignation cause with")
+    query: ResignationCauseModel = Field(..., description="Full query object to update the resignation cause with. Name mandatory.")
     )->dict:
     """
     Update resignation cause  by id (put).
@@ -6578,7 +6582,7 @@ def update_resignation_cause_by_id_put(
 @mcp.tool()
 def update_resignation_cause_by_id_post(
     id: UUID = Field(..., description="UUID of the resignation cause."),
-    query: ResignationCauseModel = Field(ResignationCauseModel(), description="Full query object to update the resignation cause with")
+    query: ResignationCauseModel = Field(..., description="Full query object to update the resignation cause with. Name mandatory.")
     )->dict:
     """
     Update resignation cause  by id (post).
@@ -7657,7 +7661,7 @@ def get_time_report_by_employee_id(
 
 @mcp.tool()
 def get_time_reports_by_employee_id(
-    query: GetTimeReportsByEmployee = Field(..., description="Full query object. employee_id is required. All other fields are optional")
+    query: GetTimeReportsByEmployee = Field(..., description="Full query object. employee_id, from_date and tom_date are required. All other fields are optional")
 ) -> dict:
     """
     Gets a time reports for an employee.

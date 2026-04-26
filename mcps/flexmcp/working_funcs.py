@@ -72,6 +72,11 @@ print_test(server.get_absence_type_by_id(id=absence_type_id))
 print("Testing get_accounts_by_account_distribution_id")
 print_test(server.get_accounts_by_account_distribution_id(account_distribution_id=account_distribution_id))
 
+print("Testing update_account_by_id")
+print_test(server.update_account_by_id("2d852f66-d09b-4be6-b434-b437010c30e6",AccountModel(
+        billingStateEnum=0, travelBillingStateEnum=0, budgetingTimeUnit=5,
+        externalCommentMustBeStatedAboutBillableTime=False,
+        code="0999", name="Test2")))
 print("Testing get_account_distribution_by_company_id")
 print_test(server.get_account_distribution_by_company_id(company_id=company_id))
 
@@ -140,7 +145,12 @@ print("Testing get_vehicle_types")
 print_test(server.get_vehicle_types())
 print("Testing get_public_schedules")
 print_test(server.get_public_schedules())
-
+print("Testing create_employment_vehicle")
+print_test(server.create_employment_vehicle(EmploymentVehicleModel(
+    company_id=company_id,
+    employee_id=employee_id,
+    vehicle_type=vehicle_type_id
+)))
 print("Testing update_vehicle_type")
 print_test(server.update_vehicle_type(vehicle_type_id, VehicleTypeRequestModel(
     company_id=company_id,
@@ -232,6 +242,23 @@ print_test(server.get_users_by_company(company_id))
 
 print("Testing get_user_by_employee_id")
 print_test(server.get_user_by_employee_id(employee_id))
+
+print("Testing get_public_travel_claim_attachment_by_id")
+print_test(server.get_public_travel_claim_attachment_by_id(public_travel_claim_attachment_id))
+
+print("Testing get_public_travel_claims")
+print_test(server.get_public_travel_claims())
+
+print("Testing get_time_report_by_employee_id")
+print_test(server.get_time_report_by_employee_id(GetTimeReportByEmployee(employeeId=employee_id)))
+
+print("Testing get_time_reports_by_employee_id")
+print_test(server.get_time_reports_by_employee_id(GetTimeReportsByEmployee(employeeId=employee_id, from_date=datetime(2026, 4, 20), tom_date=datetime(2026, 4, 30))))
+print("Testing update_resignation_cause_by_id_post")
+print_test(server.update_resignation_cause_by_id_post(resignation_cause_id, ResignationCauseModel(name="Uppsägning pga konkurs")))
+
+print("Testing update_resignation_cause_by_id_put")
+print_test(server.update_resignation_cause_by_id_put(resignation_cause_id, ResignationCauseModel(name="Uppsägning pga konkurs", description="Inte bra")))
 
 print("Testing get_resignation_cause_by_id")
 print_test(server.get_resignation_cause_by_id(resignation_cause_id))
@@ -484,19 +511,80 @@ print_test(server.get_employment_periods_by_employee(employee_id=employee_id))
 print("Testing get_employment_public_schedule_by_id")
 print_test(server.get_employment_public_schedule_by_id(employment_public_schedule_id))
 
+print("Testing update_employment_vehicle_by_id")
+print_test(server.update_employment_vehicle_by_id("b02b3b3a-7709-4068-995d-b4380083367a", EmploymentVehicleModel(
+    company_id=company_id,
+    employee_id=employee_id,
+    vehicle_type=vehicle_type_id,
+    reg_number="ABC124",
+    tripLogFrom=datetime(2026, 4, 1)
+)))
+print("Testing update_employment_title_by_id_post")
+print_test(server.update_employment_title_by_id_post("fab2397d-4d97-425b-9596-b43800840db0", EmploymentTitleModel(
+    code="TEST23",
+    company_id=company_id,
+    name="Test124"
+)))
+
+print("Testing update_employment_title_by_id_put")
+print_test(server.update_employment_title_by_id_put("fab2397d-4d97-425b-9596-b43800840db0", EmploymentTitleModel(
+    code="TEST23",
+    company_id=company_id,
+    name="Test125"
+)))
+print("Testing delete_employment_title_by_id")
+print_test(server.delete_employment_title_by_id("e249dfe4-b678-4487-968a-b438008391da"))
+
+print("Testing delete_employment_vehicle_by_id")
+print_test(server.delete_employment_vehicle_by_id("b02b3b3a-7709-4068-995d-b4380083367a"))
+print("Testing create_employment_title")
+print_test(server.create_employment_title(EmploymentTitleModel(
+    code="DEV",
+    company_id=company_id,
+    name="Developer"
+)))
 print("Testing get_employment_public_schedules")
 print_test(server.get_employment_public_schedules())
+
+print("Testing delete_employment_public_schedule_by_id")
+print_test(server.delete_employment_public_schedule_by_id("111a9cbb-c244-4a4c-8dc9-b436007e1e12"))
+
+print("Testing delete_employment_personal_schedule_by_id")
+print_test(server.delete_employment_personal_schedule_by_id("d8a5bbed-3fe6-472b-9f7f-b43500f22c40"))
 
 print("Testing get_company_account_approval_permissions")
 print_test(server.get_company_account_approval_permissions())
 
 print("Testing get_account_by_id")
 print_test(server.get_account_by_id(account_id))
+print("Testing update_employment_rate_by_id_post")
+print_test(server.update_employment_rate_by_id_post("f34e76b6-7efd-4ce8-ae4e-b438007f6b56", EmploymentRateModel(
+    company_id=company_id,
+    employee_id=employee_id,
+    employment_rate_percent=0.9,
+    hours_per_full_time_work_week=40.0,
+    hours_per_full_time_work_year=2080.0,
+)))
 
+print("Testing update_employment_rate_by_id_put")
+print_test(server.update_employment_rate_by_id_put("f34e76b6-7efd-4ce8-ae4e-b438007f6b56", EmploymentRateModel(
+    company_id=company_id,
+    employee_id=employee_id,
+    employment_rate_percent=1,
+    hours_per_full_time_work_week=41.0,
+    hours_per_full_time_work_year=2080.0,
+)))
 
 print("Testing get_company_account_approval_permissions")
 print_test(server.get_company_account_approval_permissions())
-
+print("Testing create_employment_rate")
+print_test(server.create_employment_rate(EmploymentRateModel(
+    company_id=company_id,
+    employee_id=employee_id,
+    employment_rate_percent=1,
+    hours_per_full_time_work_week=40.0,
+    hours_per_full_time_work_year=2080.0,
+)))
 print("Testing get_employment_rates")
 print(server.get_employment_rates())
 
@@ -734,6 +822,23 @@ print_test(server.create_child(
         )
 ))
 
+print("Testing update_child_by_id_post")
+print_test(server.update_child_by_id_post("9dfb96d1-f641-4962-b1e8-b43500ef43c6", ChildModel(
+        companyId=company_id,
+        employeeId=employee_id,
+        identificationString="2021-01-20",
+        identificationType=0,  # 0 = Birth date
+        name="Testbarn"
+        )))
+
+print("Testing update_child_by_id_put")
+print_test(server.update_child_by_id_put("9dfb96d1-f641-4962-b1e8-b43500ef43c6", ChildModel(
+        companyId=company_id,
+        employeeId=employee_id,
+        identificationString="2020-01-20",
+        identificationType=0,  # 0 = Birth date
+        name="Testbarn2"
+        )))
 print("Testing get_children")
 print_test(server.get_children())
 
@@ -840,7 +945,10 @@ print_test(server.get_collection_of_travel_time_rule_sets())
 print("Testing get_employee_presence_by_company")
 print_test(server.get_employee_presence_by_company(GetEmployeePresenceByCompany(companyId=company_id)))
 
-
+print("Testing post_customers_by_account_distribution_id")
+print_test(server.post_customers_by_account_distribution_id(customers_acc_distribution_id, [CustomerModel(code="CUST001",
+    name="Test AB"
+)]))
 
 print("Testing get_customers_by_account_distribution_id")
 print_test(server.get_customers_by_account_distribution_id(customers_acc_distribution_id))
