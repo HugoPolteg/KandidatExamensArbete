@@ -5,11 +5,12 @@ import json
 from uuid import UUID
 from datetime import date, datetime
 from typing import Optional
-from models import *
-import consts
+import functools
 from dotenv import load_dotenv
 import os
 import base64
+from models import *
+import consts
 load_dotenv()
 DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
@@ -37,6 +38,67 @@ def list_instances():
         response.raise_for_status()
     except requests.RequestException as e:
         return f"API request failed: {e}\n{response.text}"
+
+LOG_FILE = os.path.join(os.path.dirname(os.path.abspath(__file__)), "api_calls_log.jsonl")
+
+
+def log_to_file(entry):
+    try:
+        with open(LOG_FILE, "a", encoding="utf-8") as f:
+            f.write(json.dumps(entry, ensure_ascii=False, default=str) + "\n")
+    except Exception as e:
+        print(f"Warning: failed to write log entry: {e}", file=sys.stderr)
+
+
+def wrap_request_method(session, method_name):
+    original = getattr(session, method_name)
+
+    @functools.wraps(original)
+    def wrapper(*args, **kwargs):
+        url = args[0] if args else kwargs.get("url")
+
+        params = kwargs.get("params")
+        json_body = kwargs.get("json")
+
+        entry = {
+            "timestamp": datetime.utcnow().isoformat(),
+            "method": method_name.upper(),
+            "url": url,
+            "params": params,
+            "json": json_body,
+        }
+
+        try:
+            response = original(*args, **kwargs)
+
+            try:
+                response_data = response.json()
+            except Exception:
+                response_data = response.text
+
+            entry["status_code"] = response.status_code
+            entry["response"] = response_data
+
+            log_to_file(entry)
+
+            return response
+
+        except Exception as e:
+            entry["error"] = str(e)
+            log_to_file(entry)
+            raise
+
+    return wrapper
+
+
+def instrument_session(session):
+    for method in ["get", "post", "put", "delete", "patch"]:
+        if hasattr(session, method):
+            setattr(session, method, wrap_request_method(session, method))
+
+
+instrument_session(s)
+
 
 
 
@@ -1690,8 +1752,11 @@ def update_company_by_id_post(
 def get_companies(
     filters: Optional[GetCompanies] = GetCompanies()
     )->dict:
-    """"
-    Get companies optionally filtered by filter parameters
+    """
+    Fetch and list ALL companies in the Flex HRM system. Use this tool when you need
+    a complete overview of companies, want to search for a company by name, or need
+    to discover company IDs. Do NOT use get_company_by_id if you don't already have
+    the ID — use this tool first to find it.
 
     Returns:
         API response as a JSON dict
@@ -1732,7 +1797,6 @@ def create_company(
         params["companyIdToCopyFrom"] = str(company_id_to_copy_from)
     if copy_settings is not None:
         params["copySettings"] = copy_settings
-    print(payload)
     try:
         response = s.post(
             url,
@@ -1747,6 +1811,7 @@ def create_company(
         return response.json()
     else:
         return f"Status: {response.status_code}\n{response.text}"
+    
 
 @mcp.tool()
 def get_customer_by_id(
@@ -4127,7 +4192,7 @@ def create_employment_vehicle(
     else:
         return f"Status: {response.status_code}\n{response.text}"
 
-@mcp.tool()
+#@mcp.tool()
 def get_company_information(
     instance: Optional[str] = Field(DOMAIN, description="Domain name"),
     start_range: int = Field(..., alias="startRange", description="Company Number. Start of the range, the start value is included in the result."),

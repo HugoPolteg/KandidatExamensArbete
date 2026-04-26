@@ -1,10 +1,11 @@
 import json
 import os
+from datetime import date, datetime
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
 from test_consts import *
-import datetime
+
 
 #
 # OBS ALL EXPECTED QUERY PARAMS AND REQUEST BODIES ARE PLACEHOLDERS
@@ -85,7 +86,7 @@ data = [
                 "tool": "create_employee",
                 "query_params": {
                     "employmenttemplateId": employment_template_id,
-                    "employmentPeriodStart": datetime(2026, 9, 1, 0 , 0 ,0),
+                    "employmentPeriodStart": datetime(2026, 9, 1, 0 , 0 ,0).isoformat(),
                     "employmentPeriodEnd": None,
                 },
                 "request_body": {
@@ -93,7 +94,7 @@ data = [
                     "adressRow2": None,
                     "city": None,
                     "companyId": company_id,
-                    "dateOfBirth": datetime(1990, 3, 12, 0, 0, 0),
+                    "dateOfBirth": datetime(1990, 3, 12, 0, 0, 0).isoformat(),
                     "emailPrivate": None,
                     "emailVismaConnect": None,
                     "emailWork": None,
@@ -174,12 +175,12 @@ data = [
                     "comment": None,
                     "distance": 143,
                     "employeeId": alt_employee,
-                    "fromDateTime": datetime(2026, 3, 7, 8, 0, 0),
+                    "fromDateTime": datetime(2026, 3, 7, 8, 0, 0).isoformat(),
                     "fromMileage": None,
                     "fromStreet": None,
                     "id": None,
                     "licensePlate": None,
-                    "toDateTime": datetime(2026, 3, 7, 16, 0, 0),
+                    "toDateTime": datetime(2026, 3, 7, 16, 0, 0).isoformat(),
                     "toMileage": None,
                     "toStreet": None,
                 },
@@ -195,7 +196,7 @@ data = [
         "difficulty": 1,
         "difficulty_rationale": "Single tool call with query parameters and complex nested request body",
         "domain": "Konto",
-        "prompt": f"Skapa en kontokombination för kontodistributionerna: {account_distribution_ids[3,4,7,9,]} där repsektive distribution har selektionskod 1619, 20, 1000, 1000 inom företaget {company_id}. Kontering är tillåtet.",
+        "prompt": f"Skapa en kontokombination för kontodistributionerna: {account_distribution_ids[3]} {account_distribution_ids[4]} {account_distribution_ids[7]} {account_distribution_ids[9]} där repsektive distribution har selektionskod 1619, 20, 1000, 1000 inom företaget {company_id}. Kontering är tillåtet.",
         "tool_chain": [
             {
                 "step": 1,
@@ -364,12 +365,12 @@ data = [
                     "comment": None,
                     "distance": 167,
                     "employeeId": employee_id,
-                    "fromDateTime": datetime(2026, 4, 16, 0, 0, 0),
+                    "fromDateTime": datetime(2026, 4, 16, 0, 0, 0).isoformat(),
                     "fromMileage": None,
                     "fromStreet": None,
                     "id": None,
                     "licensePlate": None,
-                    "toDateTime": datetime(2026, 4, 17, 0, 0, 0),
+                    "toDateTime": datetime(2026, 4, 17, 0, 0, 0).isoformat(),
                     "toMileage": None,
                     "toStreet": None,
                     },
@@ -377,12 +378,12 @@ data = [
                     "comment": None,
                     "distance": 143,
                     "employeeId": alt_employee,
-                    "fromDateTime": datetime(2026, 4, 16, 0, 0, 0),
+                    "fromDateTime": datetime(2026, 4, 16, 0, 0, 0).isoformat(),
                     "fromMileage": None,
                     "fromStreet": None,
                     "id": None,
                     "licensePlate": None,
-                    "toDateTime": datetime(2026, 4, 17, 0, 0, 0),
+                    "toDateTime": datetime(2026, 4, 17, 0, 0, 0).isoformat(),
                     "toMileage": None,
                     "toStreet": None, 
                     },
@@ -407,8 +408,8 @@ data = [
                 "tool": "get_time_reports_by_employee_id",
                 "query_params": {
                     "employee_id": employee_id,
-                    "from": datetime(2026, 4, 0, 0, 0, 0),
-                    "tom": datetime(2026, 4, 30, 0, 0, 0),
+                    "from": datetime(2026, 4, 1, 0, 0, 0).isoformat(),
+                    "tom": datetime(2026, 4, 30, 0, 0, 0).isoformat(),
                     },
                 "request_body": None,
             },
@@ -418,7 +419,7 @@ data = [
                 "query_params": {
                     "user_id": user_id,
                     "instans": INSTANCE,
-                    "date": datetime(2026, 4, 15, 0, 0, 0),
+                    "date": datetime(2026, 4, 15, 0, 0, 0).isoformat(),
                 },
                 "request_body": None,
             },

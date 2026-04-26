@@ -1,5 +1,5 @@
 from models import *
-import server
+from server import *
 from test_consts import * 
 from datetime import date, time, datetime, timedelta
 def print_test(input, update = False, update_param = "", update_value = None, put = False):
@@ -198,7 +198,7 @@ print(server.create_employment_vehicle(EmploymentVehicleModel(
     reg_number="ABC123",
     tripLogFrom=datetime(2026, 4, 1)
 )))"""
-print(server.get_employees())
+print(get_companies())
 
 
 """
