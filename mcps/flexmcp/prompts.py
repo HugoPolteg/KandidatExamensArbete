@@ -1,6 +1,9 @@
 import json
 import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+DOMAIN = os.getenv("DOMAIN")
+from test_consts import *
+import datetime
 
 #
 # OBS ALL EXPECTED QUERY PARAMS AND REQUEST BODIES ARE PLACEHOLDERS
@@ -41,33 +44,113 @@ data = [
         "expected_outcome": "tool_invocation",
         "difficulty": 1,
         "difficulty_rationale": "Single tool call with simple query parameters, no request body",
-        "domain": "Lönekörning",
-        "prompt": "Visa alla lönekörningar för företag 100.",
+        "domain": "Personal",
+        "prompt": f"Lista alla icke-extern personal i en revisionsprocess på företaget med id: {company_id}",
         "tool_chain": [
             {
                 "step": 1,
-                "tool": "get_payroll_runs",
-                "query_params": {"company_id": 100},
+                "tool": "get_employees",
+                "query_params": {
+                    "instance": DOMAIN,
+                    "companyId": company_id,
+                    "companyNumber": None,
+                    "employmentnumber": None,
+                    "Email": None,
+                    "modifiedSince": None,
+                    "nationalIdentificationNumber": None,
+                    "isInAuditProcess": True,
+                    "employmentType": 0,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                },
                 "request_body": None,
             }
         ],
         "clarification_needed": None,
         "risk": None,
     },
+
     {
         "id": "A-002",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 1,
-        "difficulty_rationale": "Single tool call with simple query parameters, no request body",
+        "difficulty_rationale": "Single tool call with complex request body",
         "domain": "Personal",
-        "prompt": "Lista alla anställda på företag 100.",
+        "prompt": f"Anna Lindström kommer börja som en heltidsanställd ekonomiassistent inom företaget med id {company_id}  den första september, skulle du kunna lägga till henne som en ny anställd. Hon har personnummer 19900312-1234. Använd mallen med id {employment_template_id}",
         "tool_chain": [
             {
                 "step": 1,
-                "tool": "get_employees",
-                "query_params": {"company_id": 100},
-                "request_body": None,
+                "tool": "create_employee",
+                "query_params": {
+                    "employmenttemplateId": employment_template_id,
+                    "employmentPeriodStart": datetime(2026, 9, 1, 0 , 0 ,0),
+                    "employmentPeriodEnd": None,
+                },
+                "request_body": {
+                    "adressRow1": None,
+                    "adressRow2": None,
+                    "city": None,
+                    "companyId": company_id,
+                    "dateOfBirth": datetime(1990, 3, 12, 0, 0, 0),
+                    "emailPrivate": None,
+                    "emailVismaConnect": None,
+                    "emailWork": None,
+                    "employment": {
+                        "accountNumber": None,
+                        "advanceVacationDepreciationDate": None,
+                        "advanceVacationIngoing": None,
+                        "autoCalculateSalaries": None,
+                        "automaticCalculationDiscreteTax": None,
+                        "bic": None,
+                        "clearingNumber": None,
+                        "companyNumberInSalarySystem": None,
+                        "dailyRestPeriodBreakingTime": None,
+                        "discreteTax": None,
+                        "employmentAdjustmentsFromDate": None,
+                        "employmentAdjustmentsKronor": None,
+                        "employmentAdjustmentsPercent": None,
+                        "employmentAdjustmentsToAmount": None,
+                        "employmentAdjustmentsToDate": None,
+                        "employmentNumber": "2",
+                        "employmentNumberInSalarySystem": None,
+                        "fixedBalanceAdjustmentValue": None,
+                        "hasMobileLicense": None,
+                        "hasPlanLicense": None,
+                        "hasTimeLicense": None,
+                        "hasTravelLicense": None,
+                        "iban": None,
+                        "norwegianAccountNumber": None,
+                        "regionalAid": None,
+                        "researchDeduction": None,
+                        "showInPresenceTableau": None,
+                        "supplementaryIncome": None,
+                        "taxColumn": None,
+                        "taxTable": None,
+                        "weeklyRestBreakingDay": None,
+                        "weeklyRestBreakingTime": None,
+                        "workPlaceNumberScb": None,
+                    },
+                    "firstName": "Anna",
+                    "Gender": 2,
+                    "id": None,
+                    "immediateManagerEmployeeId": None,
+                    "instanceId": None,
+                    "isInAuditProcess": None,
+                    "lastName": "Lindström",
+                    "mailingEmailPrivate": None,
+                    "mailingEmailWork": None,
+                    "name": "Anna Lindström",
+                    "nationalIdentificationNumber": "19900312-1234",
+                    "nationality": None,
+                    "phone1": None,
+                    "phone2": None,
+                    "phone3": None,
+                    "phone4": None,
+                    "postalCode": None,
+                    "salaryRevisionYear": None,
+                    "unionId": None,
+                },
             }
         ],
         "clarification_needed": None,
@@ -78,15 +161,27 @@ data = [
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 1,
-        "difficulty_rationale": "Single tool call with simple query parameters, no request body",
-        "domain": "Roller",
-        "prompt": "Visa alla roller i instansen flexhrm.",
+        "difficulty_rationale": "Single tool call with both query parameters and complex request body",
+        "domain": "Resa",
+        "prompt": f"Kan du hjälp amig registrera en resa för {alt_employee} som har åkt 143 km menllan klockan 8 och 16 den sjunde Mars",
         "tool_chain": [
             {
                 "step": 1,
-                "tool": "get_roles",
-                "query_params": {"instance": "flexhrm"},
-                "request_body": None,
+                "tool": "create_imported_trip",
+                "query_params": None,
+                "request_body": {
+                    "comment": None,
+                    "distance": 143,
+                    "employeeId": alt_employee,
+                    "fromDateTime": datetime(2026, 3, 7, 8, 0, 0),
+                    "fromMileage": None,
+                    "fromStreet": None,
+                    "id": None,
+                    "licensePlate": None,
+                    "toDateTime": datetime(2026, 3, 7, 16, 0, 0),
+                    "toMileage": None,
+                    "toStreet": None,
+                },
             }
         ],
         "clarification_needed": None,
@@ -97,96 +192,31 @@ data = [
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 1,
-        "difficulty_rationale": "Single tool call with complex request body",
-        "domain": "Personal",
-        "prompt": "Skapa en ny anställd: Anna Lindström, personnummer 19900312-1234, heltid, startdatum 2024-09-01, avdelning Ekonomi, titel Ekonomiassistent.",
-        "tool_chain": [
-            {
-                "step": 1,
-                "tool": "create_employee",
-                "query_params": {},
-                "request_body": {
-                    "first_name": "Anna",
-                    "last_name": "Lindström",
-                    "ssn": "19900312-1234",
-                    "employment_type": "heltid",
-                    "start_date": "2024-09-01",
-                    "department": "Ekonomi",
-                    "title": "Ekonomiassistent",
-                },
-            }
-        ],
-        "clarification_needed": None,
-        "risk": None,
-    },
-    {
-        "id": "A-005",
-        "category": "A",
-        "expected_outcome": "tool_invocation",
-        "difficulty": 1,
-        "difficulty_rationale": "Single tool call with both query parameters and complex request body",
-        "domain": "Tidrapport",
-        "prompt": "Rapportera 6,5 timmar normaltid och 1,5 timmar övertid på projektkod 4450, kostnadsbärare 300, för anställd 1042 den 2024-08-20.",
-        "tool_chain": [
-            {
-                "step": 1,
-                "tool": "insert_time_row",
-                "query_params": {"employee_id": 1042},
-                "request_body": {
-                    "date": "2024-08-20",
-                    "rows": [
-                        {"type": "normal", "hours": 6.5, "project_code": "4450", "cost_center": "300"},
-                        {"type": "overtime", "hours": 1.5, "project_code": "4450", "cost_center": "300"},
-                    ],
-                },
-            }
-        ],
-        "clarification_needed": None,
-        "risk": None,
-    },
-    {
-        "id": "A-006",
-        "category": "A",
-        "expected_outcome": "tool_invocation",
-        "difficulty": 1,
-        "difficulty_rationale": "Single tool call with both query parameters and complex request body",
-        "domain": "Resa",
-        "prompt": "Registrera en tjänsteresa för anställd 880: bil (fordonstyp 2), 143 km, kund 77, projekt 4450, datum 2024-08-15.",
-        "tool_chain": [
-            {
-                "step": 1,
-                "tool": "create_imported_trip",
-                "query_params": {"employee_id": 880},
-                "request_body": {
-                    "date": "2024-08-15",
-                    "vehicle_type_id": 2,
-                    "distance_km": 143,
-                    "customer_id": 77,
-                    "project_id": 4450,
-                },
-            }
-        ],
-        "clarification_needed": None,
-        "risk": None,
-    },
-    {
-        "id": "A-007",
-        "category": "A",
-        "expected_outcome": "tool_invocation",
-        "difficulty": 1,
         "difficulty_rationale": "Single tool call with query parameters and complex nested request body",
         "domain": "Konto",
-        "prompt": "Skapa en kontokombination för kontodistribution 12: 60% på konto 5010 och 40% på konto 5020.",
+        "prompt": f"Skapa en kontokombination för kontodistributionerna: {account_distribution_ids[3,4,7,9,]} där repsektive distribution har selektionskod 1619, 20, 1000, 1000 inom företaget {company_id}. Kontering är tillåtet.",
         "tool_chain": [
             {
                 "step": 1,
                 "tool": "create_account_combination",
-                "query_params": {"account_distribution_id": 12},
+                "query_params": {},
                 "request_body": {
-                    "parts": [
-                        {"account_code": "5010", "share_percent": 60},
-                        {"account_code": "5020", "share_percent": 40},
-                    ]
+                    "accountCombinationAccounts": [
+                        {"accountDistribution": account_distribution_ids[3],
+                         "accountSelection": 1619
+                        },
+                        {"accountDistribution": account_distribution_ids[4],
+                         "accountSelection": 20
+                        },
+                        {"accountDistribution": account_distribution_ids[7],
+                         "accountSelection": 1000
+                        },
+                        {"accountDistribution": account_distribution_ids[9],
+                         "accountSelection": 1000
+                        },
+                    ],
+                    "combinationRule": 1,
+                    "companyId": company_id,
                 },
             }
         ],
@@ -196,7 +226,7 @@ data = [
 
     # --- Difficulty 2: Multiple independent tool calls ---
     {
-        "id": "A-008",
+        "id": "A-007",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
@@ -221,7 +251,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-009",
+        "id": "A-008",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
@@ -246,7 +276,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-010",
+        "id": "A-009",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
@@ -277,7 +307,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-011",
+        "id": "A-010",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
@@ -302,7 +332,7 @@ data = [
         "risk": None,
     },
     {
-        "id": "A-012",
+        "id": "A-011",
         "category": "A",
         "expected_outcome": "tool_invocation",
         "difficulty": 2,
@@ -334,6 +364,52 @@ data = [
     },
 
     # --- Difficulty 3: Multiple dependent tool calls ---
+
+
+      {
+        "id": "A-012",
+        "category": "A",
+        "expected_outcome": "tool_invocation",
+        "difficulty": 3,
+        "difficulty_rationale": "Multiple tool dependent tool calls with simple query parameters, no request body",
+        "domain": "Lönekörning",
+        "prompt": f"Visa lönekörningar för alla preliminära månadslöner för företaget med id: {company_id}",
+        "tool_chain": [
+
+            {
+                "step": 1,
+                "tool": "get_payment_groups",
+                "query_params": {
+                    "instance": None,
+                    "companyId": company_id,
+                    "companyNumber": None,
+                    "pageIndex": None,
+                    "pageSize": None,
+                },
+            },
+            {
+                "step": 2,
+                "tool": "get_payroll_runs",
+                "query_params": {
+                    "company_id": company_id,
+                    "payrollRunNumber": None,
+                    "paymentGroupId": payment_group_id,
+                    "status": 0,
+                    "payrollRunType": None,
+                    "paymentDate": None,
+                    "payrollPeriodFrom": None,
+                    "payrollPeriodTo": None,
+                    "discrepancyPeriodFrom": None,
+                    "discrepancyPeriodTo": None,
+                    "pageIndex": None,
+                    "pageSize": None,
+                },
+                "request_body": None,
+            },
+        ],
+        "clarification_needed": None,
+        "risk": None,
+    },
     {
         "id": "A-013",
         "category": "A",
