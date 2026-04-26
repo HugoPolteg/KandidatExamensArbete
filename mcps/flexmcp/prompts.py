@@ -6,7 +6,6 @@ DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
 from test_consts import *
 import consts
-import datetime
 
 #
 # OBS ALL EXPECTED QUERY PARAMS AND REQUEST BODIES ARE PLACEHOLDERS
@@ -209,16 +208,16 @@ data = [
                 "correct_request_body": {
                     "accountCombinationAccounts": [
                         {"accountDistribution": account_distribution_ids[3],
-                         "accountSelection": 1619
+                         "accountSelection": "1619"
                         },
                         {"accountDistribution": account_distribution_ids[4],
-                         "accountSelection": 20
+                         "accountSelection": "20"
                         },
                         {"accountDistribution": account_distribution_ids[7],
-                         "accountSelection": 1000
+                         "accountSelection": "1000"
                         },
                         {"accountDistribution": account_distribution_ids[9],
-                         "accountSelection": 1000
+                         "accountSelection": "1000"
                         },
                     ],
                     "combinationRule": 1,
