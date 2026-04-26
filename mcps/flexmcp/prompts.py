@@ -5,7 +5,8 @@ BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DOMAIN = os.getenv("DOMAIN")
 INSTANCE = os.getenv("INSTANCE")
 from test_consts import *
-
+import consts
+import datetime
 
 #
 # OBS ALL EXPECTED QUERY PARAMS AND REQUEST BODIES ARE PLACEHOLDERS
@@ -48,11 +49,11 @@ data = [
         "difficulty_rationale": "Single tool call with simple query parameters, no request body",
         "domain": "Personal",
         "prompt": f"Lista alla icke-extern personal i en revisionsprocess på företaget med id: {company_id}",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_employees",
-                "query_params": {
+                "correct_query_params": {
                     "instance": DOMAIN,
                     "companyId": company_id,
                     "companyNumber": None,
@@ -65,8 +66,9 @@ data = [
                     "pageIndex": 0,
                     "pageSize": 20,
                 },
-                "request_body": None,
-            }
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/employees"
+            },
         ],
         "clarification_needed": None,
         "risk": None,
@@ -80,16 +82,16 @@ data = [
         "difficulty_rationale": "Single tool call with complex request body",
         "domain": "Personal",
         "prompt": f"Anna Lindström kommer börja som en heltidsanställd ekonomiassistent inom företaget med id {company_id}  den första september, skulle du kunna lägga till henne som en ny anställd. Hon har personnummer 19900312-1234. Använd mallen med id {employment_template_id}",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "create_employee",
-                "query_params": {
+                "correct_query_params": {
                     "employmenttemplateId": employment_template_id,
                     "employmentPeriodStart": datetime(2026, 9, 1, 0 , 0 ,0).isoformat(),
                     "employmentPeriodEnd": None,
                 },
-                "request_body": {
+                "correct_request_body": {
                     "adressRow1": None,
                     "adressRow2": None,
                     "city": None,
@@ -153,7 +155,8 @@ data = [
                     "salaryRevisionYear": None,
                     "unionId": None,
                 },
-            }
+                "correct_path": f"{consts.API_ENDPOINT}/employees",
+            },
         ],
         "clarification_needed": None,
         "risk": None,
@@ -166,12 +169,12 @@ data = [
         "difficulty_rationale": "Single tool call with both query parameters and complex request body",
         "domain": "Resa",
         "prompt": f"Kan du hjälp amig registrera en resa för {alt_employee} som har åkt 143 km menllan klockan 8 och 16 den sjunde Mars",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "create_imported_trip",
-                "query_params": None,
-                "request_body": {
+                "correct_query_params": None,
+                "correct_request_body": {
                     "comment": None,
                     "distance": 143,
                     "employeeId": alt_employee,
@@ -184,6 +187,7 @@ data = [
                     "toMileage": None,
                     "toStreet": None,
                 },
+                "correct_path": f"{consts.API_ENDPOINT}/importedtrips",
             }
         ],
         "clarification_needed": None,
@@ -201,8 +205,8 @@ data = [
             {
                 "step": 1,
                 "tool": "create_account_combination",
-                "query_params": {},
-                "request_body": {
+                "correct_query_params": {},
+                "correct_request_body": {
                     "accountCombinationAccounts": [
                         {"accountDistribution": account_distribution_ids[3],
                          "accountSelection": 1619
@@ -220,6 +224,7 @@ data = [
                     "combinationRule": 1,
                     "companyId": company_id,
                 },
+                "correct_path": f"{consts.API_ENDPOINT}/accountcombinations",
             }
         ],
         "clarification_needed": None,
@@ -235,11 +240,11 @@ data = [
         "difficulty_rationale": "Two independent tool calls — results do not depend on each other, order does not matter",
         "domain": "Personal & Roller",
         "prompt": f"Visa alla anställda på företaget id: {company_id} och alla roller.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_employees",
-                "query_params": {
+                "correct_query_params": {
                     "instance": DOMAIN,
                     "companyId": company_id,
                     "companyNumber": None,
@@ -252,13 +257,15 @@ data = [
                     "pageIndex": 0,
                     "pageSize": 20,
                 },
-                "request_body": None,   
+                "correct_request_body": None,   
+                "correct_path": f"{consts.API_ENDPOINT}/employees",
             },
             {
                 "step": 2,
                 "tool": "get_roles",
-                "query_params": None,
-                "request_body": None,
+                "correct_query_params": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/roles",
             },
         ],
         "clarification_needed": None,
@@ -272,21 +279,22 @@ data = [
         "difficulty_rationale": "Two independent tool calls — results do not depend on each other, order does not matter",
         "domain": "Kontodistributioner & Frånvarosaldo",
         "prompt": f"Hämta alla kontodistributioner för företaget med id: {company_id} och visa semestersaldon för anställd med id {employee_id}.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_account_distribution_by_comapny_id",
-                "query_params": {
+                "correct_query_params": {
                     "company_id": company_id,
                     "pageIndex": 0,
                     "pageSize": 20,
                     },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/companies/{company_id}/accountdistributions",
             },
             {
                 "step": 2,
-                "tool": "get_employment_vacation_quotas",
-                "query_params": {
+                "tool": "get_employment_vacations_quotas",
+                "correct_query_params": {
                     "employeeId": employee_id,
                     "employmentNumber": None,
                     "compnayId": None,
@@ -294,7 +302,8 @@ data = [
                     "pageIndex": 0,
                     "pageSize": 20,
                     },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/employmentvacationquotas",
             },
         ],
         "clarification_needed": None,
@@ -308,17 +317,18 @@ data = [
         "difficulty_rationale": "Three independent tool calls — none depend on each other, order does not matter",
         "domain": "Personal & Schema & Dokument",
         "prompt": f"Visa information om anställd {employee_id} , hämta deras publika schema och deras anhöriga.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_employee_by_id",
-                "query_params": {"employee_id": employee_id},
-                "request_body": None,
+                "correct_query_params": {"employee_id": employee_id},
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/employees/{employee_id}",
             },
             {
                 "step": 2,
                 "tool": "get_employment_public_schedules",
-                "query_params": {
+                "correct_query_params": {
                     "instance": None,
                     "company_id": None,
                     "company_number": None,
@@ -328,12 +338,13 @@ data = [
                     "pageSize": 20,
                     "IncludeEmptySchedules": True
                     },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/employmentpublicschedules",
             },
             {
                 "step": 3,
                 "tool": "get_next_of_kins",
-                "query_params": {
+                "correct_query_params": {
                     "instance": None,
                     "company_id": None,
                     "company_number": None,
@@ -341,7 +352,8 @@ data = [
                     "employment_number": None,
                     "pageIndex": 0,
                     },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/nextofkin",
             },
         ],
         "clarification_needed": None,
@@ -355,12 +367,12 @@ data = [
         "difficulty_rationale": "A batch tool call with complex request bodies — results do not depend on each other",
         "domain": "Resa",
         "prompt": f"Registrera en tjänsteresa för anställd {employee_id} (167 km) och en för anställd {alt_employee} (87 km), båda från 2026-04-16 till 2026-04-16.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "batch_create_imported_trip",
-                "query_params": None,
-                "request_body": [
+                "correct_query_params": None,
+                "correct_request_body": [
                     {
                     "comment": None,
                     "distance": 167,
@@ -388,7 +400,7 @@ data = [
                     "toStreet": None, 
                     },
                 ],
-                
+                "correct_path": f"{consts.API_ENDPOINT}/importedtrips/batch",
             },
         ],
         "clarification_needed": None,
@@ -402,36 +414,39 @@ data = [
         "difficulty_rationale": "Three independent tool calls with query parameters — none depend on each other",
         "domain": "Tidrapport & Närvaro & Lönekörning",
         "prompt": f"Visa tidrapporterna för anställd {employee_id} för April månad 2026, {user_id} övertidsmarkörer för 15 april, och alla frånvaro-ansökningar för företag {company_id}.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_time_reports_by_employee_id",
-                "query_params": {
+                "correct_query_params": {
                     "employee_id": employee_id,
                     "from": datetime(2026, 4, 1, 0, 0, 0).isoformat(),
                     "tom": datetime(2026, 4, 30, 0, 0, 0).isoformat(),
                     },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/employees/{employee_id}/timereports",
             },
             {
                 "step": 2,
                 "tool": "get_overtime_by_user_id",
-                "query_params": {
+                "correct_query_params": {
                     "user_id": user_id,
                     "instans": INSTANCE,
                     "date": datetime(2026, 4, 15, 0, 0, 0).isoformat(),
                 },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/overtime/GetByUserID",
             },
             {
                 "step": 3,
                 "tool": "get_absence_applications_by_company_id",
-                "query_params": {
+                "correct_query_params": {
                     "company_id": company_id,
                     "pageIndex": 0,
                     "pageSize": 20,
                     },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/companies/{company_id}/absenceapplications",
             },
         ],
         "clarification_needed": None,
@@ -449,23 +464,24 @@ data = [
         "difficulty_rationale": "Multiple tool dependent tool calls with simple query parameters, no request body",
         "domain": "Lönekörning",
         "prompt": f"Visa lönekörningar för alla preliminära månadslöner för företaget med id: {company_id}",
-        "tool_chain": [
+        "correct_solution": [
 
             {
                 "step": 1,
                 "tool": "get_payment_groups",
-                "query_params": {
+                "correct_query_params": {
                     "instance": None,
                     "companyId": company_id,
                     "companyNumber": None,
                     "pageIndex": None,
                     "pageSize": None,
                 },
+                "correct_path": f"{consts.API_ENDPOINT}/paymentgroups",
             },
             {
                 "step": 2,
                 "tool": "get_payroll_runs",
-                "query_params": {
+                "correct_query_params": {
                     "company_id": company_id,
                     "payrollRunNumber": None,
                     "paymentGroupId": payment_group_id,
@@ -479,7 +495,8 @@ data = [
                     "pageIndex": None,
                     "pageSize": None,
                 },
-                "request_body": None,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/payrollruns",
             },
         ],
         "clarification_needed": None,
@@ -492,19 +509,28 @@ data = [
         "difficulty": 3,
         "difficulty_rationale": "Two dependent calls: user_id from step 1 required as input to step 2 — order matters",
         "domain": "Roller",
-        "prompt": "Visa alla roller som anställd 1042 har på företaget.",
-        "tool_chain": [
+        "prompt": f"Visa alla roller som anställd {employee_id} har på företaget.",
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_user_by_employee_id",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
+                "correct_query_params": {
+                    "employee_id": employee_id},
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/employees/{employee_id}/user",
             },
             {
+                
                 "step": 2,
-                "tool": "get_all_roles_of_user_for_company",
-                "query_params": {"user_id": "$step1.user_id", "company_id": 100},
-                "request_body": None,
+                "tool": "get_roles_by_user",
+                "correct_query_params": {
+                    "user_id": test_user_id, #Id retrived by step 1
+                    "name": None,
+                    "pageIndex": 0,
+                    "pageSize": 20,
+                "correct_request_body": None,
+                "correct_path": f"{consts.API_ENDPOINT}/users/{test_user_id}/roles",
+            },
             },
         ],
         "clarification_needed": None,
@@ -517,19 +543,25 @@ data = [
         "difficulty": 3,
         "difficulty_rationale": "Two dependent calls: billing_release_id from step 1 required as input to step 2 — order matters",
         "domain": "Fakturering",
-        "prompt": "Visa faktureringsunderlaget för den senaste faktureringsreleasen för företag 100.",
-        "tool_chain": [
+        "prompt": f"Visa faktureringsunderlaget för den senaste faktureringsreleasen för företag nr {company_nr} .",
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_billing_releases_by_company",
-                "query_params": {"company_id": 100},
-                "request_body": None,
+                "correct_query_params": {
+                    "company": company_nr,
+                    "hideCompletedReleases": 
+                    ""
+                    },
+                "correct_request_body": None,
+                "correct_path": None,
             },
             {
                 "step": 2,
                 "tool": "get_invocing_basis_by_billing_release_id",
-                "query_params": {"billing_release_id": "$step1.latest_id"},
-                "request_body": None,
+                "correct_query_params": {"billing_release_id": "$step1.latest_id"},
+                "correct_request_body": None,
+                "correct_path": None,
             },
         ],
         "clarification_needed": None,
@@ -543,18 +575,18 @@ data = [
         "difficulty_rationale": "Two dependent calls: user_id from step 1 required as input to step 2 — order matters",
         "domain": "Användarhantering",
         "prompt": "Återställ lösenordet för anställd 1042.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_user_by_employee_id",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
+                "correct_query_params": {"employee_id": 1042},
+                "correct_request_body": None,
             },
             {
                 "step": 2,
                 "tool": "recover_password_on_user_by_user_id",
-                "query_params": {"user_id": "$step1.user_id"},
-                "request_body": None,
+                "correct_query_params": {"user_id": "$step1.user_id"},
+                "correct_request_body": None,
             },
         ],
         "clarification_needed": None,
@@ -568,24 +600,24 @@ data = [
         "difficulty_rationale": "Three dependent calls in a chain: each step requires output from the previous — order matters strictly",
         "domain": "Lönekörning",
         "prompt": "Hämta transaktionerna för lönekörning 88 och visa konteringssamlingarna för den första transaktionen.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_payroll_run_by_id",
-                "query_params": {"payroll_run_id": 88},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": 88},
+                "correct_request_body": None,
             },
             {
                 "step": 2,
                 "tool": "get_payroll_run_transactions",
-                "query_params": {"payroll_run_id": "$step1.payroll_run_id"},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": "$step1.payroll_run_id"},
+                "correct_request_body": None,
             },
             {
                 "step": 3,
                 "tool": "get_payroll_run_transaction_account_collections",
-                "query_params": {"payroll_run_transaction_id": "$step2.first_transaction_id"},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_transaction_id": "$step2.first_transaction_id"},
+                "correct_request_body": None,
             },
         ],
         "clarification_needed": None,
@@ -599,12 +631,12 @@ data = [
         "difficulty_rationale": "Three dependent calls: employee created first, then employment period using employee_id, then rate using employment_id — strict order",
         "domain": "Personal",
         "prompt": "Registrera ny anställd Erik Holm, 19850615-5678, startdatum 2024-10-01, deltid 80%.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "create_employee",
-                "query_params": {},
-                "request_body": {
+                "correct_query_params": {},
+                "correct_request_body": {
                     "first_name": "Erik",
                     "last_name": "Holm",
                     "ssn": "19850615-5678",
@@ -613,8 +645,8 @@ data = [
             {
                 "step": 2,
                 "tool": "create_employment_period",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": {
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": {
                     "start_date": "2024-10-01",
                     "employment_type": "deltid",
                 },
@@ -622,8 +654,8 @@ data = [
             {
                 "step": 3,
                 "tool": "create_employment_rate",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": {
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": {
                     "employment_period_id": "$step2.employment_period_id",
                     "rate": 80,
                 },
@@ -642,40 +674,40 @@ data = [
         "difficulty_rationale": "Two independent dependent chains (D3) whose combined results feed a final tool call",
         "domain": "Fakturering & Roller",
         "prompt": "Starta en faktureringsrelease för företag 100 och tilldela användaren kopplad till anställd 1042 rollen 'faktureringsansvarig'.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_billing_releases_by_company",
-                "query_params": {"company_id": 100},
-                "request_body": None,
+                "correct_query_params": {"company_id": 100},
+                "correct_request_body": None,
                 "chain": "A",
             },
             {
                 "step": 2,
                 "tool": "begin_release_accounts_to_billing",
-                "query_params": {},
-                "request_body": {"company": "$step1.company_id", "releaseToDate": "2024-08-31"},
+                "correct_query_params": {},
+                "correct_request_body": {"company": "$step1.company_id", "releaseToDate": "2024-08-31"},
                 "chain": "A",
             },
             {
                 "step": 3,
                 "tool": "get_user_by_employee_id",
-                "query_params": {"employee_id": 1042},
-                "request_body": None,
+                "correct_query_params": {"employee_id": 1042},
+                "correct_request_body": None,
                 "chain": "B",
             },
             {
                 "step": 4,
                 "tool": "update_role_collection_of_user_for_comapany_put",
-                "query_params": {"user_id": "$step3.user_id", "company_id": 100},
-                "request_body": {"roles": [{"role_id": "faktureringsansvarig"}]},
+                "correct_query_params": {"user_id": "$step3.user_id", "company_id": 100},
+                "correct_request_body": {"roles": [{"role_id": "faktureringsansvarig"}]},
                 "chain": "B",
             },
             {
                 "step": 5,
                 "tool": "get_background_task_by_id",
-                "query_params": {"id": "$step2.task_id"},
-                "request_body": None,
+                "correct_query_params": {"id": "$step2.task_id"},
+                "correct_request_body": None,
                 "chain": "final",
                 "note": "Combines results from chain A (task_id) to verify release completed",
             },
@@ -691,26 +723,26 @@ data = [
         "difficulty_rationale": "Two independent dependent chains whose combined results feed a final batch tool call",
         "domain": "Personal & Resa",
         "prompt": "Registrera ny anställd Erik Holm (19850615-5678, startdatum 2024-10-01) och registrera tre resor för anställd 880 vecka 34, koppla sedan båda till lönekörning 88.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "create_employee",
-                "query_params": {},
-                "request_body": {"first_name": "Erik", "last_name": "Holm", "ssn": "19850615-5678"},
+                "correct_query_params": {},
+                "correct_request_body": {"first_name": "Erik", "last_name": "Holm", "ssn": "19850615-5678"},
                 "chain": "A",
             },
             {
                 "step": 2,
                 "tool": "create_employment_period",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": {"start_date": "2024-10-01"},
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": {"start_date": "2024-10-01"},
                 "chain": "A",
             },
             {
                 "step": 3,
                 "tool": "batch_create_imported_trip",
-                "query_params": {"employee_id": 880},
-                "request_body": {
+                "correct_query_params": {"employee_id": 880},
+                "correct_request_body": {
                     "trips": [
                         {"date": "2024-08-19", "vehicle_type_id": 2, "distance_km": 87, "project_id": 4450},
                         {"date": "2024-08-20", "vehicle_type_id": 2, "distance_km": 55, "project_id": 4451},
@@ -722,8 +754,8 @@ data = [
             {
                 "step": 4,
                 "tool": "get_payroll_run_employments",
-                "query_params": {"payroll_run_id": 88},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": 88},
+                "correct_request_body": None,
                 "chain": "final",
                 "note": "Combines results from chain A (new employee_id) and chain B (trip registrations) to verify both appear in payroll run 88",
             },
@@ -739,40 +771,40 @@ data = [
         "difficulty_rationale": "Two independent dependent chains whose combined results feed a final reporting tool call",
         "domain": "Lönekörning & Schema",
         "prompt": "Hämta transaktionerna för lönekörning 88 och schemadagarna för löneöverföring 55, och skapa sedan ett löneunderlagsrapport.",
-        "tool_chain": [
+        "correct_solution": [
             {
                 "step": 1,
                 "tool": "get_payroll_run_by_id",
-                "query_params": {"payroll_run_id": 88},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": 88},
+                "correct_request_body": None,
                 "chain": "A",
             },
             {
                 "step": 2,
                 "tool": "get_payroll_run_transactions",
-                "query_params": {"payroll_run_id": "$step1.payroll_run_id"},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": "$step1.payroll_run_id"},
+                "correct_request_body": None,
                 "chain": "A",
             },
             {
                 "step": 3,
                 "tool": "get_schedule_days_by_salary_transfer_id",
-                "query_params": {"salary_transfer_id": 55},
-                "request_body": None,
+                "correct_query_params": {"salary_transfer_id": 55},
+                "correct_request_body": None,
                 "chain": "B",
             },
             {
                 "step": 4,
                 "tool": "get_schedule_days_by_salary_transfer_id",
-                "query_params": {"salary_transfer_id": "$step3.salary_transfer_id"},
-                "request_body": None,
+                "correct_query_params": {"salary_transfer_id": "$step3.salary_transfer_id"},
+                "correct_request_body": None,
                 "chain": "B",
             },
             {
                 "step": 5,
                 "tool": "begin_release_accounts_to_billing",
-                "query_params": {},
-                "request_body": {
+                "correct_query_params": {},
+                "correct_request_body": {
                     "company": 100,
                     "transactions": "$step2.transactions",
                     "schedule_days": "$step4.schedule_days",
@@ -794,43 +826,43 @@ data = [
         "difficulty_rationale": "Two full D4 task groups whose combined outputs feed a final tool call — maximum complexity",
         "domain": "Personal & Fakturering & Lön",
         "prompt": "Onboarda Erik Holm (19850615-5678, IT, Systemutvecklare, 80% deltid, startdatum 2024-10-01) med rollen 'chef', registrera tre resor för anställd 880 vecka 34 och starta en faktureringsrelease för företag 100 — verifiera sedan att allt är klart i bakgrundsuppgiften.",
-        "tool_chain": [
+        "correct_solution": [
             # D4 group 1 - Chain A: Create employee + period
             {
                 "step": 1,
                 "tool": "create_employee",
-                "query_params": {},
-                "request_body": {"first_name": "Erik", "last_name": "Holm", "ssn": "19850615-5678", "department": "IT", "title": "Systemutvecklare"},
+                "correct_query_params": {},
+                "correct_request_body": {"first_name": "Erik", "last_name": "Holm", "ssn": "19850615-5678", "department": "IT", "title": "Systemutvecklare"},
                 "chain": "D4a-A",
             },
             {
                 "step": 2,
                 "tool": "create_employment_period",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": {"start_date": "2024-10-01", "employment_type": "deltid", "rate": 80},
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": {"start_date": "2024-10-01", "employment_type": "deltid", "rate": 80},
                 "chain": "D4a-A",
             },
             # D4 group 1 - Chain B: Get user + assign role
             {
                 "step": 3,
                 "tool": "get_user_by_employee_id",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": None,
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": None,
                 "chain": "D4a-B",
             },
             {
                 "step": 4,
                 "tool": "update_role_collection_of_user_for_comapany_put",
-                "query_params": {"user_id": "$step3.user_id", "company_id": 100},
-                "request_body": {"roles": [{"role_id": "chef"}]},
+                "correct_query_params": {"user_id": "$step3.user_id", "company_id": 100},
+                "correct_request_body": {"roles": [{"role_id": "chef"}]},
                 "chain": "D4a-B",
             },
             # D4 group 2 - Chain A: Batch create trips
             {
                 "step": 5,
                 "tool": "batch_create_imported_trip",
-                "query_params": {"employee_id": 880},
-                "request_body": {
+                "correct_query_params": {"employee_id": 880},
+                "correct_request_body": {
                     "trips": [
                         {"date": "2024-08-19", "vehicle_type_id": 2, "distance_km": 87, "project_id": 4450},
                         {"date": "2024-08-20", "vehicle_type_id": 2, "distance_km": 55, "project_id": 4451},
@@ -843,23 +875,23 @@ data = [
             {
                 "step": 6,
                 "tool": "get_billing_releases_by_company",
-                "query_params": {"company_id": 100},
-                "request_body": None,
+                "correct_query_params": {"company_id": 100},
+                "correct_request_body": None,
                 "chain": "D4b-B",
             },
             {
                 "step": 7,
                 "tool": "begin_release_accounts_to_billing",
-                "query_params": {},
-                "request_body": {"company": 100, "releaseToDate": "2024-08-31", "time": True, "travel": True},
+                "correct_query_params": {},
+                "correct_request_body": {"company": 100, "releaseToDate": "2024-08-31", "time": True, "travel": True},
                 "chain": "D4b-B",
             },
             # Final: Verify background task combining all D4 results
             {
                 "step": 8,
                 "tool": "get_background_task_by_id",
-                "query_params": {"id": "$step7.task_id"},
-                "request_body": None,
+                "correct_query_params": {"id": "$step7.task_id"},
+                "correct_request_body": None,
                 "chain": "final",
                 "note": "Combines outputs from both D4 groups to verify full onboarding + release completed successfully",
             },
@@ -875,13 +907,13 @@ data = [
         "difficulty_rationale": "Two full D4 task groups whose combined outputs feed a final payroll tool call",
         "domain": "Lön & Resa & Schema",
         "prompt": "Registrera tre resor för anställd 880 vecka 34, hämta schemadagarna för löneöverföring 55, hämta transaktionerna för lönekörning 88 och konteringssamlingarna för den första — kombinera och starta sedan lönekörning för företag 100.",
-        "tool_chain": [
+        "correct_solution": [
             # D4 group 1 - Chain A: Batch trips
             {
                 "step": 1,
                 "tool": "batch_create_imported_trip",
-                "query_params": {"employee_id": 880},
-                "request_body": {
+                "correct_query_params": {"employee_id": 880},
+                "correct_request_body": {
                     "trips": [
                         {"date": "2024-08-19", "vehicle_type_id": 2, "distance_km": 87, "project_id": 4450},
                         {"date": "2024-08-20", "vehicle_type_id": 2, "distance_km": 55, "project_id": 4451},
@@ -894,16 +926,16 @@ data = [
             {
                 "step": 2,
                 "tool": "get_schedule_days_by_salary_transfer_id",
-                "query_params": {"salary_transfer_id": 55},
-                "request_body": None,
+                "correct_query_params": {"salary_transfer_id": 55},
+                "correct_request_body": None,
                 "chain": "D4a-B",
             },
             # D4 group 1 - Final: Salary basis combining trips + schedule days
             {
                 "step": 3,
                 "tool": "get_salary_basis_by_travel_salary_transfer_id",
-                "query_params": {"travel_salary_transfer_id": 55, "employee_id": 880},
-                "request_body": None,
+                "correct_query_params": {"travel_salary_transfer_id": 55, "employee_id": 880},
+                "correct_request_body": None,
                 "chain": "D4a-final",
                 "note": "Combines trip registrations and schedule days from D4a",
             },
@@ -911,31 +943,31 @@ data = [
             {
                 "step": 4,
                 "tool": "get_payroll_run_by_id",
-                "query_params": {"payroll_run_id": 88},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": 88},
+                "correct_request_body": None,
                 "chain": "D4b-A",
             },
             {
                 "step": 5,
                 "tool": "get_payroll_run_transactions",
-                "query_params": {"payroll_run_id": "$step4.payroll_run_id"},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_id": "$step4.payroll_run_id"},
+                "correct_request_body": None,
                 "chain": "D4b-A",
             },
             # D4 group 2 - Chain B: Transaction account collections
             {
                 "step": 6,
                 "tool": "get_payroll_run_transaction_account_collections",
-                "query_params": {"payroll_run_transaction_id": "$step5.first_transaction_id"},
-                "request_body": None,
+                "correct_query_params": {"payroll_run_transaction_id": "$step5.first_transaction_id"},
+                "correct_request_body": None,
                 "chain": "D4b-B",
             },
             # D4 group 2 - Final: Combine transactions + collections
             {
                 "step": 7,
                 "tool": "begin_release_accounts_to_billing",
-                "query_params": {},
-                "request_body": {
+                "correct_query_params": {},
+                "correct_request_body": {
                     "company": 100,
                     "transactions": "$step5.transactions",
                     "account_collections": "$step6.collections",
@@ -947,8 +979,8 @@ data = [
             {
                 "step": 8,
                 "tool": "get_background_task_by_id",
-                "query_params": {"id": "$step7.task_id"},
-                "request_body": None,
+                "correct_query_params": {"id": "$step7.task_id"},
+                "correct_request_body": None,
                 "chain": "final",
                 "note": "Combines salary basis from D4a and billing release from D4b to verify full payroll initiation",
             },
@@ -971,9 +1003,9 @@ data = [
         "domain": "Schema",
         "prompt": "Visa scheman.",
         "clarification_needed": "Menar du publika scheman (gäller grupper) eller personliga scheman (individanpassade)?",
-        "tool_chain_after_clarification": [
-            {"option": "publikt", "tool": "get_employment_public_schedules", "query_params": {"instance": "flexhrm"}, "request_body": None},
-            {"option": "personligt", "tool": "get_employment_personal_schedules", "query_params": {"instance": "flexhrm"}, "request_body": None},
+        "correct_solution_after_clarification": [
+            {"option": "publikt", "tool": "get_employment_public_schedules", "correct_query_params": {"instance": "flexhrm"}, "correct_request_body": None},
+            {"option": "personligt", "tool": "get_employment_personal_schedules", "correct_query_params": {"instance": "flexhrm"}, "correct_request_body": None},
         ],
         "risk": None,
     },
@@ -986,8 +1018,8 @@ data = [
         "domain": "Tidrapport",
         "prompt": "Visa tidrapporterna.",
         "clarification_needed": "Vilket anställd-ID eller namn gäller det?",
-        "tool_chain_after_clarification": [
-            {"option": "angivet ID", "tool": "get_time_reports_by_employee_id", "query_params": {"employee_id": "?"}, "request_body": None},
+        "correct_solution_after_clarification": [
+            {"option": "angivet ID", "tool": "get_time_reports_by_employee_id", "correct_query_params": {"employee_id": "?"}, "correct_request_body": None},
         ],
         "risk": None,
     },
@@ -1000,12 +1032,12 @@ data = [
         "domain": "Personal",
         "prompt": "Lägg till en ny anställd som heter Maria.",
         "clarification_needed": "Jag behöver mer information: efternamn, personnummer, anställningsform, startdatum och avdelning?",
-        "tool_chain_after_clarification": [
+        "correct_solution_after_clarification": [
             {
                 "option": "all info given",
                 "tool": "create_employee",
-                "query_params": {},
-                "request_body": {"first_name": "Maria", "last_name": "?", "ssn": "?", "employment_type": "?", "start_date": "?", "department": "?"},
+                "correct_query_params": {},
+                "correct_request_body": {"first_name": "Maria", "last_name": "?", "ssn": "?", "employment_type": "?", "start_date": "?", "department": "?"},
             }
         ],
         "risk": None,
@@ -1019,12 +1051,12 @@ data = [
         "domain": "Tidrapport",
         "prompt": "Rapportera 8 timmar övertid.",
         "clarification_needed": "För vilket datum och på vilket projekt/kostnadsbärare ska övertiden rapporteras?",
-        "tool_chain_after_clarification": [
+        "correct_solution_after_clarification": [
             {
                 "option": "all info given",
                 "tool": "insert_time_row",
-                "query_params": {"employee_id": "CURRENT"},
-                "request_body": {"date": "?", "rows": [{"type": "overtime", "hours": 8, "project_code": "?", "cost_center": "?"}]},
+                "correct_query_params": {"employee_id": "CURRENT"},
+                "correct_request_body": {"date": "?", "rows": [{"type": "overtime", "hours": 8, "project_code": "?", "cost_center": "?"}]},
             }
         ],
         "risk": None,
@@ -1040,9 +1072,9 @@ data = [
         "domain": "Personal & Schema",
         "prompt": "Visa information och schema för en av mina kollegor.",
         "clarification_needed": "Vilket anställd-ID eller namn har kollegan?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "get_employee_by_id", "query_params": {"employee_id": "?"}, "request_body": None},
-            {"step": 2, "tool": "get_employment_public_schedules", "query_params": {"employee_id": "?"}, "request_body": None},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "get_employee_by_id", "correct_query_params": {"employee_id": "?"}, "correct_request_body": None},
+            {"step": 2, "tool": "get_employment_public_schedules", "correct_query_params": {"employee_id": "?"}, "correct_request_body": None},
         ],
         "risk": None,
     },
@@ -1055,9 +1087,9 @@ data = [
         "domain": "Resa",
         "prompt": "Registrera resor för mig och min kollega idag.",
         "clarification_needed": "Vilket är ditt anställd-ID och din kollegas? Och vad är distansen och projektet för vardera resa?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "create_imported_trip", "query_params": {"employee_id": "?"}, "request_body": {"date": "TODAY", "distance_km": "?", "project_id": "?"}},
-            {"step": 2, "tool": "create_imported_trip", "query_params": {"employee_id": "?"}, "request_body": {"date": "TODAY", "distance_km": "?", "project_id": "?"}},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "create_imported_trip", "correct_query_params": {"employee_id": "?"}, "correct_request_body": {"date": "TODAY", "distance_km": "?", "project_id": "?"}},
+            {"step": 2, "tool": "create_imported_trip", "correct_query_params": {"employee_id": "?"}, "correct_request_body": {"date": "TODAY", "distance_km": "?", "project_id": "?"}},
         ],
         "risk": None,
     },
@@ -1070,10 +1102,10 @@ data = [
         "domain": "Lönekörning & Frånvaro & Närvaro",
         "prompt": "Visa lönekörningar, semestersaldon och stämplingshistorik.",
         "clarification_needed": "För vilket företag ska lönekörningarna hämtas, vilket anställd-ID gäller för semestersaldona och vilket användar-ID för stämplingshistoriken?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "get_payroll_runs", "query_params": {"company_id": "?"}, "request_body": None},
-            {"step": 2, "tool": "get_employment_vacation_by_employee_id", "query_params": {"employee_id": "?"}, "request_body": None},
-            {"step": 3, "tool": "get_stamping_by_userID", "query_params": {"user_id": "?"}, "request_body": None},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "get_payroll_runs", "correct_query_params": {"company_id": "?"}, "correct_request_body": None},
+            {"step": 2, "tool": "get_employment_vacation_by_employee_id", "correct_query_params": {"employee_id": "?"}, "correct_request_body": None},
+            {"step": 3, "tool": "get_stamping_by_userID", "correct_query_params": {"user_id": "?"}, "correct_request_body": None},
         ],
         "risk": None,
     },
@@ -1088,9 +1120,9 @@ data = [
         "domain": "Användarhantering",
         "prompt": "Återställ lösenordet för en anställd.",
         "clarification_needed": "Vilket anställd-ID eller namn avses?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "get_user_by_employee_id", "query_params": {"employee_id": "?"}, "request_body": None},
-            {"step": 2, "tool": "recover_password_on_user_by_user_id", "query_params": {"user_id": "$step1.user_id"}, "request_body": None},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "get_user_by_employee_id", "correct_query_params": {"employee_id": "?"}, "correct_request_body": None},
+            {"step": 2, "tool": "recover_password_on_user_by_user_id", "correct_query_params": {"user_id": "$step1.user_id"}, "correct_request_body": None},
         ],
         "risk": None,
     },
@@ -1103,9 +1135,9 @@ data = [
         "domain": "Lönekörning",
         "prompt": "Öppna den senaste lönekörningen och visa transaktionerna.",
         "clarification_needed": "Jag hittade tre lönekörningar: #88 (aug), #87 (jul), #86 (jun). Ska jag hämta transaktionerna för #88?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "get_payroll_runs", "query_params": {"company_id": 100}, "request_body": None},
-            {"step": 2, "tool": "get_payroll_run_transactions", "query_params": {"payroll_run_id": "?"}, "request_body": None},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "get_payroll_runs", "correct_query_params": {"company_id": 100}, "correct_request_body": None},
+            {"step": 2, "tool": "get_payroll_run_transactions", "correct_query_params": {"payroll_run_id": "?"}, "correct_request_body": None},
         ],
         "risk": None,
     },
@@ -1118,24 +1150,24 @@ data = [
         "domain": "Personal",
         "prompt": "Registrera ny anställd Erik Holm, 19850615-5678.",
         "clarification_needed": "Jag behöver startdatum, anställningsform (heltid/deltid) och sysselsättningsgrad (%) för att skapa anställningsperioden.",
-        "tool_chain_after_clarification": [
+        "correct_solution_after_clarification": [
             {
                 "step": 1,
                 "tool": "create_employee",
-                "query_params": {},
-                "request_body": {"first_name": "Erik", "last_name": "Holm", "ssn": "19850615-5678"},
+                "correct_query_params": {},
+                "correct_request_body": {"first_name": "Erik", "last_name": "Holm", "ssn": "19850615-5678"},
             },
             {
                 "step": 2,
                 "tool": "create_employment_period",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": {"start_date": "?", "employment_type": "?"},
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": {"start_date": "?", "employment_type": "?"},
             },
             {
                 "step": 3,
                 "tool": "create_employment_rate",
-                "query_params": {"employee_id": "$step1.employee_id"},
-                "request_body": {"employment_period_id": "$step2.employment_period_id", "rate": "?"},
+                "correct_query_params": {"employee_id": "$step1.employee_id"},
+                "correct_request_body": {"employment_period_id": "$step2.employment_period_id", "rate": "?"},
             },
         ],
         "risk": None,
@@ -1151,12 +1183,12 @@ data = [
         "domain": "Fakturering & Roller",
         "prompt": "Starta en faktureringsrelease och tilldela en roll till en anställd.",
         "clarification_needed": "För faktureringsreleasen: vilket företag och till vilket datum? För rolltilldelningen: vilket anställd-ID och vilken roll ska tilldelas?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "get_billing_releases_by_company", "query_params": {"company_id": "?"}, "request_body": None, "chain": "A"},
-            {"step": 2, "tool": "begin_release_accounts_to_billing", "query_params": {}, "request_body": {"company": "?", "releaseToDate": "?"}, "chain": "A"},
-            {"step": 3, "tool": "get_user_by_employee_id", "query_params": {"employee_id": "?"}, "request_body": None, "chain": "B"},
-            {"step": 4, "tool": "update_role_collection_of_user_for_comapany_put", "query_params": {"user_id": "$step3.user_id", "company_id": "?"}, "request_body": {"roles": [{"role_id": "?"}]}, "chain": "B"},
-            {"step": 5, "tool": "get_background_task_by_id", "query_params": {"id": "$step2.task_id"}, "request_body": None, "chain": "final"},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "get_billing_releases_by_company", "correct_query_params": {"company_id": "?"}, "correct_request_body": None, "chain": "A"},
+            {"step": 2, "tool": "begin_release_accounts_to_billing", "correct_query_params": {}, "correct_request_body": {"company": "?", "releaseToDate": "?"}, "chain": "A"},
+            {"step": 3, "tool": "get_user_by_employee_id", "correct_query_params": {"employee_id": "?"}, "correct_request_body": None, "chain": "B"},
+            {"step": 4, "tool": "update_role_collection_of_user_for_comapany_put", "correct_query_params": {"user_id": "$step3.user_id", "company_id": "?"}, "correct_request_body": {"roles": [{"role_id": "?"}]}, "chain": "B"},
+            {"step": 5, "tool": "get_background_task_by_id", "correct_query_params": {"id": "$step2.task_id"}, "correct_request_body": None, "chain": "final"},
         ],
         "risk": None,
     },
@@ -1169,12 +1201,12 @@ data = [
         "domain": "Lönekörning & Schema",
         "prompt": "Hämta transaktionerna för den senaste lönekörningen och schemadagarna för löneöverföring 55 och skapa ett löneunderlag.",
         "clarification_needed": "Jag hittade tre lönekörningar: #88 (aug), #87 (jul), #86 (jun). Ska jag hämta transaktionerna för #88?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "get_payroll_runs", "query_params": {"company_id": 100}, "request_body": None, "chain": "A"},
-            {"step": 2, "tool": "get_payroll_run_transactions", "query_params": {"payroll_run_id": "?"}, "request_body": None, "chain": "A"},
-            {"step": 3, "tool": "get_schedule_days_by_salary_transfer_id", "query_params": {"salary_transfer_id": 55}, "request_body": None, "chain": "B"},
-            {"step": 4, "tool": "get_schedule_days_by_salary_transfer_id", "query_params": {"salary_transfer_id": "$step3.salary_transfer_id"}, "request_body": None, "chain": "B"},
-            {"step": 5, "tool": "begin_release_accounts_to_billing", "query_params": {}, "request_body": {"company": 100, "transactions": "$step2.transactions", "schedule_days": "$step4.schedule_days"}, "chain": "final"},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "get_payroll_runs", "correct_query_params": {"company_id": 100}, "correct_request_body": None, "chain": "A"},
+            {"step": 2, "tool": "get_payroll_run_transactions", "correct_query_params": {"payroll_run_id": "?"}, "correct_request_body": None, "chain": "A"},
+            {"step": 3, "tool": "get_schedule_days_by_salary_transfer_id", "correct_query_params": {"salary_transfer_id": 55}, "correct_request_body": None, "chain": "B"},
+            {"step": 4, "tool": "get_schedule_days_by_salary_transfer_id", "correct_query_params": {"salary_transfer_id": "$step3.salary_transfer_id"}, "correct_request_body": None, "chain": "B"},
+            {"step": 5, "tool": "begin_release_accounts_to_billing", "correct_query_params": {}, "correct_request_body": {"company": 100, "transactions": "$step2.transactions", "schedule_days": "$step4.schedule_days"}, "chain": "final"},
         ],
         "risk": None,
     },
@@ -1189,14 +1221,14 @@ data = [
         "domain": "Personal & Fakturering & Lön",
         "prompt": "Onboarda en ny kollega och starta en faktureringsrelease.",
         "clarification_needed": "För onboardingen behöver jag: fullständigt namn, personnummer, anställningsform, sysselsättningsgrad, startdatum, avdelning, titel och systemroll. För faktureringsreleasen: vilket företag och till vilket datum?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "create_employee", "query_params": {}, "request_body": {"first_name": "?", "last_name": "?", "ssn": "?", "department": "?", "title": "?"}, "chain": "D4a-A"},
-            {"step": 2, "tool": "create_employment_period", "query_params": {"employee_id": "$step1.employee_id"}, "request_body": {"start_date": "?", "employment_type": "?", "rate": "?"}, "chain": "D4a-A"},
-            {"step": 3, "tool": "get_user_by_employee_id", "query_params": {"employee_id": "$step1.employee_id"}, "request_body": None, "chain": "D4a-B"},
-            {"step": 4, "tool": "update_role_collection_of_user_for_comapany_put", "query_params": {"user_id": "$step3.user_id", "company_id": "?"}, "request_body": {"roles": [{"role_id": "?"}]}, "chain": "D4a-B"},
-            {"step": 5, "tool": "get_billing_releases_by_company", "query_params": {"company_id": "?"}, "request_body": None, "chain": "D4b-A"},
-            {"step": 6, "tool": "begin_release_accounts_to_billing", "query_params": {}, "request_body": {"company": "?", "releaseToDate": "?"}, "chain": "D4b-A"},
-            {"step": 7, "tool": "get_background_task_by_id", "query_params": {"id": "$step6.task_id"}, "request_body": None, "chain": "final", "note": "Combines onboarding completion from D4a and billing release from D4b"},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "create_employee", "correct_query_params": {}, "correct_request_body": {"first_name": "?", "last_name": "?", "ssn": "?", "department": "?", "title": "?"}, "chain": "D4a-A"},
+            {"step": 2, "tool": "create_employment_period", "correct_query_params": {"employee_id": "$step1.employee_id"}, "correct_request_body": {"start_date": "?", "employment_type": "?", "rate": "?"}, "chain": "D4a-A"},
+            {"step": 3, "tool": "get_user_by_employee_id", "correct_query_params": {"employee_id": "$step1.employee_id"}, "correct_request_body": None, "chain": "D4a-B"},
+            {"step": 4, "tool": "update_role_collection_of_user_for_comapany_put", "correct_query_params": {"user_id": "$step3.user_id", "company_id": "?"}, "correct_request_body": {"roles": [{"role_id": "?"}]}, "chain": "D4a-B"},
+            {"step": 5, "tool": "get_billing_releases_by_company", "correct_query_params": {"company_id": "?"}, "correct_request_body": None, "chain": "D4b-A"},
+            {"step": 6, "tool": "begin_release_accounts_to_billing", "correct_query_params": {}, "correct_request_body": {"company": "?", "releaseToDate": "?"}, "chain": "D4b-A"},
+            {"step": 7, "tool": "get_background_task_by_id", "correct_query_params": {"id": "$step6.task_id"}, "correct_request_body": None, "chain": "final", "note": "Combines onboarding completion from D4a and billing release from D4b"},
         ],
         "risk": None,
     },
@@ -1209,15 +1241,15 @@ data = [
         "domain": "Resa & Lön & Schema",
         "prompt": "Registrera mina resor den här veckan och skapa löneunderlag baserat på den senaste lönekörningen.",
         "clarification_needed": "Hur många resor var det och för varje resa behöver jag: datum, fordon, sträcka (km) och projekt. Jag hittade också tre lönekörningar: #88 (aug), #87 (jul), #86 (jun) — vilken ska användas för löneunderlaget?",
-        "tool_chain_after_clarification": [
-            {"step": 1, "tool": "batch_create_imported_trip", "query_params": {"employee_id": "CURRENT"}, "request_body": {"trips": "?"}, "chain": "D4a-A"},
-            {"step": 2, "tool": "get_schedule_days_by_salary_transfer_id", "query_params": {"salary_transfer_id": "?"}, "request_body": None, "chain": "D4a-B"},
-            {"step": 3, "tool": "get_salary_basis_by_travel_salary_transfer_id", "query_params": {"travel_salary_transfer_id": "?", "employee_id": "CURRENT"}, "request_body": None, "chain": "D4a-final", "note": "Combines trips and schedule days from D4a"},
-            {"step": 4, "tool": "get_payroll_runs", "query_params": {"company_id": 100}, "request_body": None, "chain": "D4b-A"},
-            {"step": 5, "tool": "get_payroll_run_transactions", "query_params": {"payroll_run_id": "?"}, "request_body": None, "chain": "D4b-A"},
-            {"step": 6, "tool": "get_payroll_run_transaction_account_collections", "query_params": {"payroll_run_transaction_id": "$step5.first_transaction_id"}, "request_body": None, "chain": "D4b-B"},
-            {"step": 7, "tool": "begin_release_accounts_to_billing", "query_params": {}, "request_body": {"company": 100, "transactions": "$step5.transactions", "account_collections": "$step6.collections"}, "chain": "D4b-final", "note": "Combines transactions and collections from D4b"},
-            {"step": 8, "tool": "get_background_task_by_id", "query_params": {"id": "$step7.task_id"}, "request_body": None, "chain": "final", "note": "Combines salary basis from D4a and billing release from D4b to verify full payroll initiation"},
+        "correct_solution_after_clarification": [
+            {"step": 1, "tool": "batch_create_imported_trip", "correct_query_params": {"employee_id": "CURRENT"}, "correct_request_body": {"trips": "?"}, "chain": "D4a-A"},
+            {"step": 2, "tool": "get_schedule_days_by_salary_transfer_id", "correct_query_params": {"salary_transfer_id": "?"}, "correct_request_body": None, "chain": "D4a-B"},
+            {"step": 3, "tool": "get_salary_basis_by_travel_salary_transfer_id", "correct_query_params": {"travel_salary_transfer_id": "?", "employee_id": "CURRENT"}, "correct_request_body": None, "chain": "D4a-final", "note": "Combines trips and schedule days from D4a"},
+            {"step": 4, "tool": "get_payroll_runs", "correct_query_params": {"company_id": 100}, "correct_request_body": None, "chain": "D4b-A"},
+            {"step": 5, "tool": "get_payroll_run_transactions", "correct_query_params": {"payroll_run_id": "?"}, "correct_request_body": None, "chain": "D4b-A"},
+            {"step": 6, "tool": "get_payroll_run_transaction_account_collections", "correct_query_params": {"payroll_run_transaction_id": "$step5.first_transaction_id"}, "correct_request_body": None, "chain": "D4b-B"},
+            {"step": 7, "tool": "begin_release_accounts_to_billing", "correct_query_params": {}, "correct_request_body": {"company": 100, "transactions": "$step5.transactions", "account_collections": "$step6.collections"}, "chain": "D4b-final", "note": "Combines transactions and collections from D4b"},
+            {"step": 8, "tool": "get_background_task_by_id", "correct_query_params": {"id": "$step7.task_id"}, "correct_request_body": None, "chain": "final", "note": "Combines salary basis from D4a and billing release from D4b to verify full payroll initiation"},
         ],
         "risk": None,
     },
