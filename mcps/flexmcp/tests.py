@@ -198,10 +198,7 @@ print(server.create_employment_vehicle(EmploymentVehicleModel(
     reg_number="ABC123",
     tripLogFrom=datetime(2026, 4, 1)
 )))"""
-
-
-print("Testing get_customers_by_account_distribution_id")
-print(server.get_customers_by_account_distribution_id(customers_acc_distribution_id))
+print(server.get_employees())
 
 
 """
@@ -323,8 +320,8 @@ print_test(server.create_imported_trip())
 
 
 
-print("Testing create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id")
-print_test(server.create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id())
+print("Testing create_user_account_part_approval_permission")
+print_test(server.create_user_account_part_approval_permission())
 
 
 

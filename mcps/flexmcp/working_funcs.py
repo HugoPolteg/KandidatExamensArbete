@@ -886,8 +886,8 @@ print_test(server.get_user_account_part_approval_permissions())
 
 
 
-print("Testing get_account_combination_by_account_distribution_id_and_account_code")
-print_test(server.get_account_combination_by_account_distribution_id_and_account_code(account_distribution_id=account_distribution_id,account_code=account_nr))
+print("Testing get_account_combination_by_account_distribution_id_and_code")
+print_test(server.get_account_combination_by_account_distribution_id_and_code(account_distribution_id=account_distribution_id,account_code=account_nr))
 
 
 print("Testing get_account_combination_by_account_id")

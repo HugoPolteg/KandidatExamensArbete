@@ -654,7 +654,7 @@ def get_account_combination_by_account_id(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def get_account_combination_by_account_distribution_id_and_account_code(
+def get_account_combination_by_account_distribution_id_and_code(
     account_distribution_id: UUID = Field(...,alias="accountDistributionId",description="UUID of the account distribution"),
     account_code: str = Field(...,alias="accountCode", description="Account code"),
     page_params: PageModel = PageModel()
@@ -8177,7 +8177,7 @@ def get_user_account_part_approval_permissions(
         return f"Status: {response.status_code}\n{response.text}"
 
 @mcp.tool()
-def create_user_account_part_approval_permission_by_account_distribution_part_approval_permission_id(
+def create_user_account_part_approval_permission(
     account_distribution_part_approval_permissions_id : UUID = Field(..., description="User account part approval permission distribution id.", alias="accountdistributionpartapprovalpermissionsid "),
     body:   UserAccountPartApprovalPermissonModel = Field(..., description="Reques body object, accountDistributionPartApprovalPermissionId, and accountId are requied."),
     )-> dict:
