@@ -169,7 +169,7 @@ EmploymentPublicScheduleModel(
 
 
 """
-
+print(get_employees(GetEmployees(companyId=company_id)))
 
 """
 
@@ -198,8 +198,17 @@ print(server.create_employment_vehicle(EmploymentVehicleModel(
     reg_number="ABC123",
     tripLogFrom=datetime(2026, 4, 1)
 )))"""
-print(get_companies())
-
+print(create_employee(EmployeeCreateParams(employmenttemplateId=employment_template_id, employmentPeriodStart=datetime(2026, 9, 1, 0 , 0 ,0)), EmployeeModel(
+    company_id=company_id,
+    #nationality="SE - Sverige",
+    date_of_birth=datetime(1968, 4, 13, 0, 0, 0),
+    employment=EmploymentModel(employmentNumber="9202"),
+    first_name="Test II",
+    lastName="Testsson",
+    name="Test II Testsson",
+    gender=2
+    #national_identification_number="19600705-6341"
+)))
 
 """
 

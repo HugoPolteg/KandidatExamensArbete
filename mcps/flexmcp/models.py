@@ -537,6 +537,15 @@ class EmployeeModel(BaseModel):
             return [v]
         return v
 
+class GetSalaryBasisByTransferId(BaseModel):
+    salary_transfer_id: UUID = Field(..., description="UUID of the salary transfer.")
+    page_params: PageModel = Field(PageModel(), description="Pagination query")
+
+class GetSalaryBasisByTravelTransferId(BaseModel):
+    travel_salary_transfer_id: UUID = Field(..., description="UUID of the salary transfer.")
+    page_params: PageModel = Field(PageModel(), description="Pagination query")
+
+
 class GetEmployees(BaseModel):
     instance: Optional[str] = Field(DOMAIN, description="Domain name.")
     company_id: Optional[UUID] = Field(None, alias="companyId", description="Company ID (UUID).")
@@ -551,11 +560,11 @@ class GetEmployees(BaseModel):
     model_config = {"populate_by_name": True}
 
 class EmployeeCreateParams(BaseModel):
-    employementtemplate_id: UUID = Field(None,alias="employmenttemplateId",description="Create employee with use of selected employment template. If left empty then company default template will be used.")
+    employmenttemplate_id: UUID = Field(None,alias="employmenttemplateId",description="Create employee with use of selected employment template. If left empty then company default template will be used.")
     employment_period_start: datetime = Field(None,alias="employmentPeriodStart",description="Set start date of the default employmentPeriod created. Must be specified for the employment templates assignment template to be applied.")
-    employement_period_end: datetime = Field(None,alias="employmentPeriodEnd",description="Set end date of the default employmentPeriod created.")
+    employment_period_end: datetime = Field(None,alias="employmentPeriodEnd",description="Set end date of the default employmentPeriod created.")
     model_config = {"populate_by_name": True}
-    @field_serializer("employment_period_start", "employement_period_end")
+    @field_serializer("employment_period_start", "employment_period_end")
     def serialize_datetime(self, value: Optional[datetime]):
         if value is None:
             return value
@@ -1395,6 +1404,7 @@ class GetTimeReportByEmployee(BaseModel):
 
 class GetTimeReportsByEmployee(BaseModel):
     employee_id: UUID = Field(..., alias="employeeId", description="employee id")
+    date_: Optional[datetime] = Field(None, description="Time reports reported after this date", alias="date")
     from_date: date = Field(..., description="Start of the date range (YYYY-MM-DD). Inclusive.", alias="from")
     tom_date: date = Field(..., description="End of the date range (YYYY-MM-DD). Inclusive.", alias="tom")
     generated: Optional[bool] = Field(True, description="Include generated time rows")
