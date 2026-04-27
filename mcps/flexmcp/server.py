@@ -8296,7 +8296,7 @@ def get_user_account_part_approval_permissions(
 
 @mcp.tool()
 def create_user_account_part_approval_permission(
-    account_distribution_part_approval_permissions_id : UUID = Field(..., description="User account part approval permission distribution id.", alias="accountdistributionpartapprovalpermissionsid "),
+    account_distribution_part_approval_permissions_id : UUID = Field(..., description="User account part approval permission distribution id.", alias="accountdistributionpartapprovalpermissionsid"),
     body:   UserAccountPartApprovalPermissonModel = Field(..., description="Reques body object, accountDistributionPartApprovalPermissionId, and accountId are requied."),
     )-> dict:
     """
